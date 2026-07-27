@@ -62,7 +62,7 @@ const EQUIPO_RUTINA = {
     "Equipo 6": "Rutina Area Comun"
 };
 
-const APPS_SCRIPT_URL = "https://docs.google.com/spreadsheets/d/1FfzMeo_8tPbvj4UESAI6sosNjiwh_93tOrJ_VS9qDZc/edit?pli=1&gid=0#gid=0";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxi8dukYpVNTj5Km1A6c9CngenQG40blTQqp-0HMi0xX0n4j7AZAtCusRW6aiRRABKtdA/exec";
 
 let rutinaActual = [];
 let nombreRutinaActual = "";
