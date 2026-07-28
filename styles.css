@@ -124,7 +124,7 @@ textarea {
 input[type="text"]:focus,
 textarea:focus {
     outline: none;
-    border-color: #258f51;
+    border-color: #5f9263;
     background-color: #fff;
 }
 
@@ -169,7 +169,7 @@ textarea:focus {
 }
 
 .toggle-btn.active-si {
-    background: #22c55e;
+    background: #5f9263;
     color: #fff;
 }
 
@@ -233,7 +233,7 @@ textarea:focus {
 }
 
 .time-picker:focus-within {
-    border-color: #258f51;
+    border-color: #5f9263;
     background: #fff;
 }
 
@@ -242,9 +242,9 @@ textarea:focus {
     border-radius: 0;
     background: transparent;
     text-align: center;
-    font-weight: 600;
-    font-size: 1rem;
-    padding: 10px 4px;
+    font-weight: 60;
+    font-size: 0.9rem;
+    padding: 5px ;
     outline: none;
 }
 
@@ -254,9 +254,9 @@ textarea:focus {
 }
 
 .time-sep {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #333;
+    font-size: 0.9rem;
+    font-weight: 2;
+    color: #ebe9e9f5;
     padding: 0 2px;
 }
 
