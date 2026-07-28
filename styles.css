@@ -225,9 +225,9 @@ textarea:focus {
 .time-picker {
     display: flex;
     align-items: center;
-    border: 2px solid #e0e0e0;
+    border: 3px solid #999;
     border-radius: 8px;
-    background: #fafafa;
+    background: #f0f0f0;
     overflow: hidden;
     transition: border-color 0.2s;
 }
@@ -242,10 +242,11 @@ textarea:focus {
     border-radius: 0;
     background: transparent;
     text-align: center;
-    font-weight: 600;
-    font-size: 0.9rem;
-    padding: 5px ;
+    font-weight: 700;
+    font-size: 1rem;
+    padding: 5px;
     outline: none;
+    color: #222;
 }
 
 .time-picker select:focus {
@@ -254,14 +255,14 @@ textarea:focus {
 }
 
 .time-sep {
-    font-size: 0.9rem;
-    font-weight: 2;
-    color: #ebe9e9f5;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #555;
     padding: 0 2px;
 }
 
 .time-periodo {
-    border-left: 2px solid #e0e0e0 !important;
+    border-left: 2px solid #ccc !important;
     background: #f0f0f0 !important;
     font-weight: 700 !important;
     min-width: 70px;
