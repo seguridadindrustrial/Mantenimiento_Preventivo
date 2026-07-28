@@ -5,31 +5,16 @@ const SEDES = [
     "ALTAMIRA",
 ];
 
-const HORAS = [
-    "08:00 AM - 5:00 PM",
-    "06:00 PM - 11:00 PM",
-    "12:00 AM - 6:00 AM",
-];
-
-const EQUIPOS = [
-    "Equipo 1",
-    "Equipo 2",
-    "Equipo 3",
-    "Equipo 4",
-    "Equipo 5",
-    "Equipo 6",
-];
+const SEDE_EQUIPOS = {
+    "DEPOSITO": ["Equipo 1", "Equipo 2"],
+    "RUICES": ["Equipo 3", "Equipo 4"],
+    "ALTAMIRA": ["Equipo 5", "Equipo 6"]
+};
 
 const MANTENIMIENTOS = [
     "PREVENTIVO",
     "CORRECTIVO",
 ];
-
-const TURNOS = {
-    "08:00 AM - 5:00 PM": "Diurno",
-    "06:00 PM - 11:00 PM": "Nocturno",
-    "12:00 AM - 6:00 AM": "Madrugada"
-};
 
 const TECNICOS = {
     "001": "Jose",
@@ -82,6 +67,15 @@ document.addEventListener("DOMContentLoaded", () => {
         if (e.key === "Enter") loginTecnico();
     });
 
+    document.getElementById("sedes").addEventListener("change", function () {
+        const sede = this.value;
+        const equipos = SEDE_EQUIPOS[sede] || [];
+        populateSelect("equipo", equipos);
+        document.getElementById("checkinsContainer").innerHTML = "";
+        rutinaActual = [];
+        nombreRutinaActual = "";
+    });
+
     document.getElementById("equipo").addEventListener("change", function () {
         renderRutina(this.value);
     });
@@ -101,8 +95,6 @@ function loginTecnico() {
         document.getElementById("checkinForm").style.display = "block";
         document.getElementById("tecnicoInfo").textContent = "Tecnico: " + tecnicoNombre;
         populateSelect("sedes", SEDES);
-        populateSelect("hora", HORAS);
-        populateSelect("equipo", EQUIPOS);
         populateSelect("mantenimiento", MANTENIMIENTOS);
     } else {
         errorEl.style.display = "block";
@@ -119,6 +111,13 @@ function populateSelect(id, items) {
         option.textContent = item;
         select.appendChild(option);
     });
+}
+
+function calcularTurno(horaStr) {
+    const horas = parseInt(horaStr.split(":")[0], 10);
+    if (horas >= 6 && horas < 12) return "Diurno";
+    if (horas >= 18 && horas < 24) return "Nocturno";
+    return "Madrugada";
 }
 
 function renderRutina(equipo) {
@@ -185,7 +184,7 @@ function enviarFormulario(e) {
     const checkins = getCheckinValues();
 
     if (!sedes || !hora || !equipo || !mantenimiento) {
-        alert("Por favor completa Sedes, Hora, Equipo y Mantenimiento.");
+        alert("Por favor completa todos los campos.");
         return;
     }
 
@@ -201,10 +200,11 @@ function enviarFormulario(e) {
     }
 
     const fecha = new Date().toISOString().slice(0, 10);
-    const turno = TURNOS[hora] || "";
+    const turno = calcularTurno(hora);
 
     const registro = {
         fecha: fecha,
+        hora: hora,
         turno: turno,
         sedes: sedes,
         tecnico: tecnicoNombre,
@@ -241,6 +241,7 @@ function saveToLocalStorage(registro) {
 
 function clearForm() {
     document.getElementById("checkinForm").reset();
+    document.getElementById("equipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
     document.getElementById("descripcion").value = "";
     document.getElementById("checkinsContainer").innerHTML = "";
     rutinaActual = [];
