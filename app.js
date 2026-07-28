@@ -31,6 +31,14 @@ const TURNOS = {
     "12:00 AM - 6:00 AM": "Madrugada"
 };
 
+const TECNICOS = {
+    "001": "Jose",
+    "002": "Pedro",
+    "003": "Maria",
+    "004": "Luis",
+    "005": "Ana"
+};
+
 const RUTINAS = {
     "Rutina Cocina": [
         "Area limpia",
@@ -66,12 +74,13 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxi8dukYpVNTj5K
 
 let rutinaActual = [];
 let nombreRutinaActual = "";
+let tecnicoNombre = "";
 
 document.addEventListener("DOMContentLoaded", () => {
-    populateSelect("sedes", SEDES);
-    populateSelect("hora", HORAS);
-    populateSelect("equipo", EQUIPOS);
-    populateSelect("mantenimiento", MANTENIMIENTOS);
+    document.getElementById("btnLogin").addEventListener("click", loginTecnico);
+    document.getElementById("codigoTecnico").addEventListener("keydown", function (e) {
+        if (e.key === "Enter") loginTecnico();
+    });
 
     document.getElementById("equipo").addEventListener("change", function () {
         renderRutina(this.value);
@@ -81,8 +90,29 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("btnLimpiar").addEventListener("click", clearForm);
 });
 
+function loginTecnico() {
+    const codigo = document.getElementById("codigoTecnico").value.trim();
+    const errorEl = document.getElementById("loginError");
+
+    if (TECNICOS[codigo]) {
+        tecnicoNombre = TECNICOS[codigo];
+        errorEl.style.display = "none";
+        document.getElementById("loginSection").style.display = "none";
+        document.getElementById("checkinForm").style.display = "block";
+        document.getElementById("tecnicoInfo").textContent = "Tecnico: " + tecnicoNombre;
+        populateSelect("sedes", SEDES);
+        populateSelect("hora", HORAS);
+        populateSelect("equipo", EQUIPOS);
+        populateSelect("mantenimiento", MANTENIMIENTOS);
+    } else {
+        errorEl.style.display = "block";
+        document.getElementById("codigoTecnico").value = "";
+    }
+}
+
 function populateSelect(id, items) {
     const select = document.getElementById(id);
+    select.innerHTML = '<option value="" disabled selected>Seleccionar...</option>';
     items.forEach(item => {
         const option = document.createElement("option");
         option.value = item;
@@ -151,12 +181,11 @@ function enviarFormulario(e) {
     const hora = document.getElementById("hora").value;
     const equipo = document.getElementById("equipo").value;
     const mantenimiento = document.getElementById("mantenimiento").value;
-    const tecnico = document.getElementById("tecnico").value.trim();
     const descripcion = document.getElementById("descripcion").value.trim();
     const checkins = getCheckinValues();
 
-    if (!sedes || !hora || !equipo || !mantenimiento || !tecnico) {
-        alert("Por favor completa Sedes, Hora, Equipo, Mantenimiento y Nombre del Tecnico.");
+    if (!sedes || !hora || !equipo || !mantenimiento) {
+        alert("Por favor completa Sedes, Hora, Equipo y Mantenimiento.");
         return;
     }
 
@@ -175,16 +204,16 @@ function enviarFormulario(e) {
     const turno = TURNOS[hora] || "";
 
     const registro = {
-        sedes: sedes,
+        fecha: fecha,
         turno: turno,
-        mantenimiento: mantenimiento,
+        sedes: sedes,
+        tecnico: tecnicoNombre,
         equipo: equipo,
-        tecnico: tecnico,
+        mantenimiento: mantenimiento,
         rutina: nombreRutinaActual,
         checkinKeys: rutinaActual,
         checkinValues: rutinaActual.map(c => checkins[c] || ""),
-        descripcion: descripcion,
-        fecha: fecha
+        descripcion: descripcion
     };
 
     saveToLocalStorage(registro);
@@ -212,7 +241,6 @@ function saveToLocalStorage(registro) {
 
 function clearForm() {
     document.getElementById("checkinForm").reset();
-    document.getElementById("tecnico").value = "";
     document.getElementById("descripcion").value = "";
     document.getElementById("checkinsContainer").innerHTML = "";
     rutinaActual = [];
