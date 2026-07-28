@@ -222,6 +222,23 @@ textarea:focus {
     border-color: #bbb;
 }
 
+.time-picker {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.time-picker select {
+    width: auto;
+    flex: 1;
+}
+
+.time-separator {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #333;
+}
+
 @media (max-width: 480px) {
     .image {
         padding: 12px 15px;

@@ -96,10 +96,41 @@ function loginTecnico() {
         document.getElementById("tecnicoInfo").textContent = "Tecnico: " + tecnicoNombre;
         populateSelect("sedes", SEDES);
         populateSelect("mantenimiento", MANTENIMIENTOS);
+        populateTimeSelects();
     } else {
         errorEl.style.display = "block";
         document.getElementById("codigoTecnico").value = "";
     }
+}
+
+function populateTimeSelects() {
+    const horas = document.getElementById("horaHora");
+    horas.innerHTML = '<option value="" disabled selected>HH</option>';
+    for (var i = 1; i <= 12; i++) {
+        var opt = document.createElement("option");
+        opt.value = i;
+        opt.textContent = i;
+        horas.appendChild(opt);
+    }
+
+    const minutos = document.getElementById("horaMinuto");
+    minutos.innerHTML = '<option value="" disabled selected>MM</option>';
+    for (var m = 0; m < 60; m += 5) {
+        var opt = document.createElement("option");
+        var val = m < 10 ? "0" + m : "" + m;
+        opt.value = val;
+        opt.textContent = val;
+        minutos.appendChild(opt);
+    }
+
+    const periodo = document.getElementById("horaPeriodo");
+    periodo.innerHTML = '<option value="" disabled selected>AM/PM</option>';
+    ["AM", "PM"].forEach(function (p) {
+        var opt = document.createElement("option");
+        opt.value = p;
+        opt.textContent = p;
+        periodo.appendChild(opt);
+    });
 }
 
 function populateSelect(id, items) {
@@ -113,8 +144,20 @@ function populateSelect(id, items) {
     });
 }
 
-function calcularTurno(horaStr) {
-    const horas = parseInt(horaStr.split(":")[0], 10);
+function obtenerHora() {
+    var h = document.getElementById("horaHora").value;
+    var m = document.getElementById("horaMinuto").value;
+    var p = document.getElementById("horaPeriodo").value;
+    if (!h || !m || !p) return "";
+    var horas24 = parseInt(h, 10);
+    if (p === "PM" && horas24 !== 12) horas24 += 12;
+    if (p === "AM" && horas24 === 12) horas24 = 0;
+    var hh = horas24 < 10 ? "0" + horas24 : "" + horas24;
+    return hh + ":" + m;
+}
+
+function calcularTurno(hora24) {
+    var horas = parseInt(hora24.split(":")[0], 10);
     if (horas >= 6 && horas < 12) return "Diurno";
     if (horas >= 18 && horas < 24) return "Nocturno";
     return "Madrugada";
@@ -192,7 +235,7 @@ function enviarFormulario(e) {
     e.preventDefault();
 
     const sedes = document.getElementById("sedes").value;
-    const hora = document.getElementById("hora").value;
+    const hora = obtenerHora();
     const equipo = document.getElementById("equipo").value;
     const mantenimiento = document.getElementById("mantenimiento").value;
     const descripcion = document.getElementById("descripcion").value.trim();
@@ -271,6 +314,7 @@ function clearForm() {
     document.getElementById("equipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
     document.getElementById("descripcion").value = "";
     document.getElementById("checkinsContainer").innerHTML = "";
+    populateTimeSelects();
     rutinaActual = [];
     nombreRutinaActual = "";
 }
