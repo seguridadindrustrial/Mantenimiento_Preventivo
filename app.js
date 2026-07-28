@@ -173,6 +173,21 @@ function getCheckinValues() {
     return results;
 }
 
+function generarIdUnico(fecha, hora, sede, equipo, tecnico) {
+    return fecha + "|" + hora + "|" + sede + "|" + equipo + "|" + tecnico;
+}
+
+function yaEnviado(idUnico) {
+    const enviados = JSON.parse(localStorage.getItem("enviadosIds") || "[]");
+    return enviados.includes(idUnico);
+}
+
+function marcarEnviado(idUnico) {
+    const enviados = JSON.parse(localStorage.getItem("enviadosIds") || "[]");
+    enviados.push(idUnico);
+    localStorage.setItem("enviadosIds", JSON.stringify(enviados));
+}
+
 function enviarFormulario(e) {
     e.preventDefault();
 
@@ -201,8 +216,19 @@ function enviarFormulario(e) {
 
     const fecha = new Date().toISOString().slice(0, 10);
     const turno = calcularTurno(hora);
+    const idUnico = generarIdUnico(fecha, hora, sedes, equipo, tecnicoNombre);
+
+    if (yaEnviado(idUnico)) {
+        alert("Este registro ya fue enviado anteriormente.");
+        return;
+    }
+
+    if (!confirm("Confirmar envio?\n\nFecha: " + fecha + "\nHora: " + hora + "\nSede: " + sedes + "\nEquipo: " + equipo + "\nTecnico: " + tecnicoNombre)) {
+        return;
+    }
 
     const registro = {
+        id: idUnico,
         fecha: fecha,
         hora: hora,
         turno: turno,
@@ -216,6 +242,7 @@ function enviarFormulario(e) {
         descripcion: descripcion
     };
 
+    marcarEnviado(idUnico);
     saveToLocalStorage(registro);
 
     fetch(APPS_SCRIPT_URL, {
