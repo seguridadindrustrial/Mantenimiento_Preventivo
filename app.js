@@ -171,11 +171,14 @@ const MANTENIMIENTOS = [
 ];
 
 const TECNICOS = {
-    "001": "Jose",
-    "002": "Pedro",
-    "003": "Maria",
-    "004": "Luis",
-    "005": "Ana"
+    "001": "ALBERTO",
+    "002": "ANGEL",
+    "003": "AQUILES",
+    "004": "ALEXIS",
+    "005": "ENRIQUE",
+    "006": "RAFAEL",
+    "007": "NOEL"
+
 };
 
 const RUTINAS = {
