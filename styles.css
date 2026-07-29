@@ -234,7 +234,7 @@ textarea:focus {
 .row-fecha-hora input[type="date"] {
     width: 100%;
     padding: 10px 14px;
-    border: 3px solid #999;
+    border: 3px solid #67C064;
     border-radius: 8px;
     font-size: 1rem;
     font-weight: 700;
@@ -254,7 +254,7 @@ textarea:focus {
 .time-picker {
     display: flex;
     align-items: center;
-    border: 3px solid #999;
+    border: 3px solid #67C064;
     border-radius: 8px;
     background: #f0f0f0;
     overflow: hidden;
@@ -274,7 +274,7 @@ textarea:focus {
     background: transparent;
     text-align: center;
     font-weight: 700;
-    font-size: 1rem;
+    font-size: 0.85rem;
     padding: 5px;
     outline: none;
     color: #222;
@@ -288,12 +288,12 @@ textarea:focus {
 .time-sep {
     font-size: 1rem;
     font-weight: 700;
-    color: #555;
+    color: #67ce67;
     padding: 0 2px;
 }
 
 .time-periodo {
-    border-left: 2px solid #ccc !important;
+    border-left: 2px solid #67C064 !important;
     background: #f0f0f0 !important;
     font-weight: 700 !important;
     min-width: 70px;

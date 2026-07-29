@@ -267,7 +267,9 @@ const RUTINA_PREVENTIVO = {
         "Lubricar Valvulas ",
         "Verificar Estado de la Estructura General (Pintar de ser necesario)"
     ],
-    "Rutina Lamparas de Calor": [],
+    "Rutina Lamparas de Calor": [
+        "chao"
+    ],
     "Rutina Cocinas": [],
     "Rutina Lava Vajillas": [],
     "Rutina Escalinatas": [],
@@ -291,7 +293,14 @@ const RUTINA_PREVENTIVO = {
     "Rutina Neveras" : []
 };
 
-const RUTINA_CORRECTIVO = JSON.parse(JSON.stringify(RUTINA_PREVENTIVO));
+const RUTINA_CORRECTIVO = {
+    "Rutina Correctiva": [
+        "Diagnostico de falla",
+        "Reparacion realizada",
+        "Prueba de funcionamiento",
+        "Limpieza del area"
+    ]
+};
 
 const EQUIPO_RUTINA = {
     "A/A 12000 BTU split // oficina PB": "Rutina Cava Cuarto",
@@ -315,7 +324,7 @@ const EQUIPO_RUTINA = {
     "Armario refrigerado Ursel 1": "Rutina Almacen",
     "Armario refrigerado Ursel 2": "Rutina Almacen",
     "Abatidor": "Rutina Cocina",
-    "Chambranas": "Rutina Seguridad",
+    "Chambranas": "Rutina Lamparas de Calor",
     "Circuito Camaras Planta Baja": "Rutina Area Comun",
     "Circuito Camaras Planta Alta": "Rutina Area Comun",
     "Creperas": "Rutina Cocina",
@@ -607,12 +616,13 @@ function calcularTurno(hora24) {
 function renderRutina(equipo, mantenimiento) {
     const container = document.getElementById("checkinsContainer");
     container.innerHTML = "";
-    const baseRutina = EQUIPO_RUTINA[equipo] || "";
-    nombreRutinaActual = baseRutina;
 
     if (mantenimiento === "CORRECTIVO") {
-        rutinaActual = RUTINA_CORRECTIVO[baseRutina] || [];
+        nombreRutinaActual = "Rutina Correctiva";
+        rutinaActual = RUTINA_CORRECTIVO["Rutina Correctiva"] || [];
     } else {
+        const baseRutina = EQUIPO_RUTINA[equipo] || "";
+        nombreRutinaActual = baseRutina;
         rutinaActual = RUTINA_PREVENTIVO[baseRutina] || [];
     }
 
