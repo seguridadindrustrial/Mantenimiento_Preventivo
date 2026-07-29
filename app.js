@@ -184,7 +184,7 @@ const TECNICOS = {
 
 };
 
-const RUTINAS = {
+const RUTINA_PREVENTIVO = {
     "Rutina Horno A Gas": [
         "Verificar Entrada de Gas (Regulador y Manguera )",
         "Lubricar  Perilla Manual de Gas",
@@ -290,6 +290,8 @@ const RUTINAS = {
     "Rutina Cuminorias": [],
     "Rutina Neveras" : []
 };
+
+const RUTINA_CORRECTIVO = JSON.parse(JSON.stringify(RUTINA_PREVENTIVO));
 
 const EQUIPO_RUTINA = {
     "A/A 12000 BTU split // oficina PB": "Rutina Cava Cuarto",
@@ -606,15 +608,12 @@ function renderRutina(equipo, mantenimiento) {
     const container = document.getElementById("checkinsContainer");
     container.innerHTML = "";
     const baseRutina = EQUIPO_RUTINA[equipo] || "";
-    let key = baseRutina;
-    if (mantenimiento === "CORRECTIVO") key += " CORRECTIVO";
+    nombreRutinaActual = baseRutina;
 
-    nombreRutinaActual = key;
-    rutinaActual = RUTINAS[key] || [];
-
-    if (rutinaActual.length === 0 && key !== baseRutina) {
-        nombreRutinaActual = baseRutina;
-        rutinaActual = RUTINAS[baseRutina] || [];
+    if (mantenimiento === "CORRECTIVO") {
+        rutinaActual = RUTINA_CORRECTIVO[baseRutina] || [];
+    } else {
+        rutinaActual = RUTINA_PREVENTIVO[baseRutina] || [];
     }
 
     if (rutinaActual.length === 0) {
