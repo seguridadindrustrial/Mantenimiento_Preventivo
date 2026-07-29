@@ -222,6 +222,35 @@ textarea:focus {
     border-color: #bbb;
 }
 
+.row-fecha-hora {
+    display: flex;
+    gap: 12px;
+}
+
+.row-fecha-hora .half {
+    flex: 1;
+}
+
+.row-fecha-hora input[type="date"] {
+    width: 100%;
+    padding: 10px 14px;
+    border: 3px solid #999;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #222;
+    background: #f0f0f0;
+    box-sizing: border-box;
+    height: 42px;
+    transition: border-color 0.2s;
+}
+
+.row-fecha-hora input[type="date"]:focus {
+    outline: none;
+    border-color: #67C064;
+    background: #fff;
+}
+
 .time-picker {
     display: flex;
     align-items: center;
@@ -230,6 +259,8 @@ textarea:focus {
     background: #f0f0f0;
     overflow: hidden;
     transition: border-color 0.2s;
+    height: 42px;
+    box-sizing: border-box;
 }
 
 .time-picker:focus-within {

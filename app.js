@@ -502,16 +502,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function irAlPaso2() {
     const sedes = document.getElementById("sedes").value;
+    const fecha = document.getElementById("fecha").value;
     const hora = obtenerHora();
     const equipo = document.getElementById("equipo").value;
     const mantenimiento = document.getElementById("mantenimiento").value;
 
-    if (!sedes || !hora || !equipo || !mantenimiento) {
+    if (!sedes || !fecha || !hora || !equipo || !mantenimiento) {
         alert("Por favor completa todos los campos antes de continuar.");
         return;
     }
 
-    renderRutina(equipo);
+    renderRutina(equipo, mantenimiento);
 
     if (!rutinaActual || rutinaActual.length === 0) {
         alert("El equipo seleccionado no tiene rutina definida.");
@@ -601,11 +602,20 @@ function calcularTurno(hora24) {
     return "Madrugada";
 }
 
-function renderRutina(equipo) {
+function renderRutina(equipo, mantenimiento) {
     const container = document.getElementById("checkinsContainer");
     container.innerHTML = "";
-    nombreRutinaActual = EQUIPO_RUTINA[equipo] || "";
-    rutinaActual = RUTINAS[nombreRutinaActual] || [];
+    const baseRutina = EQUIPO_RUTINA[equipo] || "";
+    let key = baseRutina;
+    if (mantenimiento === "CORRECTIVO") key += " CORRECTIVO";
+
+    nombreRutinaActual = key;
+    rutinaActual = RUTINAS[key] || [];
+
+    if (rutinaActual.length === 0 && key !== baseRutina) {
+        nombreRutinaActual = baseRutina;
+        rutinaActual = RUTINAS[baseRutina] || [];
+    }
 
     if (rutinaActual.length === 0) {
         container.innerHTML = "<p style='color:#999;font-size:0.85rem;'>No hay rutina definida para este equipo.</p>";
@@ -614,7 +624,7 @@ function renderRutina(equipo) {
 
     const labelRutina = document.createElement("p");
     labelRutina.style.cssText = "color:#5f9263;font-size:0.8rem;font-weight:600;margin-bottom:4px;";
-    labelRutina.textContent = nombreRutinaActual;
+    labelRutina.textContent = mantenimiento + " - " + nombreRutinaActual;
     container.appendChild(labelRutina);
 
     rutinaActual.forEach((label, index) => {
@@ -673,13 +683,14 @@ function enviarFormulario(e) {
     e.preventDefault();
 
     const sedes = document.getElementById("sedes").value;
+    const fecha = document.getElementById("fecha").value;
     const hora = obtenerHora();
     const equipo = document.getElementById("equipo").value;
     const mantenimiento = document.getElementById("mantenimiento").value;
     const descripcion = document.getElementById("descripcion").value.trim();
     const checkins = getCheckinValues();
 
-    if (!sedes || !hora || !equipo || !mantenimiento) {
+    if (!sedes || !fecha || !hora || !equipo || !mantenimiento) {
         alert("Por favor completa todos los campos.");
         return;
     }
@@ -695,7 +706,6 @@ function enviarFormulario(e) {
         return;
     }
 
-    const fecha = new Date().toISOString().slice(0, 10);
     const turno = calcularTurno(hora);
     const idUnico = generarIdUnico(fecha, hora, sedes, equipo, tecnicoNombre);
 
