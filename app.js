@@ -486,15 +486,41 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("checkinsContainer").innerHTML = "";
         rutinaActual = [];
         nombreRutinaActual = "";
+        document.getElementById("paso2").style.display = "none";
+        document.getElementById("paso1").style.display = "block";
     });
 
-    document.getElementById("equipo").addEventListener("change", function () {
-        renderRutina(this.value);
+    document.getElementById("btnSiguiente").addEventListener("click", irAlPaso2);
+
+    document.getElementById("btnAtras").addEventListener("click", function () {
+        document.getElementById("paso2").style.display = "none";
+        document.getElementById("paso1").style.display = "block";
     });
 
     document.getElementById("checkinForm").addEventListener("submit", enviarFormulario);
-    document.getElementById("btnLimpiar").addEventListener("click", clearForm);
 });
+
+function irAlPaso2() {
+    const sedes = document.getElementById("sedes").value;
+    const hora = obtenerHora();
+    const equipo = document.getElementById("equipo").value;
+    const mantenimiento = document.getElementById("mantenimiento").value;
+
+    if (!sedes || !hora || !equipo || !mantenimiento) {
+        alert("Por favor completa todos los campos antes de continuar.");
+        return;
+    }
+
+    renderRutina(equipo);
+
+    if (!rutinaActual || rutinaActual.length === 0) {
+        alert("El equipo seleccionado no tiene rutina definida.");
+        return;
+    }
+
+    document.getElementById("paso1").style.display = "none";
+    document.getElementById("paso2").style.display = "block";
+}
 
 function loginTecnico() {
     const codigo = document.getElementById("codigoTecnico").value.trim();
@@ -726,6 +752,8 @@ function clearForm() {
     document.getElementById("equipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
     document.getElementById("descripcion").value = "";
     document.getElementById("checkinsContainer").innerHTML = "";
+    document.getElementById("paso2").style.display = "none";
+    document.getElementById("paso1").style.display = "block";
     populateTimeSelects();
     rutinaActual = [];
     nombreRutinaActual = "";
