@@ -530,7 +530,7 @@ const EQUIPO_RUTINA = {
     "Tableros Electricos": "Rutina Area Comun",
 };
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxg_EZKP_vc_TivOzxzloDUbbY1bTJD7qVQX37z4bqkaWH-Og1_C1soYP3T_y7CsImpw/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_eFKWHYC2pv4UJOzKaAbsAnSLvCGp8HyZ772vxlFRx5ChYgzO9792Bp3XO44dOCO32w/exec";
 
 let rutinaActual = [];
 let nombreRutinaActual = "";
