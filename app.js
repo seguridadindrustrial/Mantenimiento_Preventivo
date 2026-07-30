@@ -5,6 +5,27 @@ const SEDES = [
     "ALTAMIRA",
 ];
 
+const SEDE_ZONAS = {
+    "ALTAMIRA": [],
+    "RUICES": ["PB", "Piso 1", "Piso 2", "Terraza"],
+    "DEPOSITO": ["PB", "Piso 1", "Nuevo espacio", "Taller"]
+};
+
+const ZONA_EQUIPOS = {
+    "DEPOSITO": {
+        "PB": [],
+        "Piso 1": [],
+        "Nuevo espacio": [],
+        "Taller": null
+    },
+    "RUICES": {
+        "PB": [],
+        "Piso 1": [],
+        "Piso 2": [],
+        "Terraza": []
+    }
+};
+
 const SEDE_EQUIPOS = {
     "DEPOSITO": [
         "A/A 12000 BTU split // oficina PB",
@@ -36,9 +57,14 @@ const SEDE_EQUIPOS = {
         "Horno electrico 110v 2",
         "Horno pizzero Ooni",
         "Horno Unox",
-        "Lamparas de calor",
-        "Lavavajillas 1",
-        "Lavavajillas 2",
+        "Lamparas de calor 1",
+        "Lamparas de calor 2",
+        "Lamparas de calor 3",
+        "Lamparas de calor 4",
+        "Lamparas de calor 5 (Madera)",
+        "Lamparas de calor 6 (Madera)",
+        "Lava vajillas 1",
+        "Lava vajillas 2",
         "Mallas anti ratas",
         "Maquina de cafe 1",
         "Maquina de Cafe 2",
@@ -89,9 +115,9 @@ const SEDE_EQUIPOS = {
         "Cava cuarto de Conservacion 1",
         "Cava cuarto de Conservacion 2",
         "Cava Cuarto de Basura",
-        "Cocina 1",
-        "Cocina 2",
-        "Cocina 3",
+        "Cocina 1 (turca PB)",
+        "Cocina 2 (turca Piso 1)",
+        "Cocina 3 (Iboia Piso 1)",
         "Cortina de Aire 150 cm 220V",
         "Ductos + trampa grasas",
         "Elevador de Carga",
@@ -268,13 +294,30 @@ const RUTINA_PREVENTIVO = {
         "Verificar Estado de la Estructura General (Pintar de ser necesario)"
     ],
     "Rutina Lamparas de Calor": [
-        "chao"
+        "Verificar conexiones Electricas",
+        "Ajustes de Socates y Bombillos (cambiar de ser necesario)",
+        "Verificar Estado de la Estructura General (Pintar de ser necesario)",
+    
     ],
-    "Rutina Cocinas": [],
-    "Rutina Lava Vajillas": [],
-    "Rutina Escalinatas": [],
-    "Rutina Topes Frances": [],
-    "Rutina Molino de Carne": [],
+    "Rutina Cocinas": [
+        "Mantenimiento de Valvulas (lubricacion)",
+        " Limpieza de Pilotos y Quemadores",
+        "Ajustes de Termo pilas o Termo Cuplas",
+        "Verificar Tuercas y Conexciones de Entrada de Gas (Buscar Fugas)",
+        "Verificar Entrada de Aire (Ajustar de ser necesario)",
+
+    ],
+    "Rutina Lava Vajillas": [
+        "Verificar Conexiones Electricas",
+        "Verificar quimicos de Limpieza (Secante y Detergente)",
+        "Desincrustar el Equipo (con producto desincrustante)",
+        "Limpieza externa ",
+
+    ],
+
+    "Rutina Molino de Carne": [
+        ""
+    ],
     "Rutina Laminadora": [],
     "Rutina Amasadora": [],
     "Rutina Planchas Electricas": [],
@@ -299,6 +342,29 @@ const RUTINA_CORRECTIVO = {
         "Reparacion realizada",
         "Prueba de funcionamiento",
         "Limpieza del area"
+    ]
+};
+
+const RUTINA_TALLER = {
+    "Actividades de Semaneros": [
+        {
+            label: "Tanques",
+            type: "toggle",
+            expand: [
+                { label: "Llenos", type: "number" },
+                { label: "Vacios", type: "number", min: 0, max: 20 },
+                { label: "Pedir cisterna", type: "toggle" }
+            ]
+        },
+        {
+            label: "Bombonas",
+            type: "toggle",
+            expand: [
+                { label: "Llenas", type: "number" },
+                { label: "Vacias", type: "number" },
+                { label: "Medias", type: "number" }
+            ]
+        }
     ]
 };
 
@@ -334,9 +400,9 @@ const EQUIPO_RUTINA = {
     "Cava cuarto de Conservacion 1": "Rutina Cava Cuarto",
     "Cava cuarto de Conservacion 2": "Rutina Cava Cuarto",
     "Cava Cuarto de Basura": "Rutina Cava Cuarto",
-    "Cocina 1": "Rutina Cocina",
-    "Cocina 2": "Rutina Cocina",
-    "Cocina 3": "Rutina Cocina",
+    "Cocina 1 (turca PB)": "Rutina Cocinas",
+    "Cocina 2 (turca Piso 1)" : "Rutina Cocinas",
+    "Cocina 3 (Iboia Piso 1)": "Rutina Cocinas",
     "Cortina de Aire 150 cm 220V": "Rutina Area Comun",
     "Enfriador sushi cake": "Rutina Almacen",
     "Extintores": "Rutina Seguridad",
@@ -374,8 +440,8 @@ const EQUIPO_RUTINA = {
     "Horno electrico Balsam 110 V-ph1 1": "Rutina Horno Mixto",
     "Horno electrico Balsam 110 V-ph1 2": "Rutina Horno Mixto",
     "Horno pizzero Ooni": "Rutina Horno A Gas",
-    "Lavavajillas 1": "Rutina Cocina",
-    "Lavavajillas 2": "Rutina Cocina",
+    "Lava vajillas 1": "Rutina Lava Vajillas",
+    "Lava vajillas 2": "Rutina Lava Vajillas",
     "Mallas anti ratas": "Rutina Seguridad",
     "Maquina de cafe 1": "Rutina Maquinas de Cafe",
     "Maquina de Cafe 2": "Rutina Maquinas de Cafe",
@@ -415,43 +481,31 @@ const EQUIPO_RUTINA = {
     "Reverberos sencillos": "Rutina Reberberos",
     "Tanques de agua (8000lts)": "Rutina Almacen",
     "Tanquillas": "Rutina Almacen",
-    "Tope Frances a Gas 1": "Rutina Topes Frances",
-    "Tope Frances a Gas 2": "Rutina Topes Frances",
+    "Tope Frances a Gas 1": "Rutina Cocinas",
+    "Tope Frances a Gas 2": "Rutina Cocinas",
     "Tableros": "Rutina Seguridad",
     "salamandras": "Rutina Horno A Gas",
     "Reverbero de mesa": "Rutina Reberberos",
-
-
-    "Lamparas de calor": "Rutina Area Comun",
+    "Lamparas de calor 1": "Rutina Lamparas de Calor",
+    "Lamparas de calor 2": "Rutina Lamparas de Calor",
+    "Lamparas de calor 3": "Rutina Lamparas de Calor",
+    "Lamparas de calor 4": "Rutina Lamparas de Calor",
+    "Lamparas de calor 5 (Madera)": "Rutina Lamparas de Calor",
+    "Lamparas de calor 6 (Madera)": "Rutina Lamparas de Calor",
     "Bombonas de gas": "Rutina Cocina",
     "Escalinatas": "Rutina Escalinatas",
-
-
-
-
-
-
-
     "Nevera exhibidora": "Rutina Almacen",
     "Sistema de bombas Hidroneumatico": "Rutina Area Comun",
     "Tanques de agua de 1000lts (8 un)": "Rutina Almacen",
-
-
-
     "Santa maria 1 3.5 mts": "Rutina Santa Maria",
     "Santa maria 2 3.5 mts": "Rutina Santa Maria",
     "Elevador de Carga": "Rutina Area Comun",
     "Pela papas": "Rutina Cocina",
     "Rebanadora 1": "Rutina Cocina",
     "Rebanadora 2": "Rutina Cocina",
-
     "Robocop": "Rutina Cocina",
-
-
-
     "Plancha a gas": "Rutina Planchas a Gas",
     "Sarten Basculante Industrial": "Rutina Cocina",
-
     "AMASADOR 1": "Rutina Cocina",
     "FERMENTADOR": "Rutina Cocina",
     "SISTEMA DE DETENCION DE INCENDIO": "Rutina Seguridad",
@@ -459,9 +513,7 @@ const EQUIPO_RUTINA = {
     "Laminadora": "Rutina Cocina",
     "Tableros Electricos": "Rutina Area Comun",
     "Fumigacion": "Rutina Seguridad",
-
     "Ductos + trampa grasas": "Rutina Area Comun",
-
     "Alfombra Piso": "Rutina Area Comun",
     "Extintor 1": "Rutina Seguridad",
     "Extintor 2": "Rutina Seguridad",
@@ -483,6 +535,7 @@ const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxg_EZKP_vc_Ti
 let rutinaActual = [];
 let nombreRutinaActual = "";
 let tecnicoNombre = "";
+let esTaller = false;
 
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("btnLogin").addEventListener("click", loginTecnico);
@@ -492,8 +545,49 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("sedes").addEventListener("change", function () {
         const sede = this.value;
-        const equipos = SEDE_EQUIPOS[sede] || [];
-        populateSelect("equipo", equipos);
+        const zonas = SEDE_ZONAS[sede] || [];
+        const zonaGroup = document.getElementById("zonaGroup");
+        const zonaSelect = document.getElementById("zona");
+
+        if (zonas.length > 0) {
+            zonaGroup.style.display = "block";
+            populateSelect("zona", zonas);
+        } else {
+            zonaGroup.style.display = "none";
+            zonaSelect.value = "";
+        }
+
+        document.getElementById("equipoGroup").style.display = "block";
+        document.getElementById("mantenimientoGroup").style.display = "block";
+        document.getElementById("equipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
+        document.getElementById("checkinsContainer").innerHTML = "";
+        rutinaActual = [];
+        nombreRutinaActual = "";
+        esTaller = false;
+        document.getElementById("paso2").style.display = "none";
+        document.getElementById("paso1").style.display = "block";
+    });
+
+    document.getElementById("zona").addEventListener("change", function () {
+        const sede = document.getElementById("sedes").value;
+        const zona = this.value;
+        const eqGroup = document.getElementById("equipoGroup");
+
+        if (zona === "Taller") {
+            eqGroup.style.display = "none";
+            document.getElementById("mantenimientoGroup").style.display = "block";
+            esTaller = true;
+        } else {
+            eqGroup.style.display = "block";
+            esTaller = false;
+            const zonaData = ZONA_EQUIPOS[sede]?.[zona] || [];
+            if (zonaData.length > 0) {
+                populateSelect("equipo", zonaData);
+            } else {
+                const equipos = SEDE_EQUIPOS[sede] || [];
+                populateSelect("equipo", equipos);
+            }
+        }
         document.getElementById("checkinsContainer").innerHTML = "";
         rutinaActual = [];
         nombreRutinaActual = "";
@@ -515,17 +609,27 @@ function irAlPaso2() {
     const sedes = document.getElementById("sedes").value;
     const fecha = document.getElementById("fecha").value;
     const hora = obtenerHora();
-    const equipo = document.getElementById("equipo").value;
+    const zona = document.getElementById("zona").value;
+    const equipo = esTaller ? "Taller" : document.getElementById("equipo").value;
     const mantenimiento = document.getElementById("mantenimiento").value;
 
-    if (!sedes || !fecha || !hora || !equipo || !mantenimiento) {
+    if (!sedes || !fecha || !hora || !mantenimiento) {
         alert("Por favor completa todos los campos antes de continuar.");
+        return;
+    }
+    const zonas = SEDE_ZONAS[sedes] || [];
+    if (zonas.length > 0 && !zona) {
+        alert("Selecciona una zona.");
+        return;
+    }
+    if (!esTaller && !equipo) {
+        alert("Selecciona un equipo.");
         return;
     }
 
     renderRutina(equipo, mantenimiento);
 
-    if (!rutinaActual || rutinaActual.length === 0) {
+    if (!rutinaActual || (Array.isArray(rutinaActual) && rutinaActual.length === 0)) {
         alert("El equipo seleccionado no tiene rutina definida.");
         return;
     }
@@ -617,6 +721,13 @@ function renderRutina(equipo, mantenimiento) {
     const container = document.getElementById("checkinsContainer");
     container.innerHTML = "";
 
+    if (esTaller) {
+        nombreRutinaActual = "Actividades de Semaneros";
+        rutinaActual = RUTINA_TALLER["Actividades de Semaneros"] || [];
+        renderExpandableTasks(container);
+        return;
+    }
+
     if (mantenimiento === "CORRECTIVO") {
         nombreRutinaActual = "Rutina Correctiva";
         rutinaActual = RUTINA_CORRECTIVO["Rutina Correctiva"] || [];
@@ -650,6 +761,101 @@ function renderRutina(equipo, mantenimiento) {
     });
 }
 
+function renderExpandableTasks(container) {
+    const labelRutina = document.createElement("p");
+    labelRutina.style.cssText = "color:#5f9263;font-size:0.8rem;font-weight:600;margin-bottom:4px;";
+    labelRutina.textContent = "PREVENTIVO - Actividades de Semaneros";
+    container.appendChild(labelRutina);
+
+    rutinaActual.forEach((task, idx) => {
+        const wrapper = document.createElement("div");
+        wrapper.className = "taller-task";
+        wrapper.dataset.taskIdx = idx;
+
+        const row = document.createElement("div");
+        row.className = "taller-task-row";
+        row.innerHTML = `
+            <span class="taller-task-label">${task.label}</span>
+            <div class="toggle-group">
+                <button type="button" class="toggle-btn" data-task="${idx}" data-value="Si" onclick="toggleTallerTask(this)">Si</button>
+                <button type="button" class="toggle-btn" data-task="${idx}" data-value="No" onclick="toggleTallerTask(this)">No</button>
+            </div>
+        `;
+        wrapper.appendChild(row);
+
+        const subContainer = document.createElement("div");
+        subContainer.className = "taller-sub";
+        subContainer.id = "tallerSub" + idx;
+        subContainer.style.display = "none";
+        wrapper.appendChild(subContainer);
+
+        container.appendChild(wrapper);
+    });
+}
+
+function toggleTallerTask(btn) {
+    const row = btn.parentElement;
+    row.querySelectorAll(".toggle-btn").forEach(b => {
+        b.classList.remove("active-si", "active-no");
+    });
+    if (btn.dataset.value === "Si") {
+        btn.classList.add("active-si");
+    } else {
+        btn.classList.add("active-no");
+    }
+
+    const wrapper = btn.closest(".taller-task");
+    const idx = parseInt(btn.dataset.task);
+    const task = rutinaActual[idx];
+    const sub = document.getElementById("tallerSub" + idx);
+
+    if (btn.dataset.value === "Si" && task.expand) {
+        sub.style.display = "block";
+        sub.innerHTML = "";
+        task.expand.forEach((field, fi) => {
+            const fieldDiv = document.createElement("div");
+            fieldDiv.className = "taller-sub-field";
+            const label = document.createElement("label");
+            label.textContent = field.label;
+            fieldDiv.appendChild(label);
+            if (field.type === "toggle") {
+                const tg = document.createElement("div");
+                tg.className = "toggle-group";
+                tg.innerHTML = `
+                    <button type="button" class="toggle-btn sub-toggle" data-task="${idx}" data-sub="${fi}" data-value="Si" onclick="toggleSubToggle(this)">Si</button>
+                    <button type="button" class="toggle-btn sub-toggle" data-task="${idx}" data-sub="${fi}" data-value="No" onclick="toggleSubToggle(this)">No</button>
+                `;
+                fieldDiv.appendChild(tg);
+            } else if (field.type === "number") {
+                const inp = document.createElement("input");
+                inp.type = "number";
+                inp.className = "taller-number-input";
+                inp.dataset.task = idx;
+                inp.dataset.sub = fi;
+                if (field.min !== undefined) inp.min = field.min;
+                if (field.max !== undefined) inp.max = field.max;
+                fieldDiv.appendChild(inp);
+            }
+            sub.appendChild(fieldDiv);
+        });
+    } else {
+        sub.style.display = "none";
+        sub.innerHTML = "";
+    }
+}
+
+function toggleSubToggle(btn) {
+    const group = btn.parentElement;
+    group.querySelectorAll(".toggle-btn").forEach(b => {
+        b.classList.remove("active-si", "active-no");
+    });
+    if (btn.dataset.value === "Si") {
+        btn.classList.add("active-si");
+    } else {
+        btn.classList.add("active-no");
+    }
+}
+
 function toggleCheckin(btn) {
     const group = btn.parentElement;
     group.querySelectorAll(".toggle-btn").forEach(b => {
@@ -669,6 +875,32 @@ function getCheckinValues() {
     groups.forEach((group, index) => {
         const activeBtn = group.querySelector(".active-si, .active-no");
         results[rutinaActual[index]] = activeBtn ? activeBtn.dataset.value : "";
+    });
+    return results;
+}
+
+function getTallerValues() {
+    const results = {};
+    document.querySelectorAll(".taller-task").forEach(wrapper => {
+        const idx = parseInt(wrapper.dataset.taskIdx);
+        const task = rutinaActual[idx];
+        const activeBtn = wrapper.querySelector(".taller-task-row .active-si, .taller-task-row .active-no");
+        const val = activeBtn ? activeBtn.dataset.value : "";
+        const sub = {};
+        if (val === "Si" && task.expand) {
+            task.expand.forEach((field, fi) => {
+                const subField = document.getElementById("tallerSub" + idx)?.querySelectorAll(".taller-sub-field")[fi];
+                if (!subField) return;
+                if (field.type === "toggle") {
+                    const sb = subField.querySelector(".active-si, .active-no");
+                    sub[field.label] = sb ? sb.dataset.value : "";
+                } else if (field.type === "number") {
+                    const inp = subField.querySelector("input");
+                    sub[field.label] = inp ? inp.value : "";
+                }
+            });
+        }
+        results[task.label] = { value: val, sub: sub };
     });
     return results;
 }
@@ -694,15 +926,22 @@ function enviarFormulario(e) {
     const sedes = document.getElementById("sedes").value;
     const fecha = document.getElementById("fecha").value;
     const hora = obtenerHora();
-    const equipo = document.getElementById("equipo").value;
+    const zona = document.getElementById("zona").value;
+    const equipo = esTaller ? "Taller" : document.getElementById("equipo").value;
     const mantenimiento = document.getElementById("mantenimiento").value;
     const descripcion = document.getElementById("descripcion").value.trim();
-    const checkins = getCheckinValues();
 
-    if (!sedes || !fecha || !hora || !equipo || !mantenimiento) {
+    if (!sedes || !fecha || !hora || !mantenimiento) {
         alert("Por favor completa todos los campos.");
         return;
     }
+
+    if (esTaller) {
+        enviarTaller(sedes, fecha, hora, zona, mantenimiento, descripcion);
+        return;
+    }
+
+    const checkins = getCheckinValues();
 
     if (rutinaActual.length === 0) {
         alert("Selecciona un equipo con rutina definida.");
@@ -733,6 +972,7 @@ function enviarFormulario(e) {
         hora: hora,
         turno: turno,
         sedes: sedes,
+        zona: zona,
         tecnico: tecnicoNombre,
         equipo: equipo,
         mantenimiento: mantenimiento,
@@ -760,6 +1000,53 @@ function enviarFormulario(e) {
     });
 }
 
+function enviarTaller(sedes, fecha, hora, zona, mantenimiento, descripcion) {
+    const tallerValues = getTallerValues();
+    const turno = calcularTurno(hora);
+
+    for (const [taskLabel, data] of Object.entries(tallerValues)) {
+        const idUnico = generarIdUnico(fecha, hora, sedes, taskLabel, tecnicoNombre);
+
+        if (yaEnviado(idUnico)) {
+            alert("El registro para " + taskLabel + " ya fue enviado anteriormente.");
+            continue;
+        }
+
+        if (!confirm("Confirmar envio de " + taskLabel + "?\n\nFecha: " + fecha + "\nHora: " + hora + "\nSede: " + sedes + "\nZona: " + zona + "\nTecnico: " + tecnicoNombre)) {
+            continue;
+        }
+
+        const registro = {
+            id: idUnico,
+            fecha: fecha,
+            hora: hora,
+            turno: turno,
+            sedes: sedes,
+            zona: zona,
+            tecnico: tecnicoNombre,
+            equipo: "Taller",
+            mantenimiento: mantenimiento,
+            rutina: "Actividades de Semaneros - " + taskLabel,
+            task: taskLabel,
+            taskValue: data.value,
+            taskSub: data.sub,
+            descripcion: descripcion
+        };
+
+        marcarEnviado(idUnico);
+        saveToLocalStorage(registro);
+
+        fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            body: JSON.stringify(registro)
+        }).then(() => {}).catch(() => {});
+    }
+
+    alert("Tareas de Taller enviadas.");
+    clearForm();
+}
+
 function saveToLocalStorage(registro) {
     const historial = JSON.parse(localStorage.getItem("historialCheckins") || "[]");
     historial.push(registro);
@@ -773,7 +1060,12 @@ function clearForm() {
     document.getElementById("checkinsContainer").innerHTML = "";
     document.getElementById("paso2").style.display = "none";
     document.getElementById("paso1").style.display = "block";
+    document.getElementById("zonaGroup").style.display = "none";
+    document.getElementById("zona").innerHTML = '<option value="" disabled selected>Seleccionar zona...</option>';
+    document.getElementById("equipoGroup").style.display = "block";
+    document.getElementById("mantenimientoGroup").style.display = "block";
     populateTimeSelects();
     rutinaActual = [];
     nombreRutinaActual = "";
+    esTaller = false;
 }

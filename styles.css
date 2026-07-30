@@ -299,6 +299,66 @@ textarea:focus {
     min-width: 70px;
 }
 
+.taller-task {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+}
+
+.taller-task-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.taller-task-label {
+    font-size: 0.9rem;
+    color: #444;
+    font-weight: 600;
+}
+
+.taller-sub {
+    margin-top: 10px;
+    padding: 10px;
+    background: #fff;
+    border-radius: 6px;
+    border: 1px dashed #ccc;
+}
+
+.taller-sub-field {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.taller-sub-field:last-child {
+    margin-bottom: 0;
+}
+
+.taller-sub-field label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #555;
+    margin-bottom: 0;
+}
+
+.taller-number-input {
+    width: 80px;
+    padding: 6px 10px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.taller-number-input:focus {
+    outline: none;
+    border-color: #63bb60;
+}
+
 @media (max-width: 480px) {
     .image {
         padding: 12px 15px;
