@@ -13,16 +13,133 @@ const SEDE_ZONAS = {
 
 const ZONA_EQUIPOS = {
     "DEPOSITO": {
-        "PB": [],
-        "Piso 1": [],
+        "PB": [
+            "A/A 12000 BTU split // oficina PB",
+            "Chambranas",
+            "Circuito Camaras Planta Baja",
+            "Creperas",
+            "Enfriador de Botellon 1",
+            "Enfriador sushi cake",
+            "Extractores (6)",
+            "Extintores",
+            "Extintores Fijos",
+            "Freidora Duker 1",
+            "Freidora Duker 2",
+            "Freidora Imperial",
+            "Freidora Star Book",
+            "Freidora Vulcan 1",
+            "Freidora Vulcan 2",
+            "Horno Asber",
+            "Horno electrico 110v 1",
+            "Horno electrico 110v 2",
+            "Lava vajillas 1",
+            "Lava vajillas 2",
+            "Mallas anti ratas",
+            "Maquina de cafe 1",
+            "Maquina de Cafe 2",
+            "Maquina de cafe 3",
+            "Maquina de cafe 4",
+            "Maquina de cafe 5",
+            "Microondas 1",
+            "Molino de cafe 1",
+            "Molino de cafe 2",
+            "Molino de cafe 3",
+            "pantallas de vidrio",
+            "parrilleras",
+            "Peceras Grandes",
+            "Planchas a gas",
+            "Reverberos dobles",
+            "Reverberos sencillos",
+            "salamandras"
+        ],
+        "Piso 1": [
+            "A/A 12000 Btu Ventana ///Dormitorio",
+            "A/A 24000 Btu Split 77 Oficina Pa",
+            "A/A 8000 BTU Ventana // dormitorio",
+            "Bombonas de gas",
+            "Circuito Camaras Planta Alta",
+            "Enfriador de Botellon 2",
+            "Horno pizzero Ooni",
+            "Microondas 2",
+            "Peceras Pequenas",
+            "Reverbero de mesa"
+        ],
         "Nuevo espacio": [],
         "Taller": null
     },
     "RUICES": {
-        "PB": [],
-        "Piso 1": [],
-        "Piso 2": [],
-        "Terraza": []
+        "PB": [
+            "Aire acondicionado 5 ton Fan coil 1",
+            "Aire acondicionado 5 ton Fan coil 2",
+            "Armario refrigerado Ursel 1",
+            "Cava cuarto de Congelacion 1",
+            "Cava cuarto de Congelacion 2",
+            "Cava cuarto de Congelacion 3",
+            "Cava cuarto de Conservacion 1",
+            "Cocina 1 (turca PB)",
+            "Empacadora al Vacio 1",
+            "Empacadora al Vacio 2",
+            "Enfriador de agua 1",
+            "Filtro desbarrador",
+            "Freidora 1",
+            "Horno Rational a Gas 220 V ph2",
+            "Meson refrigerado 2 pta 1 Ursel",
+            "Meson refrigerado 3 pta 1 Ursel",
+            "MOTOR DE INYECCION DE AIRE 1",
+            "MOTOR DE INYECCION DE AIRE 4",
+            "Nevera exhibidora",
+            "Pela papas",
+            "Rebanadora 1",
+            "Robocop",
+            "Sistema de bombas Hidroneumatico",
+            "Tableros Electricos",
+            "Tanques de agua de 1000lts (8 un)"
+        ],
+        "Piso 1": [
+            "Abatidor",
+            "Aire acondicionado 5 ton Fan Coil 3",
+            "Aire Acondicionado 12000 Btu Panaderia",
+            "Aire Acondicionado 18000 Btu Entradas",
+            "Aire Acondicionado 18000Btu Comedor",
+            "AMASADOR 1",
+            "Armario refrigerado Ursel 2",
+            "Cava cuarto de Conservacion 2",
+            "Cocina 2 (turca Piso 1)",
+            "Cocina 3 (Iboia Piso 1)",
+            "Cortina de Aire 150 cm 220V",
+            "Enfriador de agua 2",
+            "FERMENTADOR",
+            "Freidora 2",
+            "Freidora 3",
+            "Horno electrico Balsam 110 V-ph1 1",
+            "Horno electrico Balsam 110 V-ph1 2",
+            "Horno Rational trifasico 220V ph3",
+            "Laminadora",
+            "Meson refrigerado 2 pta Balsam 1 Pantry",
+            "Meson refrigerado 2 pta Balsam 2 Pantry",
+            "Meson refrigerado de gaveta Balsam 1 principal",
+            "Meson refrigerado de gaveta Balsam 2 Principal",
+            "Meson refrigerado de gaveta Ursel Comida en familia",
+            "MOTOR DE INYECCION DE AIRE 2",
+            "MOTOR DE INYECCION DE AIRE 3",
+            "Plancha a gas",
+            "Rebanadora 2",
+            "Sarten Basculante Industrial",
+            "SISTEMA DE DETENCION DE INCENDIO",
+            "Tope Frances a Gas 1",
+            "Tope Frances a Gas 2"
+        ],
+        "Piso 2": [
+            "Aire acondicionado 5 ton Fan Coil 4",
+            "Aire Acondicionado 5 ton Piso techo 1",
+            "Aire Acondicionado 12000 Btu Cuarto de IT",
+            "Enfriador de agua 3"
+        ],
+        "Terraza": [
+            "Ductos + trampa grasas",
+            "Motor extractor 12000 CFM Planta Baja",
+            "Motor extractor 21000 CFM Piso 1"
+        ]
     }
 };
 
@@ -39,9 +156,9 @@ const SEDE_EQUIPOS = {
         "Creperas",
         "Enfriador de Botellon 1",
         "Enfriador de Botellon 2",
-        "Enfriador de Botellon 3",
+        "Enfriador de Botellon 3", // SIN ZONA
         "Enfriador sushi cake",
-        "Escalinatas",
+        "Escalinatas", // SIN ZONA
         "Extractores (6)",
         "Extintores",
         "Extintores Fijos",
@@ -51,18 +168,18 @@ const SEDE_EQUIPOS = {
         "Freidora Star Book",
         "Freidora Vulcan 1",
         "Freidora Vulcan 2",
-        "Fumigacion",
+        "Fumigacion", // SIN ZONA
         "Horno Asber",
         "Horno electrico 110v 1",
         "Horno electrico 110v 2",
         "Horno pizzero Ooni",
-        "Horno Unox",
-        "Lamparas de calor 1",
-        "Lamparas de calor 2",
-        "Lamparas de calor 3",
-        "Lamparas de calor 4",
-        "Lamparas de calor 5 (Madera)",
-        "Lamparas de calor 6 (Madera)",
+        "Horno Unox", // SIN ZONA
+        "Lamparas de calor 1", // SIN ZONA
+        "Lamparas de calor 2", // SIN ZONA
+        "Lamparas de calor 3", // SIN ZONA
+        "Lamparas de calor 4", // SIN ZONA
+        "Lamparas de calor 5 (Madera)", // SIN ZONA
+        "Lamparas de calor 6 (Madera)", // SIN ZONA
         "Lava vajillas 1",
         "Lava vajillas 2",
         "Mallas anti ratas",
@@ -73,26 +190,26 @@ const SEDE_EQUIPOS = {
         "Maquina de cafe 5",
         "Microondas 1",
         "Microondas 2",
-        "Microondas 3",
+        "Microondas 3", // SIN ZONA
         "Molino de cafe 1",
         "Molino de cafe 2",
         "Molino de cafe 3",
-        "Molino de cafe 4",
-        "Molino de cafe 5",
+        "Molino de cafe 4", // SIN ZONA
+        "Molino de cafe 5", // SIN ZONA
         "pantallas de vidrio",
         "parrilleras",
         "Peceras Grandes",
         "Peceras Pequenas",
-        "Pintura Externa",
-        "Pintura interna",
+        "Pintura Externa", // SIN ZONA
+        "Pintura interna", // SIN ZONA
         "Planchas a gas",
         "Reverbero de mesa",
         "Reverberos dobles",
         "Reverberos sencillos",
         "salamandras",
-        "Tableros",
-        "Tanques de agua (8000lts)",
-        "Tanquillas"
+        "Tableros", // SIN ZONA
+        "Tanques de agua (8000lts)", // SIN ZONA
+        "Tanquillas" // SIN ZONA
     ],
     "RUICES": [
         "Abatidor",
@@ -106,7 +223,7 @@ const SEDE_EQUIPOS = {
         "Aire Acondicionado 18000 Btu Entradas",
         "Aire Acondicionado 18000Btu Comedor",
         "AMASADOR 1",
-        "Amasador 2",
+        "Amasador 2", // SIN ZONA
         "Armario refrigerado Ursel 1",
         "Armario refrigerado Ursel 2",
         "Cava cuarto de Congelacion 1",
@@ -114,27 +231,27 @@ const SEDE_EQUIPOS = {
         "Cava cuarto de Congelacion 3",
         "Cava cuarto de Conservacion 1",
         "Cava cuarto de Conservacion 2",
-        "Cava Cuarto de Basura",
+        "Cava Cuarto de Basura", // SIN ZONA
         "Cocina 1 (turca PB)",
         "Cocina 2 (turca Piso 1)",
         "Cocina 3 (Iboia Piso 1)",
         "Cortina de Aire 150 cm 220V",
         "Ductos + trampa grasas",
-        "Elevador de Carga",
+        "Elevador de Carga", // SIN ZONA
         "Empacadora al Vacio 1",
         "Empacadora al Vacio 2",
         "Enfriador de agua 1",
         "Enfriador de agua 2",
         "Enfriador de agua 3",
-        "Enfriador de agua 4",
-        "Extintores",
+        "Enfriador de agua 4", // SIN ZONA
+        "Extintores", // SIN ZONA
         "FERMENTADOR",
-        "Filtro de carbon activado",
+        "Filtro de carbon activado", // SIN ZONA
         "Filtro desbarrador",
         "Freidora 1",
         "Freidora 2",
         "Freidora 3",
-        "Fumigacion",
+        "Fumigacion", // SIN ZONA
         "Horno electrico Balsam 110 V-ph1 1",
         "Horno electrico Balsam 110 V-ph1 2",
         "Horno Rational a Gas 220 V ph2",
@@ -147,7 +264,7 @@ const SEDE_EQUIPOS = {
         "Meson refrigerado de gaveta Balsam 1 principal",
         "Meson refrigerado de gaveta Balsam 2 Principal",
         "Meson refrigerado de gaveta Ursel Comida en familia",
-        "Molino de cafe 6",
+        "Molino de cafe 6", // SIN ZONA
         "Motor extractor 12000 CFM Planta Baja",
         "Motor extractor 21000 CFM Piso 1",
         "MOTOR DE INYECCION DE AIRE 1",
@@ -160,8 +277,8 @@ const SEDE_EQUIPOS = {
         "Rebanadora 1",
         "Rebanadora 2",
         "Robocop",
-        "Santa maria 1 3.5 mts",
-        "Santa maria 2 3.5 mts",
+        "Santa maria 1 3.5 mts", // SIN ZONA
+        "Santa maria 2 3.5 mts", // SIN ZONA
         "Sarten Basculante Industrial",
         "Sistema de bombas Hidroneumatico",
         "SISTEMA DE DETENCION DE INCENDIO",
@@ -353,6 +470,7 @@ const RUTINA_TALLER = {
             expand: [
                 { label: "Llenos", type: "number" },
                 { label: "Vacios", type: "number", min: 0, max: 20 },
+                {label: "Entrada de Agua de la Calle", type: "toggle"},
                 { label: "Pedir cisterna", type: "toggle" }
             ]
         },
@@ -530,7 +648,7 @@ const EQUIPO_RUTINA = {
     "Tableros Electricos": "Rutina Area Comun",
 };
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzvnYJ7Uvz0ijmyFMJ2upVtVNS8meOw-wBmxUBAd_hj77DgdnQznkHTTmGLkMXOckpMfA/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzUafHVA8hoXnpIm2pyzKRZbn6LffdS7ixloTwqOHgo_YU0ZrabnhTqpN950CNtWCUyUQ/exec";
 
 let rutinaActual = [];
 let nombreRutinaActual = "";
@@ -552,15 +670,15 @@ document.addEventListener("DOMContentLoaded", () => {
         if (zonas.length > 0) {
             zonaGroup.style.display = "block";
             populateSelect("zona", zonas);
+            document.getElementById("equipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
         } else {
             zonaGroup.style.display = "none";
             zonaSelect.value = "";
+            const equipos = SEDE_EQUIPOS[sede] || [];
+            populateSelect("equipo", equipos);
         }
-
-        document.getElementById("equipoGroup").style.display = "block";
-        document.getElementById("mantenimientoGroup").style.display = "block";
-        document.getElementById("formActions").style.display = "flex";
-        document.getElementById("equipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
+        document.getElementById("equipo").required = true;
+        document.getElementById("mantenimiento").required = true;
         document.getElementById("checkinsContainer").innerHTML = "";
         rutinaActual = [];
         nombreRutinaActual = "";
@@ -576,11 +694,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (zona === "Taller") {
             eqGroup.style.display = "none";
-            document.getElementById("mantenimientoGroup").style.display = "block";
+            document.getElementById("mantenimientoGroup").style.display = "none";
             document.getElementById("formActions").style.display = "flex";
+            document.getElementById("equipo").required = false;
+            document.getElementById("mantenimiento").required = false;
             esTaller = true;
         } else {
             eqGroup.style.display = "block";
+            document.getElementById("mantenimientoGroup").style.display = "block";
+            document.getElementById("equipo").required = true;
+            document.getElementById("mantenimiento").required = true;
             esTaller = false;
             const zonaData = ZONA_EQUIPOS[sede]?.[zona] || [];
             if (zonaData.length > 0) {
@@ -613,10 +736,14 @@ function irAlPaso2() {
     const hora = obtenerHora();
     const zona = document.getElementById("zona").value;
     const equipo = esTaller ? "Taller" : document.getElementById("equipo").value;
-    const mantenimiento = document.getElementById("mantenimiento").value;
+    const mantenimiento = esTaller ? "" : document.getElementById("mantenimiento").value;
 
-    if (!sedes || !fecha || !hora || !mantenimiento) {
+    if (!sedes || !fecha || !hora) {
         alert("Por favor completa todos los campos antes de continuar.");
+        return;
+    }
+    if (!esTaller && !mantenimiento) {
+        alert("Selecciona un tipo de mantenimiento.");
         return;
     }
     const zonas = SEDE_ZONAS[sedes] || [];
@@ -766,7 +893,7 @@ function renderRutina(equipo, mantenimiento) {
 function renderExpandableTasks(container) {
     const labelRutina = document.createElement("p");
     labelRutina.style.cssText = "color:#5f9263;font-size:0.8rem;font-weight:600;margin-bottom:4px;";
-    labelRutina.textContent = "PREVENTIVO - Actividades de Semaneros";
+    labelRutina.textContent = "Actividades de Semaneros";
     container.appendChild(labelRutina);
 
     rutinaActual.forEach((task, idx) => {
@@ -884,25 +1011,33 @@ function getCheckinValues() {
 function getTallerValues() {
     const results = {};
     document.querySelectorAll(".taller-task").forEach(wrapper => {
-        const idx = parseInt(wrapper.dataset.taskIdx);
-        const task = rutinaActual[idx];
-        const activeBtn = wrapper.querySelector(".taller-task-row .active-si, .taller-task-row .active-no");
-        const val = activeBtn ? activeBtn.dataset.value : "";
-        const sub = {};
-        if (val === "Si" && task.expand) {
-            task.expand.forEach((field, fi) => {
-                const subField = document.getElementById("tallerSub" + idx)?.querySelectorAll(".taller-sub-field")[fi];
-                if (!subField) return;
-                if (field.type === "toggle") {
-                    const sb = subField.querySelector(".active-si, .active-no");
-                    sub[field.label] = sb ? sb.dataset.value : "";
-                } else if (field.type === "number") {
-                    const inp = subField.querySelector("input");
-                    sub[field.label] = inp ? inp.value : "";
-                }
-            });
+        try {
+            const idx = parseInt(wrapper.dataset.taskIdx);
+            const task = rutinaActual[idx];
+            if (!task) return;
+            const activeBtn = wrapper.querySelector(".taller-task-row .active-si, .taller-task-row .active-no");
+            const val = activeBtn ? activeBtn.dataset.value : "";
+            const sub = {};
+            if (val === "Si" && task.expand) {
+                const subEl = document.getElementById("tallerSub" + idx);
+                if (!subEl) return;
+                const subFields = subEl.querySelectorAll(".taller-sub-field");
+                task.expand.forEach((field, fi) => {
+                    const subField = subFields[fi];
+                    if (!subField) return;
+                    if (field.type === "toggle") {
+                        const sb = subField.querySelector(".active-si, .active-no");
+                        sub[field.label] = sb ? sb.dataset.value : "";
+                    } else if (field.type === "number") {
+                        const inp = subField.querySelector("input");
+                        sub[field.label] = inp ? inp.value : "";
+                    }
+                });
+            }
+            results[task.label] = { value: val, sub: sub };
+        } catch (err) {
+            alert("Error en tarea: " + err.message);
         }
-        results[task.label] = { value: val, sub: sub };
     });
     return results;
 }
@@ -930,15 +1065,47 @@ function enviarFormulario(e) {
     const hora = obtenerHora();
     const zona = document.getElementById("zona").value;
     const equipo = esTaller ? "Taller" : document.getElementById("equipo").value;
-    const mantenimiento = document.getElementById("mantenimiento").value;
+    const mantenimiento = esTaller ? "" : document.getElementById("mantenimiento").value;
     const descripcion = document.getElementById("descripcion").value.trim();
 
-    if (!sedes || !fecha || !hora || !mantenimiento) {
+    if (!sedes || !fecha || !hora) {
         alert("Por favor completa todos los campos.");
+        return;
+    }
+    if (!esTaller && !mantenimiento) {
+        alert("Selecciona un tipo de mantenimiento.");
         return;
     }
 
     if (esTaller) {
+        const allAnswered = Array.from(document.querySelectorAll(".taller-task")).every(w =>
+            w.querySelector(".taller-task-row .active-si, .taller-task-row .active-no")
+        );
+        if (!allAnswered) {
+            alert("Responde Si o No en todas las tareas antes de enviar.");
+            return;
+        }
+        const allSubAnswered = Array.from(document.querySelectorAll(".taller-task")).every(w => {
+            const val = w.querySelector(".taller-task-row .active-si, .taller-task-row .active-no");
+            if (!val || val.dataset.value !== "Si") return true;
+            const idx = parseInt(w.dataset.taskIdx);
+            const task = rutinaActual[idx];
+            if (!task || !task.expand) return true;
+            const subEl = document.getElementById("tallerSub" + idx);
+            if (!subEl) return true;
+            const fields = subEl.querySelectorAll(".taller-sub-field");
+            return Array.from(fields).every(f => {
+                const toggle = f.querySelector(".active-si, .active-no");
+                if (toggle) return true;
+                const num = f.querySelector("input");
+                if (num) return num.value !== "";
+                return false;
+            });
+        });
+        if (!allSubAnswered) {
+            alert("Completa todas las sub-preguntas de las tareas marcadas con Si.");
+            return;
+        }
         enviarTaller(sedes, fecha, hora, zona, mantenimiento, descripcion);
         return;
     }
@@ -1007,6 +1174,8 @@ function enviarTaller(sedes, fecha, hora, zona, mantenimiento, descripcion) {
     const turno = calcularTurno(hora);
 
     for (const [taskLabel, data] of Object.entries(tallerValues)) {
+        if (data.value !== "Si") continue;
+
         const idUnico = generarIdUnico(fecha, hora, sedes, taskLabel, tecnicoNombre);
 
         if (yaEnviado(idUnico)) {
@@ -1067,6 +1236,8 @@ function clearForm() {
     document.getElementById("equipoGroup").style.display = "block";
     document.getElementById("mantenimientoGroup").style.display = "block";
     document.getElementById("formActions").style.display = "flex";
+    document.getElementById("equipo").required = true;
+    document.getElementById("mantenimiento").required = true;
     populateTimeSelects();
     rutinaActual = [];
     nombreRutinaActual = "";
