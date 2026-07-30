@@ -62,9 +62,19 @@ const ZONA_EQUIPOS = {
             "Horno pizzero Ooni",
             "Microondas 2",
             "Peceras Pequenas",
-            "Reverbero de mesa"
+            "Reverbero de mesa",
+            "Plancha Electrica 110v 1",
+            "Plancha Electrica 110v 2",
         ],
-        "Nuevo espacio": [],
+        "Nuevo espacio": [     
+            "Planchas a gas 1",
+            "Planchas a gas 2",
+            "Planchas a gas 3",
+            "Planchas a gas 4",
+            "Planchas a gas 5",
+            "Plancha Electrica 220v 1",
+            "Plancha Electrica 220v 2",
+        ],
         "Taller": null
     },
     "RUICES": {
@@ -122,7 +132,7 @@ const ZONA_EQUIPOS = {
             "Meson refrigerado de gaveta Ursel Comida en familia",
             "MOTOR DE INYECCION DE AIRE 2",
             "MOTOR DE INYECCION DE AIRE 3",
-            "Plancha a gas",
+            "Plancha a gas 6",
             "Rebanadora 2",
             "Sarten Basculante Industrial",
             "SISTEMA DE DETENCION DE INCENDIO",
@@ -202,7 +212,15 @@ const SEDE_EQUIPOS = {
         "Peceras Pequenas",
         "Pintura Externa", // SIN ZONA
         "Pintura interna", // SIN ZONA
-        "Planchas a gas",
+        "Planchas a gas 1",
+        "Planchas a gas 2",
+        "Planchas a gas 3",
+        "Planchas a gas 4",
+        "Planchas a gas 5",
+        "Plancha Electrica 220v 1",
+        "Plancha Electrica 220v 2",
+        "Plancha Electrica 110v 1",
+        "Plancha Electrica 110v 2",
         "Reverbero de mesa",
         "Reverberos dobles",
         "Reverberos sencillos",
@@ -273,7 +291,7 @@ const SEDE_EQUIPOS = {
         "MOTOR DE INYECCION DE AIRE 4",
         "Nevera exhibidora",
         "Pela papas",
-        "Plancha a gas",
+        "Plancha a gas 6",
         "Rebanadora 1",
         "Rebanadora 2",
         "Robocop",
@@ -317,13 +335,14 @@ const MANTENIMIENTOS = [
 ];
 
 const TECNICOS = {
-    "001": "ALBERTO",
-    "002": "ANGEL",
-    "003": "AQUILES",
-    "004": "ALEXIS",
-    "005": "ENRIQUE",
-    "006": "RAFAEL",
-    "007": "NOEL"
+    "180236394": "ALBERTO",
+    "143977568": "ANGEL",
+    "98636442": "AQUILES",
+    "79927276": "ALEXIS",
+    "196849519": "ENRIQUE",
+    "65160601": "RAFAEL",
+    "149708163": "SANDRY",
+    "001" : "CAROLINA"
 
 };
 
@@ -431,15 +450,33 @@ const RUTINA_PREVENTIVO = {
         "Limpieza externa ",
 
     ],
-
     "Rutina Molino de Carne": [
-        ""
+        "Ajustar partes moviles",
+        "Chequear componentes electricos",
+        "verificar rodamiento de motor (Lubricar de ser necesario)",
+        "Lubricar cadena"
     ],
-    "Rutina Laminadora": [],
-    "Rutina Amasadora": [],
-    "Rutina Planchas Electricas": [],
-    "Rutina Planchas a Gas": [],
-    "Rutina Enfriadores de Agua": [],
+    "Rutina Laminadora": [
+        "Chequear componentes electricos",
+        "Verificar estado de bandas y rodillos",
+        "Limpieza interna con aire a presion"
+    ],
+    "Rutina Amasadora": [
+        "Verificar componentes electricos",
+        "Chequar Tension de correa (cambiar de ser necesario)",
+        "Chequeo de Motor (Descartar ruidos extraños)"
+    ],
+    "Rutina Planchas Electricas": [
+        "Chequeo de componentes electricos",
+        "Ajustes de estructura general",
+        "Verificar que trabajen las resistencia"
+    ],
+    "Rutina Enfriadores de Agua": [
+        "Revision de componentes electricos",
+        "Ajustes de estrutura",
+        "Limpieza de valvulas dispensadoras de agua (cambiar de ser necesario)",
+        
+    ],
     "Rutina Motores de Inyeccion ": [],
     "Rutina Motores de Extracion": [],
     "Rutina Freidora": [],
@@ -448,8 +485,8 @@ const RUTINA_PREVENTIVO = {
     "Rutina Hidroneumatico": [],
     "Rutina Tablero Electrico": [],
     "Rutina Empacadoras al Vacio": [],
-    "Rutina Sarten Basalante ": [],
-    "Rutina Cuminorias": [],
+    "Rutina Sarten Basculante ": [],
+    "Rutina Luminarias": [],
     "Rutina Neveras" : []
 };
 
@@ -526,16 +563,16 @@ const EQUIPO_RUTINA = {
     "Extintores": "Rutina Seguridad",
     "Extintores Fijos": "Rutina Seguridad",
     "Extractores (6)": "Rutina Cocina",
-    "Enfriador de Botellon 1": "Rutina Almacen",
-    "Enfriador de Botellon 2": "Rutina Almacen",
-    "Enfriador de Botellon 3": "Rutina Almacen",
+    "Enfriador de Botellon 1": "Rutina Enfriadores de Agua",
+    "Enfriador de Botellon 2": "Rutina Enfriadores de Agua",
+    "Enfriador de Botellon 3": "Rutina Enfriadores de Agua",
     "Empacadora al Vacio 1": "Rutina Cocina",
     "Empacadora al Vacio 2": "Rutina Cocina",
     "Extintores": "Rutina Seguridad",
-    "Enfriador de agua 1": "Rutina Almacen",
-    "Enfriador de agua 2": "Rutina Almacen",
-    "Enfriador de agua 3": "Rutina Almacen",
-    "Enfriador de agua 4": "Rutina Almacen",
+    "Enfriador de agua 1": "Rutina Enfriadores de Agua",
+    "Enfriador de agua 2": "Rutina Enfriadores de Agua",
+    "Enfriador de agua 3": "Rutina Enfriadores de Agua",
+    "Enfriador de agua 4": "Rutina Enfriadores de Agua",
     "Freidora Imperial": "Rutina Cocina",
     "Freidora Star Book": "Rutina Cocina",
     "Freidora Vulcan 1": "Rutina Cocina",
@@ -592,7 +629,15 @@ const EQUIPO_RUTINA = {
     "parrilleras": "Rutina Cocina",
     "Pintura Externa": "Rutina Area Comun",
     "Pintura interna": "Rutina Area Comun",
-    "Planchas a gas": "Rutina Cocina",
+    "Planchas a gas 1": "Rutina Reberberos",
+    "Planchas a gas 2": "Rutina Reberberos",
+    "Planchas a gas 3": "Rutina Reberberos",
+    "Planchas a gas 4": "Rutina Reberberos",
+    "Planchas a gas 5": "Rutina Reberberos",
+    "Plancha Electrica 220v 1": "Rutina Planchas Electricas",
+    "Plancha Electrica 220v 2": "Rutina Planchas Electricas",
+    "Plancha Electrica 110v 1": "Rutina Planchas Electricas",
+    "Plancha Electrica 110v 2": "Rutina Planchas Electricas",
     "Peceras Grandes": "Rutina Peceras",
     "Peceras Pequenas": "Rutina Peceras",
     "Reverberos dobles": "Rutina Reberberos",
@@ -622,13 +667,13 @@ const EQUIPO_RUTINA = {
     "Rebanadora 1": "Rutina Cocina",
     "Rebanadora 2": "Rutina Cocina",
     "Robocop": "Rutina Cocina",
-    "Plancha a gas": "Rutina Planchas a Gas",
+    "Plancha a gas 6": "Rutina Reberberos",
     "Sarten Basculante Industrial": "Rutina Cocina",
-    "AMASADOR 1": "Rutina Cocina",
+    "AMASADOR 1": "Rutina Amasadora",
     "FERMENTADOR": "Rutina Cocina",
     "SISTEMA DE DETENCION DE INCENDIO": "Rutina Seguridad",
-    "Amasador 2": "Rutina Cocina",
-    "Laminadora": "Rutina Cocina",
+    "Amasador 2": "Rutina Amasadora",
+    "Laminadora": "Rutina Laminadora",
     "Tableros Electricos": "Rutina Area Comun",
     "Fumigacion": "Rutina Seguridad",
     "Ductos + trampa grasas": "Rutina Area Comun",
