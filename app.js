@@ -559,6 +559,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("equipoGroup").style.display = "block";
         document.getElementById("mantenimientoGroup").style.display = "block";
+        document.getElementById("formActions").style.display = "flex";
         document.getElementById("equipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
         document.getElementById("checkinsContainer").innerHTML = "";
         rutinaActual = [];
@@ -576,6 +577,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (zona === "Taller") {
             eqGroup.style.display = "none";
             document.getElementById("mantenimientoGroup").style.display = "block";
+            document.getElementById("formActions").style.display = "flex";
             esTaller = true;
         } else {
             eqGroup.style.display = "block";
@@ -1064,6 +1066,7 @@ function clearForm() {
     document.getElementById("zona").innerHTML = '<option value="" disabled selected>Seleccionar zona...</option>';
     document.getElementById("equipoGroup").style.display = "block";
     document.getElementById("mantenimientoGroup").style.display = "block";
+    document.getElementById("formActions").style.display = "flex";
     populateTimeSelects();
     rutinaActual = [];
     nombreRutinaActual = "";
