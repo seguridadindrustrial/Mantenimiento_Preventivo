@@ -338,6 +338,21 @@ textarea:focus {
     margin-bottom: 0;
 }
 
+.taller-sub-field-col {
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.taller-nested {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.taller-text-input {
+    width: 160px;
+    text-align: left;
+}
+
 .taller-sub-field label {
     font-size: 0.85rem;
     font-weight: 500;
@@ -357,6 +372,111 @@ textarea:focus {
 .taller-number-input:focus {
     outline: none;
     border-color: #63bb60;
+}
+
+.hint {
+    color: #888;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+}
+
+.info-banner {
+    background: #e8f5e9;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    color: #2e7d32;
+    margin-bottom: 20px;
+}
+
+.dynamic-builder {
+    display: flex;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.dynamic-builder .dynamic-step-input {
+    flex: 1;
+}
+
+.dynamic-builder .btn-add,
+.btn-add {
+    flex: 0 0 auto;
+    padding: 10px 14px;
+}
+
+.dynamic-remove,
+.repuesto-remove {
+    border: none;
+    background: transparent;
+    color: #ef4444;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.dynamic-remove:hover,
+.repuesto-remove:hover {
+    background: #fee2e2;
+}
+
+#dynamicStepsWrapper {
+    display: contents;
+}
+
+#dynamicStepsWrapper .checkin-item {
+    margin-bottom: 8px;
+}
+
+#dynamicStepsWrapper .toggle-group {
+    margin-left: 8px;
+}
+
+.repuesto-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+}
+
+.repuesto-row .repuesto-nombre {
+    flex: 1;
+}
+
+.repuesto-row .repuesto-cantidad {
+    width: 90px;
+    padding: 10px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    text-align: center;
+}
+
+.repuesto-row input:focus {
+    outline: none;
+    border-color: #63bb60;
+}
+
+input[type="file"] {
+    font-size: 0.85rem;
+    color: #555;
+    width: 100%;
+}
+
+.imagenes-preview {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.imagen-thumb {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
 }
 
 @media (max-width: 480px) {
