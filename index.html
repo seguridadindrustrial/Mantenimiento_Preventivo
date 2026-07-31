@@ -19,7 +19,7 @@
         <div id="loginSection">
             <div class="form-group">
                 <label for="codigoTecnico">Usuario</label>
-                <input type="text" id="codigoTecnico" placeholder="Ingresa tu cedula" maxlength="10">
+                <input type="text" id="codigoTecnico" placeholder="Ingresa tu cedula o codigo de averia" maxlength="20">
             </div>
             <div class="form-actions">
                 <button type="button" class="btn-primary" id="btnLogin">Ingresar</button>
@@ -168,11 +168,18 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="aEquipoGroup">
                 <label for="aEquipo">Equipo</label>
                 <select id="aEquipo" name="aEquipo" required>
                     <option value="" disabled selected>Seleccionar equipo...</option>
                 </select>
+            </div>
+
+            <div class="form-group" id="aEquipoLibreGroup" style="display:none;">
+                <label for="aEquipoLibre">Equipo del evento</label>
+                <input type="text" id="aEquipoLibre" placeholder="Escribe el equipo...">
+                <label for="aEventoLibre" style="margin-top:12px;">Evento</label>
+                <input type="text" id="aEventoLibre" placeholder="Nombre del evento...">
             </div>
 
             <div class="form-group">
@@ -198,6 +205,66 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn-primary">Enviar averia</button>
+            </div>
+        </form>
+
+        <form id="resolucionForm" style="display:none;" novalidate>
+            <p id="resolucionInfo" class="info-banner"></p>
+            <div id="resolucionEquipo" class="equipo-banner"></div>
+
+            <div class="form-group">
+                <label for="rTecnico">Tecnico</label>
+                <select id="rTecnico" required>
+                    <option value="" disabled selected>Seleccionar tecnico...</option>
+                </select>
+            </div>
+
+            <div class="row-fecha-hora">
+                <div class="form-group half">
+                    <label for="rFecha">Fecha</label>
+                    <input type="date" id="rFecha" required>
+                </div>
+
+                <div class="form-group half">
+                    <label for="rHora">Hora</label>
+                    <div class="time-picker">
+                        <select id="rHoraHora" required>
+                            <option value="" disabled selected>HH</option>
+                        </select>
+                        <span class="time-sep">:</span>
+                        <select id="rHoraMinuto" required>
+                            <option value="" disabled selected>MM</option>
+                        </select>
+                        <select id="rHoraPeriodo" class="time-periodo" required>
+                            <option value="" disabled selected>AM/PM</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>¿Se realizo la averia?</label>
+                <div class="toggle-group">
+                    <button type="button" class="toggle-btn" id="rSi" data-value="Si" onclick="toggleRealizado(this)">Si</button>
+                    <button type="button" class="toggle-btn" id="rNo" data-value="No" onclick="toggleRealizado(this)">No</button>
+                    <button type="button" class="toggle-btn" id="rProceso" data-value="En proceso" onclick="toggleRealizado(this)">En proceso</button>
+                </div>
+            </div>
+
+            <div class="form-group" id="rDescripcionGroup" style="display:none;">
+                <label for="rDescripcion">Descripcion del motivo</label>
+                <textarea id="rDescripcion" rows="3" placeholder="Por que no se realizo / en que quedo..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="rImagenes">Fotos (maximo 2, opcional)</label>
+                <input type="file" id="rImagenes" accept="image/*" multiple>
+                <div id="rImagenesPreview" class="imagenes-preview"></div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" class="btn-secondary" id="btnAtrasResolucion">Atras</button>
+                <button type="submit" class="btn-primary">Enviar resolucion</button>
             </div>
         </form>
     </div>

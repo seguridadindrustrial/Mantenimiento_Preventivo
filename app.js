@@ -3,13 +3,24 @@ const SEDES = [
     "DEPOSITO",
     "RUICES",
     "ALTAMIRA",
+    "EVENTO",
 ];
+
+const SEDES_CHECKIN = SEDES.filter(s => s !== "EVENTO");
 
 const SEDE_ZONAS = {
     "ALTAMIRA": [],
     "RUICES": ["PB", "Piso 1", "Piso 2", "Terraza"],
-    "DEPOSITO": ["PB", "Piso 1", "Nuevo espacio", "Taller"]
+    "DEPOSITO": ["PB", "Piso 1", "Nuevo espacio", "Taller"],
+    "EVENTO": []
 };
+
+function getAveriaZonas(sede) {
+    if (sede === "EVENTO") return [];
+    const zonas = (SEDE_ZONAS[sede] || []).filter(z => z !== "Taller");
+    if (!zonas.includes("Exterior")) zonas.push("Exterior");
+    return zonas;
+}
 
 const ZONA_EQUIPOS = {
     "DEPOSITO": {
@@ -358,10 +369,10 @@ const EMPLEADOS = {
 
 const RUTINA_PREVENTIVO = {
     "Rutina Horno A Gas": [
-        "Verificar Entrada de Gas (Regulador y Manguera )",
+        { label: "Verificar Entrada de Gas (Regulador y Manguera )", sub: { label: "¿Qué se realizó?", type: "text" } },
         "Lubricar  Perilla Manual de Gas",
-        "Lubricar Puertas",
-        "Ajustar Estructura General"
+        { label: "Lubricar Puertas", sub: { label: "¿Se aplicó grasa?", type: "toggle" } },
+        { label: "Ajustar Estructura General", sub: { label: "¿Cuántos tornillos se ajustaron?", type: "number", min: 0, max: 20 } }
     ],
     "Rutina Horno Electrico": [
         "Verificar Tomas Electricas",
@@ -533,10 +544,27 @@ const RUTINA_PREVENTIVO = {
         "Chequeo y ajustes de componentes electricos",
         "Limpieza Interna de tablero"
     ],
-    "Rutina Empacadoras al Vacio": [],
+    "Rutina Empacadoras al Vacio": [
+        "Cambio de Aceite",
+        "Chequeo y ajustes de componentes electricos",
+        "Limpieza y lubricacion de pistones neumaticos",
+        "Chequeo de cinta teflon (cambiar de ser necesario)",
+        "Chequeo de estado de sello compuerta (Cambiar de ser necesario)",
+        "Limpieza de barras de sellado"
+    ],
     "Rutina Sarten Basculante ": [],
-    "Rutina Luminarias": [],
-    "Rutina Neveras" : []
+    "Rutina Luminarias": [
+        "Chequeo de tubos oo bombillas",
+        "Chequeo de componentes Electricos (socates)",
+        "Limpieza externa de carcasa y acrilico"
+
+    ],
+    "Rutina Seguridad":[
+        "Chequeo de fecha de vencimiento Extintores",
+        "Chequeo de cerco electrico",
+        "chequeo de sistema de deteccion de incendios"
+    ]
+    
 };
 
 const RUTINA_CORRECTIVO = {
@@ -625,15 +653,15 @@ const EQUIPO_RUTINA = {
     "Cocina 2 (turca Piso 1)" : "Rutina Cocinas",
     "Cocina 3 (Iboia Piso 1)": "Rutina Cocinas",
     "Cortina de Aire 150 cm 220V": "Rutina Area Comun",
-    "Enfriador sushi cake": "Rutina Almacen",
+    "Enfriador sushi cake": "Rutina Cava Cuarto/Nevera",
     "Extintores": "Rutina Seguridad",
     "Extintores Fijos": "Rutina Seguridad",
     "Extractores (6)": "Rutina Cocina",
     "Enfriador de Botellon 1": "Rutina Enfriadores de Agua",
     "Enfriador de Botellon 2": "Rutina Enfriadores de Agua",
     "Enfriador de Botellon 3": "Rutina Enfriadores de Agua",
-    "Empacadora al Vacio 1": "Rutina Cocina",
-    "Empacadora al Vacio 2": "Rutina Cocina",
+    "Empacadora al Vacio 1": "Rutina Empacadoras al Vacio",
+    "Empacadora al Vacio 2": "Rutina Empacadoras al Vacio",
     "Extintores": "Rutina Seguridad",
     "Enfriador de agua 1": "Rutina Enfriadores de Agua",
     "Enfriador de agua 2": "Rutina Enfriadores de Agua",
@@ -656,8 +684,8 @@ const EQUIPO_RUTINA = {
     "Freidora 3": "Rutina Freidora",
     "Fumigacion": "Rutina Seguridad",
     "Fumigacion": "Rutina Seguridad",
-    "Filtro desbarrador": "Rutina Almacen",
-    "Filtro de carbon activado": "Rutina Almacen",
+    "Filtro desbarrador": "...",
+    "Filtro de carbon activado": "...",
     "FERMENTADOR": "Rutina Cocina",
     "Fumigacion": "Rutina Seguridad",
     "Horno Asber": "Rutina Horno A Gas",
@@ -699,10 +727,8 @@ const EQUIPO_RUTINA = {
     "MOTOR DE INYECCION DE AIRE 4": "Rutina Motores de Inyeccion ",
     "Nevera exhibidora": "Rutina Cava Cuarto/Nevera",
     "Nevera exhibidora": "Rutina Cava Cuarto/Nevera",
-    "pantallas de vidrio": "Rutina Area Comun",
     "parrilleras": "Rutina Cocina",
-    "Pintura Externa": "Rutina Area Comun",
-    "Pintura interna": "Rutina Area Comun",
+
     "Planchas a gas 1": "Rutina Reberberos",
     "Planchas a gas 2": "Rutina Reberberos",
     "Planchas a gas 3": "Rutina Reberberos",
@@ -716,8 +742,7 @@ const EQUIPO_RUTINA = {
     "Peceras Pequenas": "Rutina Peceras",
     "Pela papas": "Rutina Cocina",
     "Plancha a gas 6": "Rutina Reberberos",
-    "Pintura Externa": "Rutina Area Comun",
-    "Pintura interna": "Rutina Area Comun",
+
     "Reverberos dobles": "Rutina Reberberos",
     "Reverberos sencillos": "Rutina Reberberos",
     "Rebanadora 1": "Rutina Cocina",
@@ -726,10 +751,10 @@ const EQUIPO_RUTINA = {
     "Revisio Microonda 1": "Rutina Cocina",
     "Revisio Microonda 2": "Rutina Cocina",
     "Tanques de agua (8000lts)": "Rutina Hidroneumatico",
-    "Tanquillas": "Rutina Almacen",
+    "Tanquillas": "Rutina Tanquilla",
     "Tope Frances a Gas 1": "Rutina Cocinas",
     "Tope Frances a Gas 2": "Rutina Cocinas",
-    "Tableros": "Rutina Seguridad",
+    "Tableros": "Rutina Tablero Electrico",
     "Tanques de agua de 1000lts (8 un)": "Rutina Hidroneumatico",
     "Tableros Electricos": "Rutina Tablero Electrico",
     "Tableros Electricos": "Rutina Tablero Electrico",
@@ -737,7 +762,7 @@ const EQUIPO_RUTINA = {
     "salamandras": "Rutina Horno A Gas",
     "Santa maria 1 3.5 mts": "Rutina Santa Maria",
     "Santa maria 2 3.5 mts": "Rutina Santa Maria",
-    "SISTEMA DE DETENCION DE INCENDIO": "",
+    "SISTEMA DE DETENCION DE INCENDIO": "Rutina de Seguridad",
     "Sarten Basculante Industrial": "Rutina Cocina",
     "Reverbero de mesa": "Rutina Reberberos",
     "Lamparas de calor 1": "Rutina Lamparas de Calor",
@@ -746,23 +771,17 @@ const EQUIPO_RUTINA = {
     "Lamparas de calor 4": "Rutina Lamparas de Calor",
     "Lamparas de calor 5 (Madera)": "Rutina Lamparas de Calor",
     "Lamparas de calor 6 (Madera)": "Rutina Lamparas de Calor",
-    "Limpieza de canaletas": "Rutina Area Comun",
+    "Limpieza de canaletas": "",
     "Limpieza de Tanques": "Rutina Hidroneumatico",
     "Limpieza de Tanquilla": "Rutina Almacen",
     "Laminadora": "Rutina Laminadora",
     "Lava vajillas 1": "Rutina Lava Vajillas",
     "Lava vajillas 2": "Rutina Lava Vajillas",
-    "Ductos + trampa grasas": "Rutina Area Comun",
-
-
-
-
-
-
+    "Ductos + trampa grasas": "",
 
 };
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-6dSj4mw9OMq-F--JIuGeZizs1J22BtPUh6nxvUtuuZElDcEAWGRuYmlMHLrFVAfXRA/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyISEvtHVAliw2DO_pMnrIZirakaGmVJ5m0ToFwZisPMXRoa3YmT3jO3gAN81Wi8jW71g/exec";
 
 let rutinaActual = [];
 let nombreRutinaActual = "";
@@ -774,6 +793,49 @@ let averiaImagenes = [];
 let equipoDinamicoActual = "";
 let esCreadorDinamica = true;
 let rutinasDinamicasGuardadas = {};
+let averiasDisponibles = [];
+let averiasCargadas = false;
+let resolucionActualNumero = "";
+let resolucionImagenes = [];
+
+function postJSON(body) {
+    return fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: JSON.stringify(body)
+    }).then(function (r) {
+        return r.text().catch(function () { return ""; });
+    });
+}
+
+function cargarAverias() {
+    return fetch(APPS_SCRIPT_URL + "?accion=averias")
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+            if (Array.isArray(data)) {
+                averiasDisponibles = data;
+                averiasCargadas = true;
+            } else if (data && Array.isArray(data.averias)) {
+                averiasDisponibles = data.averias;
+                averiasCargadas = true;
+            }
+        })
+        .catch(function () { averiasCargadas = false; });
+}
+
+function buscarAveriaLocal(codigo) {
+    const num = String(codigo || "").trim().toLowerCase();
+    if (!num) return null;
+    const buscar = function () {
+        for (const a of averiasDisponibles) {
+            if (String(a.numero || "").trim().toLowerCase() === num) return a;
+        }
+        return null;
+    };
+    if (averiasDisponibles.length > 0) return buscar();
+    if (!averiasCargadas) return cargarAverias().then(buscar);
+    return buscar();
+}
 
 function guardarRutinaDinamica(equipo, pasos) {
     if (!equipo) return;
@@ -815,23 +877,33 @@ function getRutinaDinamicaGuardada(equipo) {
 }
 
 function cargarRutinasDinamicas() {
-    fetch(APPS_SCRIPT_URL + "?accion=rutinas")
+    return fetch(APPS_SCRIPT_URL + "?accion=rutinas")
         .then(r => r.json())
         .then(data => {
             if (!data) return;
-            rutinasDinamicasGuardadas = {};
+            let stored = {};
             try {
-                const stored = JSON.parse(localStorage.getItem("rutinasDinamicas") || "{}");
-                for (const eq in data) {
-                    const v = data[eq];
-                    const pasos = Array.isArray(v) ? v : (v.pasos || []);
-                    const creadoPor = Array.isArray(v) ? "" : (v.creadoPor || "");
-                    if (pasos.length > 0) {
-                        const dato = { pasos: pasos.slice(), creadoPor: creadoPor };
-                        rutinasDinamicasGuardadas[eq] = dato;
-                        stored[eq] = dato;
-                    }
-                }
+                stored = JSON.parse(localStorage.getItem("rutinasDinamicas") || "{}");
+            } catch (err) {}
+            const cambios = {};
+            for (const eq in data) {
+                const v = data[eq];
+                const bPasos = Array.isArray(v) ? v.slice() : (v.pasos || []).slice();
+                if (bPasos.length === 0) continue;
+                const bCreado = Array.isArray(v) ? "" : (v.creadoPor || "");
+                const local = stored[eq];
+                const lPasos = local && (Array.isArray(local) ? local.slice() : (local.pasos || []).slice());
+                const lCreado = local && !Array.isArray(local) ? (local.creadoPor || "") : "";
+                const creadoPor = bCreado || lCreado;
+                const pasos = bPasos.length >= (lPasos || []).length ? bPasos : lPasos;
+                const dato = { pasos: pasos.slice(), creadoPor: creadoPor };
+                cambios[eq] = dato;
+                stored[eq] = dato;
+            }
+            for (const eq in cambios) {
+                rutinasDinamicasGuardadas[eq] = cambios[eq];
+            }
+            try {
                 localStorage.setItem("rutinasDinamicas", JSON.stringify(stored));
             } catch (err) {}
         })
@@ -840,6 +912,7 @@ function cargarRutinasDinamicas() {
 
 document.addEventListener("DOMContentLoaded", () => {
     cargarRutinasDinamicas();
+    cargarAverias();
     document.getElementById("btnLogin").addEventListener("click", loginTecnico);
     document.getElementById("codigoTecnico").addEventListener("keydown", function (e) {
         if (e.key === "Enter") loginTecnico();
@@ -854,11 +927,47 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("averiaForm").addEventListener("submit", enviarAveria);
 
+    document.getElementById("resolucionForm").addEventListener("submit", enviarResolucion);
+    document.getElementById("btnAtrasResolucion").addEventListener("click", volverAlLogin);
+    document.getElementById("rImagenes").addEventListener("change", async function () {
+        const files = Array.from(this.files);
+        if (files.length > 2) {
+            alert("Puedes adjuntar un maximo de 2 fotos.");
+        }
+        resolucionImagenes = [];
+        for (const file of files.slice(0, 2)) {
+            try {
+                resolucionImagenes.push(await fileToImagen(file));
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+        renderResolucionImagenesPreview();
+    });
+
     document.getElementById("aSedes").addEventListener("change", function () {
         const sede = this.value;
-        const zonas = (SEDE_ZONAS[sede] || []).filter(z => z !== "Taller");
+        const zonas = getAveriaZonas(sede);
         const zonaGroup = document.getElementById("aZonaGroup");
         const zonaSelect = document.getElementById("aZona");
+        const equipoGroup = document.getElementById("aEquipoGroup");
+        const equipoLibreGroup = document.getElementById("aEquipoLibreGroup");
+
+        if (sede === "EVENTO") {
+            zonaGroup.style.display = "none";
+            zonaSelect.value = "";
+            equipoGroup.style.display = "none";
+            document.getElementById("aEquipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
+            equipoLibreGroup.style.display = "block";
+            document.getElementById("aEquipoLibre").value = "";
+            document.getElementById("aEventoLibre").value = "";
+            return;
+        }
+
+        equipoGroup.style.display = "block";
+        equipoLibreGroup.style.display = "none";
+        document.getElementById("aEquipoLibre").value = "";
+        document.getElementById("aEventoLibre").value = "";
 
         if (zonas.length > 0) {
             zonaGroup.style.display = "block";
@@ -1014,37 +1123,56 @@ function loginTecnico() {
     const codigo = document.getElementById("codigoTecnico").value.trim();
     const errorEl = document.getElementById("loginError");
 
-    if (TECNICOS[codigo]) {
-        tecnicoNombre = TECNICOS[codigo];
-        errorEl.style.display = "none";
-        document.getElementById("loginSection").style.display = "none";
-        document.getElementById("checkinForm").style.display = "block";
-        document.getElementById("tecnicoInfo").textContent = "Tecnico: " + tecnicoNombre;
-        populateSelect("sedes", SEDES);
-        populateSelect("mantenimiento", MANTENIMIENTOS);
-        populateTimeSelects();
+    const procesarLogin = function (av) {
+        if (av) {
+            if (av.resuelto) {
+                errorEl.textContent = "La averia " + av.numero + " ya fue resuelta.";
+                errorEl.style.display = "block";
+                document.getElementById("codigoTecnico").value = "";
+                return;
+            }
+            abrirResolucion(av);
+            return;
+        }
+        if (TECNICOS[codigo]) {
+            tecnicoNombre = TECNICOS[codigo];
+            errorEl.style.display = "none";
+            document.getElementById("loginSection").style.display = "none";
+            document.getElementById("checkinForm").style.display = "block";
+            document.getElementById("tecnicoInfo").textContent = "Tecnico: " + tecnicoNombre;
+            populateSelect("sedes", SEDES_CHECKIN);
+            populateSelect("mantenimiento", MANTENIMIENTOS);
+            populateTimeSelects();
+            return;
+        }
+        if (EMPLEADOS[codigo]) {
+            empleadoNombre = EMPLEADOS[codigo];
+            errorEl.style.display = "none";
+            document.getElementById("loginSection").style.display = "none";
+            document.getElementById("averiaForm").style.display = "block";
+            document.getElementById("empleadoInfo").textContent = "Empleado: " + empleadoNombre;
+            populateSelect("aSedes", SEDES);
+            populateTimeSelects("a");
+            return;
+        }
+        errorEl.textContent = "Credencial o codigo de averia no valido.";
+        errorEl.style.display = "block";
+        document.getElementById("codigoTecnico").value = "";
+    };
+
+    if (/^av/i.test(codigo)) {
+        Promise.resolve(buscarAveriaLocal(codigo)).then(procesarLogin);
         return;
     }
-
-    if (EMPLEADOS[codigo]) {
-        empleadoNombre = EMPLEADOS[codigo];
-        errorEl.style.display = "none";
-        document.getElementById("loginSection").style.display = "none";
-        document.getElementById("averiaForm").style.display = "block";
-        document.getElementById("empleadoInfo").textContent = "Empleado: " + empleadoNombre;
-        populateSelect("aSedes", SEDES);
-        populateTimeSelects("a");
-        return;
-    }
-
-    errorEl.style.display = "block";
-    document.getElementById("codigoTecnico").value = "";
+    procesarLogin(null);
 }
 
 function populateTimeSelects(prefix) {
     prefix = prefix || "";
     const ids = prefix === "a"
         ? { horas: "aHoraHora", minutos: "aHoraMinuto", periodo: "aHoraPeriodo" }
+        : prefix === "r"
+        ? { horas: "rHoraHora", minutos: "rHoraMinuto", periodo: "rHoraPeriodo" }
         : { horas: "horaHora", minutos: "horaMinuto", periodo: "horaPeriodo" };
     const horas = document.getElementById(ids.horas);
     horas.innerHTML = '<option value="" disabled selected>HH</option>';
@@ -1088,9 +1216,11 @@ function populateSelect(id, items) {
 
 function obtenerHora(prefix) {
     prefix = prefix || "";
-    const ids = prefix === "a"
-        ? { h: "aHoraHora", m: "aHoraMinuto", p: "aHoraPeriodo" }
-        : { h: "horaHora", m: "horaMinuto", p: "horaPeriodo" };
+    const ids = {
+        h: prefix ? prefix + "HoraHora" : "horaHora",
+        m: prefix ? prefix + "HoraMinuto" : "horaMinuto",
+        p: prefix ? prefix + "HoraPeriodo" : "horaPeriodo"
+    };
     var h = document.getElementById(ids.h).value;
     var m = document.getElementById(ids.m).value;
     var p = document.getElementById(ids.p).value;
@@ -1150,15 +1280,41 @@ function renderRutina(equipo, mantenimiento) {
     labelRutina.textContent = mantenimiento + " - " + nombreRutinaActual;
     container.appendChild(labelRutina);
 
-    rutinaActual.forEach((label, index) => {
+    rutinaActual.forEach((item, index) => {
+        const esObjeto = typeof item === "object" && item !== null;
+        const label = esObjeto ? item.label : item;
+        const sub = esObjeto && item.sub ? item.sub : null;
+        let subHtml = "";
+        if (sub) {
+            if (sub.type === "toggle") {
+                subHtml = `
+                    <div class="checkin-sub" id="checkinSub_${index}" style="display:none;">
+                        <label>${sub.label}</label>
+                        <div class="toggle-group checkin-sub-toggle">
+                            <button type="button" class="toggle-btn" data-value="Si" onclick="toggleCheckinSub(this)">Si</button>
+                            <button type="button" class="toggle-btn" data-value="No" onclick="toggleCheckinSub(this)">No</button>
+                        </div>
+                    </div>`;
+            } else {
+                const tipoInput = sub.type === "number" ? "number" : "text";
+                const minMax = (sub.type === "number" && sub.min !== undefined ? ` min="${sub.min}"` : "") +
+                    (sub.type === "number" && sub.max !== undefined ? ` max="${sub.max}"` : "");
+                subHtml = `
+                    <div class="checkin-sub" id="checkinSub_${index}" style="display:none;">
+                        <label>${sub.label}</label>
+                        <input type="${tipoInput}" class="checkin-sub-input" data-index="${index}"${minMax}>
+                    </div>`;
+            }
+        }
         const div = document.createElement("div");
         div.className = "checkin-item";
         div.innerHTML = `
             <span>${label}</span>
-            <div class="toggle-group">
+            <div class="toggle-group checkin-main-toggle">
                 <button type="button" class="toggle-btn" data-index="${index}" data-value="Si" onclick="toggleCheckin(this)">Si</button>
                 <button type="button" class="toggle-btn" data-index="${index}" data-value="No" onclick="toggleCheckin(this)">No</button>
             </div>
+            ${subHtml}
         `;
         container.appendChild(div);
     });
@@ -1240,7 +1396,7 @@ function renderRutinaDinamicaSteps() {
         div.className = "checkin-item";
         div.innerHTML = `
             <span>${label}</span>
-            <div class="toggle-group">
+            <div class="toggle-group checkin-main-toggle">
                 <button type="button" class="toggle-btn" data-index="${index}" data-value="Si" onclick="toggleCheckin(this)">Si</button>
                 <button type="button" class="toggle-btn" data-index="${index}" data-value="No" onclick="toggleCheckin(this)">No</button>
             </div>
@@ -1265,9 +1421,16 @@ function irAlPaso3() {
         alert("Agrega al menos un paso a la rutina.");
         return;
     }
-    const hasCheckinEmpty = rutinaActual.some(c => !checkins[c]);
+    const hasCheckinEmpty = rutinaActual.some(c => {
+        const label = typeof c === "object" && c !== null ? c.label : c;
+        return !checkins[label];
+    });
     if (hasCheckinEmpty) {
         alert("Por favor responde todos los pasos de la rutina (Si/No).");
+        return;
+    }
+    if (!checkinSubsCompletas()) {
+        alert("Completa las sub-preguntas de los pasos marcados con Si.");
         return;
     }
 
@@ -1461,22 +1624,80 @@ function toggleCheckin(btn) {
     group.querySelectorAll(".toggle-btn").forEach(b => {
         b.classList.remove("active-si", "active-no");
     });
+    btn.classList.add(btn.dataset.value === "Si" ? "active-si" : "active-no");
 
-    if (btn.dataset.value === "Si") {
-        btn.classList.add("active-si");
-    } else {
-        btn.classList.add("active-no");
+    const item = btn.closest(".checkin-item");
+    if (item) {
+        const sub = item.querySelector(".checkin-sub");
+        if (sub) {
+            sub.style.display = btn.dataset.value === "Si" ? "block" : "none";
+        }
     }
+}
+
+function toggleCheckinSub(btn) {
+    const group = btn.parentElement;
+    group.querySelectorAll(".toggle-btn").forEach(b => {
+        b.classList.remove("active-si", "active-no");
+    });
+    btn.classList.add(btn.dataset.value === "Si" ? "active-si" : "active-no");
 }
 
 function getCheckinValues() {
     const results = {};
-    const groups = document.querySelectorAll(".toggle-group");
-    groups.forEach((group, index) => {
+    document.querySelectorAll(".checkin-main-toggle").forEach((group, index) => {
+        const item = rutinaActual[index];
+        if (!item) return;
+        const label = typeof item === "object" && item !== null ? item.label : item;
         const activeBtn = group.querySelector(".active-si, .active-no");
-        results[rutinaActual[index]] = activeBtn ? activeBtn.dataset.value : "";
+        results[label] = activeBtn ? activeBtn.dataset.value : "";
     });
     return results;
+}
+
+function getCheckinSubValues() {
+    const subs = [];
+    const checkins = getCheckinValues();
+    rutinaActual.forEach((item, index) => {
+        const esObjeto = typeof item === "object" && item !== null;
+        if (!esObjeto || !item.sub) {
+            subs.push("");
+            return;
+        }
+        if (checkins[item.label] !== "Si") {
+            subs.push("");
+            return;
+        }
+        const subEl = document.getElementById("checkinSub_" + index);
+        if (!subEl) {
+            subs.push("");
+            return;
+        }
+        if (item.sub.type === "toggle") {
+            const btn = subEl.querySelector(".active-si, .active-no");
+            subs.push(btn ? btn.dataset.value : "");
+        } else {
+            const inp = subEl.querySelector(".checkin-sub-input");
+            subs.push(inp ? inp.value.trim() : "");
+        }
+    });
+    return subs;
+}
+
+function checkinSubsCompletas() {
+    const checkins = getCheckinValues();
+    return rutinaActual.every((item, index) => {
+        const esObjeto = typeof item === "object" && item !== null;
+        if (!esObjeto || !item.sub) return true;
+        if (checkins[item.label] !== "Si") return true;
+        const subEl = document.getElementById("checkinSub_" + index);
+        if (!subEl) return false;
+        if (item.sub.type === "toggle") {
+            return !!subEl.querySelector(".active-si, .active-no");
+        }
+        const inp = subEl.querySelector(".checkin-sub-input");
+        return inp ? inp.value.trim() !== "" : false;
+    });
 }
 
 function getTallerValues() {
@@ -1617,9 +1838,16 @@ function enviarFormulario(e) {
         return;
     }
 
-    const hasCheckinEmpty = rutinaActual.some(c => !checkins[c]);
+    const hasCheckinEmpty = rutinaActual.some(c => {
+        const label = typeof c === "object" && c !== null ? c.label : c;
+        return !checkins[label];
+    });
     if (hasCheckinEmpty) {
         alert("Por favor responde todos los pasos de la rutina (Si/No).");
+        return;
+    }
+    if (!checkinSubsCompletas()) {
+        alert("Completa las sub-preguntas de los pasos marcados con Si.");
         return;
     }
 
@@ -1653,6 +1881,18 @@ function enviarFormulario(e) {
         return;
     }
 
+    const keys = rutinaActual.map(c => typeof c === "object" && c !== null ? c.label : c);
+    const subs = getCheckinSubValues();
+    const checkinKeysFinal = keys.slice();
+    const checkinValuesFinal = keys.map(c => checkins[c] || "");
+    keys.forEach((k, i) => {
+        if (subs[i]) {
+            const subLabel = rutinaActual[i] && rutinaActual[i].sub ? rutinaActual[i].sub.label : "Sub-pregunta";
+            checkinKeysFinal.push(subLabel + " (" + k + ")");
+            checkinValuesFinal.push(subs[i]);
+        }
+    });
+
     const registro = {
         id: idUnico,
         fecha: fecha,
@@ -1664,8 +1904,8 @@ function enviarFormulario(e) {
         equipo: equipo,
         mantenimiento: mantenimiento,
         rutina: nombreRutinaActual,
-        checkinKeys: rutinaActual,
-        checkinValues: rutinaActual.map(c => checkins[c] || ""),
+        checkinKeys: checkinKeysFinal,
+        checkinValues: checkinValuesFinal,
         descripcion: descripcion,
         repuestos: repuestos
     };
@@ -1832,7 +2072,12 @@ function enviarAveria(e) {
     const zona = document.getElementById("aZona").value;
     const fecha = document.getElementById("aFecha").value;
     const hora = obtenerHora("a");
-    const equipo = document.getElementById("aEquipo").value;
+    const esEvento = sedes === "EVENTO";
+    const equipoLibre = esEvento ? document.getElementById("aEquipoLibre").value.trim() : "";
+    const eventoNombre = esEvento ? document.getElementById("aEventoLibre").value.trim() : "";
+    const equipo = esEvento
+        ? (equipoLibre + (eventoNombre ? " / Evento: " + eventoNombre : ""))
+        : document.getElementById("aEquipo").value;
     const averia = document.querySelector("#aAvSi.active-si, #aAvNo.active-si, #aAvSi.active-no, #aAvNo.active-no");
     const descripcion = document.getElementById("aDescripcion").value.trim();
 
@@ -1840,13 +2085,17 @@ function enviarAveria(e) {
         alert("Completa sede, fecha y hora.");
         return;
     }
-    const zonas = SEDE_ZONAS[sedes] || [];
-    if (zonas.length > 0 && !zona) {
+    const zonas = getAveriaZonas(sedes);
+    if (!esEvento && zonas.length > 0 && !zona) {
         alert("Selecciona una zona.");
         return;
     }
     if (!equipo) {
-        alert("Selecciona un equipo.");
+        alert(esEvento ? "Escribe el equipo del evento." : "Selecciona un equipo.");
+        return;
+    }
+    if (esEvento && !eventoNombre) {
+        alert("Escribe el nombre del evento.");
         return;
     }
     if (!averia) {
@@ -1879,11 +2128,7 @@ function enviarAveria(e) {
         imagenes: averiaImagenes
     };
 
-    fetch(APPS_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        body: JSON.stringify(registro)
-    })
+    postJSON(registro)
     .then(() => {
         alert("Averia reportada correctamente.");
         clearAveriaForm();
@@ -1896,6 +2141,10 @@ function enviarAveria(e) {
 function clearAveriaForm() {
     document.getElementById("averiaForm").reset();
     document.getElementById("aZonaGroup").style.display = "none";
+    document.getElementById("aEquipoGroup").style.display = "block";
+    document.getElementById("aEquipoLibreGroup").style.display = "none";
+    document.getElementById("aEquipoLibre").value = "";
+    document.getElementById("aEventoLibre").value = "";
     document.getElementById("aEquipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
     document.getElementById("aAveriaDetalle").style.display = "none";
     document.getElementById("aImagenesPreview").innerHTML = "";
@@ -1904,4 +2153,143 @@ function clearAveriaForm() {
     });
     averiaImagenes = [];
     populateTimeSelects("a");
+}
+
+function abrirResolucion(av) {
+    resolucionActualNumero = String(av.numero || "");
+    document.getElementById("loginSection").style.display = "none";
+    document.getElementById("resolucionForm").style.display = "block";
+    document.getElementById("resolucionInfo").textContent =
+        "Averia " + resolucionActualNumero + " | Sede: " + (av.sede || "") +
+        (av.zona ? " | Zona: " + av.zona : "") +
+        " | Descripcion: " + (av.descripcion || "");
+    document.getElementById("resolucionEquipo").textContent = "Equipo: " + (av.equipo || "No especificado");
+    populateSelect("rTecnico", Object.values(TECNICOS));
+    populateTimeSelects("r");
+    clearResolucionForm();
+    document.getElementById("resolucionForm").style.display = "block";
+}
+
+function toggleRealizado(el) {
+    const container = el.parentElement;
+    if (container && container.querySelectorAll) {
+        container.querySelectorAll(".toggle-btn").forEach(b => {
+            b.classList.remove("active-si", "active-no");
+        });
+    }
+    el.classList.add(el.dataset.value === "Si" ? "active-si" : "active-no");
+    const grupo = document.getElementById("rDescripcionGroup");
+    grupo.style.display = el.dataset.value === "Si" ? "none" : "block";
+}
+
+function renderResolucionImagenesPreview() {
+    const container = document.getElementById("rImagenesPreview");
+    container.innerHTML = "";
+    resolucionImagenes.forEach(function (img, i) {
+        const div = document.createElement("div");
+        div.className = "imagen-preview";
+        const nombre = document.createElement("span");
+        nombre.textContent = (i + 1) + ". " + (img.nombre || "foto");
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "btn-remove";
+        btn.textContent = "x";
+        btn.onclick = function () {
+            resolucionImagenes.splice(i, 1);
+            renderResolucionImagenesPreview();
+        };
+        div.appendChild(nombre);
+        div.appendChild(btn);
+        container.appendChild(div);
+    });
+}
+
+function enviarResolucion(e) {
+    e.preventDefault();
+
+    const numero = resolucionActualNumero;
+    const toggles = ["rSi", "rNo", "rProceso"].map(id => document.getElementById(id));
+    const activo = toggles.find(b => b.classList.contains("active-si") || b.classList.contains("active-no"));
+    const realizado = activo ? activo.dataset.value : "";
+    const fecha = document.getElementById("rFecha").value;
+    const hora = obtenerHora("r");
+    const tecnico = document.getElementById("rTecnico").value;
+    const descripcion = document.getElementById("rDescripcion").value.trim();
+
+    if (!numero) {
+        alert("No hay averia en curso.");
+        return;
+    }
+    if (!realizado) {
+        alert("Indica si se realizo la averia (Si/No/En proceso).");
+        return;
+    }
+    if (!fecha || !hora) {
+        alert("Completa fecha y hora.");
+        return;
+    }
+    if (!tecnico) {
+        alert("Selecciona el tecnico.");
+        return;
+    }
+    if (realizado !== "Si" && !descripcion) {
+        alert("Escribe el motivo de por que no se realizo.");
+        return;
+    }
+
+    const registro = {
+        tipo: "resolucion",
+        numero: numero,
+        fecha: fecha,
+        hora: hora,
+        tecnico: tecnico,
+        realizado: realizado,
+        descripcion: descripcion,
+        imagenes: resolucionImagenes
+    };
+
+    postJSON(registro)
+        .then(() => {
+            alert("Resolucion enviada correctamente.");
+            marcarAveriaResuelta(numero);
+            clearResolucionForm();
+            volverAlLogin();
+        })
+        .catch(() => {
+            alert("Error al enviar. Intenta de nuevo.");
+        });
+}
+
+function marcarAveriaResuelta(numero) {
+    averiasDisponibles = averiasDisponibles.map(a => {
+        if (String(a.numero || "") === String(numero)) {
+            return Object.assign({}, a, { resuelto: true });
+        }
+        return a;
+    });
+}
+
+function clearResolucionForm() {
+    document.getElementById("rFecha").value = "";
+    document.getElementById("rTecnico").value = "";
+    document.getElementById("rDescripcion").value = "";
+    document.getElementById("rImagenes").value = "";
+    document.getElementById("rImagenesPreview").innerHTML = "";
+    document.getElementById("rDescripcionGroup").style.display = "none";
+    ["rSi", "rNo", "rProceso"].forEach(id => {
+        document.getElementById(id).classList.remove("active-si", "active-no");
+    });
+    resolucionImagenes = [];
+    populateTimeSelects("r");
+}
+
+function volverAlLogin() {
+    resolucionActualNumero = "";
+    resolucionImagenes = [];
+    document.getElementById("resolucionEquipo").textContent = "";
+    document.getElementById("resolucionForm").style.display = "none";
+    document.getElementById("loginSection").style.display = "block";
+    document.getElementById("codigoTecnico").value = "";
+    const errorEl = document.getElementById("loginError");
+    errorEl.style.display = "none";
 }

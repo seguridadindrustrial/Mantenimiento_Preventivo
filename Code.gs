@@ -1,6 +1,11 @@
 function doGet(e) {
-    if (e && e.parameter && e.parameter.accion === "rutinas") {
-        return obtenerRutinasDinamicas();
+    if (e && e.parameter) {
+        if (e.parameter.accion === "rutinas") {
+            return obtenerRutinasDinamicas();
+        }
+        if (e.parameter.accion === "averias") {
+            return obtenerAverias();
+        }
     }
     return ContentService.createTextOutput(
         JSON.stringify({})
@@ -12,6 +17,10 @@ function doPost(e) {
 
     if (data.tipo === "averia") {
         return procesarAveria(data);
+    }
+
+    if (data.tipo === "resolucion") {
+        return procesarResolucionAveria(data);
     }
 
     if (data.tipo === "rutina") {
@@ -81,7 +90,24 @@ function doPost(e) {
         }
     }
 
+    var nuevosHeaders = [];
+    var conocidos = headersRow.slice();
+    for (var hk = 0; hk < (data.checkinKeys || []).length; hk++) {
+        if (conocidos.indexOf(data.checkinKeys[hk]) === -1) {
+            conocidos = conocidos.concat([data.checkinKeys[hk]]);
+            nuevosHeaders.push(data.checkinKeys[hk]);
+            row.push(data.checkinValues && data.checkinValues[hk] ? data.checkinValues[hk] : "");
+        }
+    }
+
     sheet.appendRow(row);
+
+    if (nuevosHeaders.length > 0) {
+        var colInicio = headersRow.length + 1;
+        for (var nh = 0; nh < nuevosHeaders.length; nh++) {
+            sheet.getRange(1, colInicio + nh).setValue(nuevosHeaders[nh]);
+        }
+    }
 
     if (data.repuestos && data.repuestos.length > 0) {
         guardarRepuestos(data);
@@ -180,13 +206,80 @@ function probarCorreo() {
     return "Correo de prueba enviado sin errores.";
 }
 
+var CABECERA_AVERIAS = ["Numero", "Fecha", "Hora", "Sede", "Zona", "Empleado", "Equipo", "Descripcion", "Fecha Resolucion", "Hora Resolucion", "Tecnico", "Realizado", "Descripcion Resolucion"];
+
+function jsonAveria(obj) {
+    return ContentService.createTextOutput(
+        JSON.stringify(obj)
+    ).setMimeType(ContentService.MimeType.JSON);
+}
+
+function asegurarHojaAverias(sheet, ss) {
+    if (!sheet) {
+        sheet = ss.insertSheet("averias");
+        sheet.appendRow(CABECERA_AVERIAS);
+        return sheet;
+    }
+    var data = sheet.getDataRange().getValues();
+    var headers = data[0] || [];
+    if (headers.indexOf("Numero") !== -1 && headers.indexOf("Averia") === -1) {
+        return sheet;
+    }
+    var rebuilt = [];
+    if (headers.indexOf("Numero") !== -1 && headers.indexOf("Averia") !== -1) {
+        for (var i = 1; i < data.length; i++) {
+            var r = data[i];
+            rebuilt.push([
+                r[0] || "", r[1] || "", r[2] || "", r[3] || "", r[4] || "",
+                r[8] || "", r[5] || "", r[7] || "",
+                "", "", "", "", ""
+            ]);
+        }
+    } else {
+        for (var j = 1; j < data.length; j++) {
+            var row = data[j];
+            var out = [];
+            for (var k = 0; k < CABECERA_AVERIAS.length; k++) {
+                out.push(row[k] || "");
+            }
+            rebuilt.push(out);
+        }
+    }
+    sheet.clear();
+    sheet.appendRow(CABECERA_AVERIAS);
+    for (var m = 0; m < rebuilt.length; m++) {
+        sheet.appendRow(rebuilt[m]);
+    }
+    return sheet;
+}
+
+function obtenerAverias() {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("averias");
+    var out = [];
+    if (sheet) {
+        var data = sheet.getDataRange().getValues();
+        for (var i = 1; i < data.length; i++) {
+            out.push({
+                numero: String(data[i][0] || ""),
+                fecha: String(data[i][1] || ""),
+                hora: String(data[i][2] || ""),
+                sede: String(data[i][3] || ""),
+                zona: String(data[i][4] || ""),
+                empleado: String(data[i][5] || ""),
+                equipo: String(data[i][6] || ""),
+                descripcion: String(data[i][7] || ""),
+                resuelto: String(data[i][11] || "") !== ""
+            });
+        }
+    }
+    return jsonAveria(out);
+}
+
 function procesarAveria(data) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName("averias");
-    if (!sheet) {
-        sheet = ss.insertSheet("averias");
-        sheet.appendRow(["Numero", "Fecha", "Hora", "Sede", "Zona", "Equipo", "Averia", "Descripcion", "Empleado"]);
-    }
+    sheet = asegurarHojaAverias(sheet, ss);
 
     var numero = generarNumeroAveria(sheet);
     sheet.appendRow([
@@ -195,10 +288,10 @@ function procesarAveria(data) {
         data.hora || "",
         data.sedes || "",
         data.zona || "",
+        data.empleado || "",
         data.equipo || "",
-        data.averia || "",
         data.descripcion || "",
-        data.empleado || ""
+        "", "", "", "", ""
     ]);
 
     var attachments = [];
@@ -220,7 +313,6 @@ function procesarAveria(data) {
         "<b>Sede:</b> " + (data.sedes || "") + "<br>" +
         "<b>Zona:</b> " + (data.zona || "") + "<br>" +
         "<b>Equipo:</b> " + (data.equipo || "") + "<br>" +
-        "<b>Averia:</b> " + (data.averia || "") + "<br>" +
         "<b>Descripcion:</b> " + (data.descripcion || "") + "<br>" +
         "<b>Empleado:</b> " + (data.empleado || "") +
         (attachments.length > 0 ? "<br><br><i>" + attachments.length + " foto(s) adjunta(s).</i>" : "");
@@ -254,9 +346,96 @@ function procesarAveria(data) {
         registrarError("averia", numero, mailError);
     }
 
-    return ContentService.createTextOutput(
-        JSON.stringify({ status: "ok", numero: numero, mailEnviado: mailEnviado })
-    ).setMimeType(ContentService.MimeType.JSON);
+    return jsonAveria({ status: "ok", numero: numero, mailEnviado: mailEnviado });
+}
+
+function procesarResolucionAveria(data) {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("averias");
+    if (!sheet) {
+        return jsonAveria({ status: "not_found" });
+    }
+    sheet = asegurarHojaAverias(sheet, ss);
+
+    var numero = String(data.numero || "");
+    var all = sheet.getDataRange().getValues();
+    var rowIndex = -1;
+    for (var i = 1; i < all.length; i++) {
+        if (String(all[i][0]) === numero) {
+            rowIndex = i + 1;
+            break;
+        }
+    }
+    if (rowIndex === -1) {
+        return jsonAveria({ status: "not_found" });
+    }
+    if (String(all[rowIndex - 1][11] || "") !== "") {
+        return jsonAveria({ status: "ya_resuelta" });
+    }
+
+    var realizado = String(data.realizado || "");
+    sheet.getRange(rowIndex, 9, 1, 5).setValues([[
+        data.fecha || "",
+        data.hora || "",
+        data.tecnico || "",
+        realizado,
+        data.descripcion || ""
+    ]]);
+
+    var color = realizado === "Si" ? "#C6EFCE" : realizado === "No" ? "#FFC7CE" : "#FFEB9C";
+    sheet.getRange(rowIndex, 1, 1, 13).setBackground(color);
+
+    var attachments = [];
+    if (data.imagenes && data.imagenes.length > 0) {
+        for (var k = 0; k < data.imagenes.length; k++) {
+            try {
+                var img = data.imagenes[k];
+                if (!img || !img.data) continue;
+                var bytes = Utilities.base64Decode(img.data);
+                var blob = Utilities.newBlob(bytes, img.mimeType || "image/jpeg", img.nombre || ("resolucion_" + (k + 1) + ".jpg"));
+                attachments.push(blob);
+            } catch (imgErr) {}
+        }
+    }
+
+    var html = "<h3>Resolucion " + numero + "</h3>" +
+        "<b>Realizado:</b> " + realizado + "<br>" +
+        "<b>Fecha:</b> " + (data.fecha || "") + "<br>" +
+        "<b>Hora:</b> " + (data.hora || "") + "<br>" +
+        "<b>Tecnico:</b> " + (data.tecnico || "") + "<br>" +
+        "<b>Descripcion:</b> " + (data.descripcion || "") +
+        (attachments.length > 0 ? "<br><br><i>" + attachments.length + " foto(s) adjunta(s).</i>" : "");
+
+    var mailOptions = {
+        to: "blancocarolina155@gmail.com",
+        subject: "Resolucion " + numero + " - " + realizado + " - " + (data.tecnico || ""),
+        htmlBody: html
+    };
+    if (attachments.length > 0) {
+        mailOptions.attachments = attachments;
+    }
+
+    var mailEnviado = false;
+    var mailError = "";
+    try {
+        MailApp.sendEmail(mailOptions);
+        mailEnviado = true;
+    } catch (mailErr) {
+        mailError = String(mailErr);
+        try {
+            delete mailOptions.attachments;
+            MailApp.sendEmail(mailOptions);
+            mailEnviado = true;
+        } catch (mailErr2) {
+            mailError = String(mailErr2);
+        }
+    }
+
+    if (!mailEnviado) {
+        registrarError("resolucion", numero, mailError);
+    }
+
+    return jsonAveria({ status: "ok", numero: numero, mailEnviado: mailEnviado });
 }
 
 function registrarError(origen, referencia, detalle) {
