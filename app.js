@@ -9,7 +9,7 @@ const SEDES = [
 const SEDES_CHECKIN = SEDES.filter(s => s !== "EVENTO");
 
 const SEDE_ZONAS = {
-    "ALTAMIRA": [],
+    "ALTAMIRA": ["Exterior", "Otros"],
     "RUICES": ["PB", "Piso 1", "Piso 2", "Terraza"],
     "DEPOSITO": ["PB", "Piso 1", "Nuevo espacio", "Taller"],
     "EVENTO": []
@@ -1053,6 +1053,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const zonas = SEDE_ZONAS[sede] || [];
         const zonaGroup = document.getElementById("zonaGroup");
         const zonaSelect = document.getElementById("zona");
+        const eqExteriorGroup = document.getElementById("equipoExteriorGroup");
+
+        eqExteriorGroup.style.display = "none";
+        document.getElementById("equipoExterior").value = "";
+        document.getElementById("equipo").required = true;
 
         if (zonas.length > 0) {
             zonaGroup.style.display = "block";
@@ -1080,26 +1085,40 @@ document.addEventListener("DOMContentLoaded", () => {
         const sede = document.getElementById("sedes").value;
         const zona = this.value;
         const eqGroup = document.getElementById("equipoGroup");
+        const eqExteriorGroup = document.getElementById("equipoExteriorGroup");
 
         if (zona === "Taller") {
+            eqExteriorGroup.style.display = "none";
             eqGroup.style.display = "none";
             document.getElementById("mantenimientoGroup").style.display = "none";
             document.getElementById("formActions").style.display = "flex";
             document.getElementById("equipo").required = false;
             document.getElementById("mantenimiento").required = false;
             esTaller = true;
+        } else if (zona === "Exterior") {
+            eqGroup.style.display = "none";
+            eqExteriorGroup.style.display = "block";
+            document.getElementById("equipoExterior").value = "";
+            document.getElementById("mantenimientoGroup").style.display = "block";
+            document.getElementById("equipo").required = false;
+            document.getElementById("mantenimiento").required = true;
+            esTaller = false;
         } else {
+            eqExteriorGroup.style.display = "none";
             eqGroup.style.display = "block";
             document.getElementById("mantenimientoGroup").style.display = "block";
             document.getElementById("equipo").required = true;
             document.getElementById("mantenimiento").required = true;
             esTaller = false;
-            const zonaData = ZONA_EQUIPOS[sede]?.[zona] || [];
-            if (zonaData.length > 0) {
-                populateSelect("equipo", zonaData);
+            if (zona === "Otros") {
+                populateSelect("equipo", SEDE_EQUIPOS[sede] || []);
             } else {
-                const equipos = SEDE_EQUIPOS[sede] || [];
-                populateSelect("equipo", equipos);
+                const zonaData = ZONA_EQUIPOS[sede]?.[zona] || [];
+                if (zonaData.length > 0) {
+                    populateSelect("equipo", zonaData);
+                } else {
+                    populateSelect("equipo", SEDE_EQUIPOS[sede] || []);
+                }
             }
         }
         document.getElementById("checkinsContainer").innerHTML = "";
@@ -1126,7 +1145,12 @@ function irAlPaso2() {
     const fecha = document.getElementById("fecha").value;
     const hora = obtenerHora();
     const zona = document.getElementById("zona").value;
-    const equipo = esTaller ? "Taller" : document.getElementById("equipo").value;
+    const esExterior = !esTaller && zona === "Exterior";
+    const equipo = esTaller
+        ? "Taller"
+        : esExterior
+        ? document.getElementById("equipoExterior").value.trim()
+        : document.getElementById("equipo").value;
     const mantenimiento = esTaller ? "" : document.getElementById("mantenimiento").value;
 
     if (!sedes || !fecha || !hora) {
@@ -1143,7 +1167,7 @@ function irAlPaso2() {
         return;
     }
     if (!esTaller && !equipo) {
-        alert("Selecciona un equipo.");
+        alert(esExterior ? "Escribe el nombre del equipo." : "Selecciona un equipo.");
         return;
     }
 
@@ -1846,7 +1870,12 @@ function enviarFormulario(e) {
     const fecha = document.getElementById("fecha").value;
     const hora = obtenerHora();
     const zona = document.getElementById("zona").value;
-    const equipo = esTaller ? "Taller" : document.getElementById("equipo").value;
+    const esExterior = !esTaller && zona === "Exterior";
+    const equipo = esTaller
+        ? "Taller"
+        : esExterior
+        ? document.getElementById("equipoExterior").value.trim()
+        : document.getElementById("equipo").value;
     const mantenimiento = esTaller ? "" : document.getElementById("mantenimiento").value;
     const descripcion = document.getElementById("descripcion").value.trim();
 
@@ -1856,6 +1885,10 @@ function enviarFormulario(e) {
     }
     if (!esTaller && !mantenimiento) {
         alert("Selecciona un tipo de mantenimiento.");
+        return;
+    }
+    if (!esTaller && !equipo) {
+        alert(esExterior ? "Escribe el nombre del equipo." : "Selecciona un equipo.");
         return;
     }
 
@@ -2035,6 +2068,8 @@ function clearForm() {
     document.getElementById("zonaGroup").style.display = "none";
     document.getElementById("zona").innerHTML = '<option value="" disabled selected>Seleccionar zona...</option>';
     document.getElementById("equipoGroup").style.display = "block";
+    document.getElementById("equipoExteriorGroup").style.display = "none";
+    document.getElementById("equipoExterior").value = "";
     document.getElementById("mantenimientoGroup").style.display = "block";
     document.getElementById("formActions").style.display = "flex";
     document.getElementById("equipo").required = true;
