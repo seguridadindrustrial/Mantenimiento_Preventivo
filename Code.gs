@@ -253,6 +253,10 @@ function asegurarHojaAverias(sheet, ss) {
     return sheet;
 }
 
+function averiaCerrada(valor) {
+    return valor === "Si" || valor === "Falsa averia";
+}
+
 function obtenerAverias() {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName("averias");
@@ -269,7 +273,7 @@ function obtenerAverias() {
                 empleado: String(data[i][5] || ""),
                 equipo: String(data[i][6] || ""),
                 descripcion: String(data[i][7] || ""),
-                resuelto: String(data[i][11] || "") !== ""
+                resuelto: averiaCerrada(String(data[i][11] || ""))
             });
         }
     }
@@ -280,6 +284,17 @@ function procesarAveria(data) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName("averias");
     sheet = asegurarHojaAverias(sheet, ss);
+
+    var existentes = sheet.getDataRange().getValues();
+    for (var e = 1; e < existentes.length; e++) {
+        if (String(existentes[e][1]) === String(data.fecha || "") &&
+            String(existentes[e][2]) === String(data.hora || "") &&
+            String(existentes[e][3]) === String(data.sedes || "") &&
+            String(existentes[e][6]) === String(data.equipo || "") &&
+            String(existentes[e][5]) === String(data.empleado || "")) {
+            return jsonAveria({ status: "duplicate" });
+        }
+    }
 
     var numero = generarNumeroAveria(sheet);
     sheet.appendRow([
@@ -369,7 +384,8 @@ function procesarResolucionAveria(data) {
     if (rowIndex === -1) {
         return jsonAveria({ status: "not_found" });
     }
-    if (String(all[rowIndex - 1][11] || "") !== "") {
+    var estadoActual = String(all[rowIndex - 1][11] || "");
+    if (averiaCerrada(estadoActual)) {
         return jsonAveria({ status: "ya_resuelta" });
     }
 
@@ -382,7 +398,7 @@ function procesarResolucionAveria(data) {
         data.descripcion || ""
     ]]);
 
-    var color = realizado === "Si" ? "#C6EFCE" : realizado === "No" ? "#FFC7CE" : "#FFEB9C";
+    var color = realizado === "Si" ? "#C6EFCE" : realizado === "Falsa averia" ? "#DDEBF7" : realizado === "No" ? "#FFC7CE" : "#FFEB9C";
     sheet.getRange(rowIndex, 1, 1, 13).setBackground(color);
 
     var attachments = [];

@@ -14,7 +14,9 @@
     </div>
 
     <div class="container">
-        <h1>MANTENIMIENTOS PREVENTIVOS Y CORRECTIVOS</h1>
+        <h1> GERENCIA DE SEGURIDAD INDUSTRIAL Y MANTENIMIENTO</h1>
+        <P>Reporte de averias/ Reporte de mantenimiento preventivo</P>
+        <br>
 
         <div id="loginSection">
             <div class="form-group">
@@ -182,6 +184,11 @@
                 <input type="text" id="aEventoLibre" placeholder="Nombre del evento...">
             </div>
 
+            <div class="form-group" id="aEquipoExteriorGroup" style="display:none;">
+                <label for="aEquipoExterior">Equipo</label>
+                <input type="text" id="aEquipoExterior" placeholder="Escribe el nombre del equipo...">
+            </div>
+
             <div class="form-group">
                 <label>¿El equipo presenta una averia?</label>
                 <div class="toggle-group">
@@ -204,7 +211,7 @@
             </div>
 
             <div class="form-actions">
-                <button type="submit" class="btn-primary">Enviar averia</button>
+                <button type="submit" class="btn-primary" id="enviarAveriaBtn">Enviar averia</button>
             </div>
         </form>
 
@@ -243,11 +250,12 @@
             </div>
 
             <div class="form-group">
-                <label>¿Se realizo la averia?</label>
+                <label>¿Se arreglo la averia?</label>
                 <div class="toggle-group">
                     <button type="button" class="toggle-btn" id="rSi" data-value="Si" onclick="toggleRealizado(this)">Si</button>
                     <button type="button" class="toggle-btn" id="rNo" data-value="No" onclick="toggleRealizado(this)">No</button>
                     <button type="button" class="toggle-btn" id="rProceso" data-value="En proceso" onclick="toggleRealizado(this)">En proceso</button>
+                    <button type="button" class="toggle-btn" id="rFalsa" data-value="Falsa averia" onclick="toggleRealizado(this)">Falsa averia</button>
                 </div>
             </div>
 
@@ -264,7 +272,7 @@
 
             <div class="form-actions">
                 <button type="button" class="btn-secondary" id="btnAtrasResolucion">Atras</button>
-                <button type="submit" class="btn-primary">Enviar resolucion</button>
+                <button type="submit" class="btn-primary" id="enviarResolucionBtn">Enviar </button>
             </div>
         </form>
     </div>

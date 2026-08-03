@@ -361,6 +361,31 @@ textarea:focus {
     border: 1px dashed #ccc;
 }
 
+.checkin-sub-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.checkin-sub-row:last-child {
+    margin-bottom: 0;
+}
+
+.checkin-sub-row label {
+    flex: 1 1 140px;
+    min-width: 0;
+    margin-bottom: 0;
+    overflow-wrap: anywhere;
+}
+
+.checkin-sub-row .checkin-sub-input {
+    flex: 1 1 120px;
+    min-width: 0;
+}
+
 .checkin-sub label {
     display: block;
     font-size: 0.85rem;
@@ -605,6 +630,20 @@ input[type="file"] {
     .taller-sub-field {
         flex-direction: column;
         align-items: stretch;
+    }
+
+    .checkin-sub-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .checkin-sub-row label {
+        flex: none;
+    }
+
+    .checkin-sub-row .checkin-sub-input {
+        width: 100%;
+        flex: none;
     }
 
     .taller-sub-field label {

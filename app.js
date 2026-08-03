@@ -17,6 +17,7 @@ const SEDE_ZONAS = {
 
 function getAveriaZonas(sede) {
     if (sede === "EVENTO") return [];
+    if (sede === "ALTAMIRA") return ["Exterior", "Otros"];
     const zonas = (SEDE_ZONAS[sede] || []).filter(z => z !== "Taller");
     if (!zonas.includes("Exterior")) zonas.push("Exterior");
     return zonas;
@@ -30,6 +31,7 @@ const ZONA_EQUIPOS = {
             "Circuito Camaras Planta Baja",
             "Creperas",
             "Enfriador de Botellon 1",
+            "Enfriador de Botellon 3",
             "Enfriador sushi cake",
             "Extractores (6)",
             "Extintores",
@@ -70,6 +72,7 @@ const ZONA_EQUIPOS = {
             "Bombonas de gas",
             "Circuito Camaras Planta Alta",
             "Enfriador de Botellon 2",
+            "Escalinatas", 
             "Horno pizzero Ooni",
             "Microondas 2",
             "Peceras Pequenas",
@@ -178,7 +181,7 @@ const SEDE_EQUIPOS = {
         "Creperas",
         "Enfriador de Botellon 1",
         "Enfriador de Botellon 2",
-        "Enfriador de Botellon 3", // SIN ZONA
+        "Enfriador de Botellon 3", 
         "Enfriador sushi cake",
         "Escalinatas", // SIN ZONA
         "Extractores (6)",
@@ -401,11 +404,17 @@ const RUTINA_PREVENTIVO = {
         "Verificar Estado de Aislantes Termicos",
         "Ajustes de Puertas",
         "Chequear Cortinas de PVC",
-        "Chequeo de Presiones",
-        "Chequeo de Consumo Electrico",
+        { label: "Chequeo de Presiones", expand: [
+            { label: "P1 (PSI)", type: "number", min: 0, max: 20 },
+            { label: "P2 (PSI)", type: "number", min: 0, max: 20 },
+        ] },
+        {label: "Chequeo de Consumo Electrico", type:"toggle", expand:[
+            {label:"L1 (AMP)", type:"number"}, 
+            {label:"L2 (AMP)", type:"number"}, 
+            {label:"L3 (AMP)", type:"number"}]},
         "Ajuste de Terminales Electricos",
         "Limpieza de Tablero",
-        "Limpieza de Bandeja del Evaporador",
+        {label:"Limpieza de Bandeja del Evaporador", type:"toggle", expand:[{label:"Realizada", type:"toggle"}]},
         "Chequear Resistencias Electricas"
         
     ],
@@ -527,8 +536,14 @@ const RUTINA_PREVENTIVO = {
         "Mantenimiento de Motores del Condesador ",
         "Mantenimiento de Motores del Evaporador",
         "Verificar Estado de Aislantes Termicos",
-        "Chequeo de Presiones",
-        "Chequeo de Consumo Electrico",
+        { label: "Chequeo de Presiones", expand: [
+            { label: "P1 (PSI)", type: "number"},
+            { label: "P2 (PSI)", type: "number"}
+        ] },
+        {label: "Chequeo de Consumo Electrico", type:"toggle", expand:[
+            {label:"L1 (AMP)", type:"number"}, 
+            {label:"L2 (AMP)", type:"number"}, 
+            {label:"L3 (AMP)", type:"number"}]},
         "Ajuste de Terminales Electricos",
         "Limpieza de Tarjeta",
         "Limpieza de Bandeja del Evaporador"
@@ -569,10 +584,14 @@ const RUTINA_PREVENTIVO = {
 
 const RUTINA_CORRECTIVO = {
     "Rutina Correctiva": [
-        "Diagnostico de falla",
-        "Reparacion realizada",
-        "Prueba de funcionamiento",
-        "Limpieza del area"
+        "Plomeria",
+        "Soldadura",
+        "Electricidad",
+        "Refigeracion",
+        "Carpinteria",
+        "Pintura",
+        "Albanileria",
+        ""
     ]
 };
 
@@ -781,7 +800,7 @@ const EQUIPO_RUTINA = {
 
 };
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyISEvtHVAliw2DO_pMnrIZirakaGmVJ5m0ToFwZisPMXRoa3YmT3jO3gAN81Wi8jW71g/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyLU9YTkjpE9er_EQ4A4EaJk_zWAzQrqRbCi53XQwR1S_RPRtT7uLCvfbjxguEEIBRS9Q/exec";
 
 let rutinaActual = [];
 let nombreRutinaActual = "";
@@ -790,6 +809,8 @@ let esTaller = false;
 let esDinamica = false;
 let empleadoNombre = "";
 let averiaImagenes = [];
+let averiaEnviando = false;
+let resolucionEnviando = false;
 let equipoDinamicoActual = "";
 let esCreadorDinamica = true;
 let rutinasDinamicasGuardadas = {};
@@ -952,6 +973,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const zonaSelect = document.getElementById("aZona");
         const equipoGroup = document.getElementById("aEquipoGroup");
         const equipoLibreGroup = document.getElementById("aEquipoLibreGroup");
+        const equipoExteriorGroup = document.getElementById("aEquipoExteriorGroup");
+
+        equipoExteriorGroup.style.display = "none";
+        document.getElementById("aEquipoExterior").value = "";
 
         if (sede === "EVENTO") {
             zonaGroup.style.display = "none";
@@ -984,12 +1009,26 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("aZona").addEventListener("change", function () {
         const sede = document.getElementById("aSedes").value;
         const zona = this.value;
+        const equipoGroup = document.getElementById("aEquipoGroup");
+        const equipoExteriorGroup = document.getElementById("aEquipoExteriorGroup");
+
+        if (zona === "Exterior") {
+            equipoGroup.style.display = "none";
+            equipoExteriorGroup.style.display = "block";
+            document.getElementById("aEquipoExterior").value = "";
+            return;
+        }
+        equipoExteriorGroup.style.display = "none";
+        equipoGroup.style.display = "block";
+        if (zona === "Otros") {
+            populateSelect("aEquipo", SEDE_EQUIPOS[sede] || []);
+            return;
+        }
         const zonaData = ZONA_EQUIPOS[sede]?.[zona] || [];
         if (zonaData.length > 0) {
             populateSelect("aEquipo", zonaData);
         } else {
-            const equipos = SEDE_EQUIPOS[sede] || [];
-            populateSelect("aEquipo", equipos);
+            populateSelect("aEquipo", SEDE_EQUIPOS[sede] || []);
         }
     });
 
@@ -1283,29 +1322,36 @@ function renderRutina(equipo, mantenimiento) {
     rutinaActual.forEach((item, index) => {
         const esObjeto = typeof item === "object" && item !== null;
         const label = esObjeto ? item.label : item;
-        const sub = esObjeto && item.sub ? item.sub : null;
+        const fields = esObjeto ? (item.expand || (item.sub ? [item.sub] : null)) : null;
         let subHtml = "";
-        if (sub) {
-            if (sub.type === "toggle") {
-                subHtml = `
-                    <div class="checkin-sub" id="checkinSub_${index}" style="display:none;">
-                        <label>${sub.label}</label>
+        if (fields && fields.length > 0) {
+            let camposHtml = "";
+            fields.forEach((f, fi) => {
+                if (f.type === "toggle") {
+                    camposHtml += `
+                        <div class="checkin-sub-row">
+                            <label>${f.label}</label>
                         <div class="toggle-group checkin-sub-toggle">
-                            <button type="button" class="toggle-btn" data-value="Si" onclick="toggleCheckinSub(this)">Si</button>
-                            <button type="button" class="toggle-btn" data-value="No" onclick="toggleCheckinSub(this)">No</button>
+                                <button type="button" class="toggle-btn" data-field="${fi}" data-value="Si" onclick="toggleCheckinSub(this)">Si</button>
+                                <button type="button" class="toggle-btn" data-field="${fi}" data-value="No" onclick="toggleCheckinSub(this)">No</button>
                         </div>
                     </div>`;
             } else {
-                const tipoInput = sub.type === "number" ? "number" : "text";
-                const minMax = (sub.type === "number" && sub.min !== undefined ? ` min="${sub.min}"` : "") +
-                    (sub.type === "number" && sub.max !== undefined ? ` max="${sub.max}"` : "");
+                    const tipoInput = f.type === "number" ? "number" : "text";
+                    const minMax = (f.type === "number" && f.min !== undefined ? ` min="${f.min}"` : "") +
+                        (f.type === "number" && f.max !== undefined ? ` max="${f.max}"` : "");
+                    camposHtml += `
+                        <div class="checkin-sub-row">
+                            <label>${f.label}</label>
+                            <input type="${tipoInput}" class="checkin-sub-input" data-field="${fi}"${minMax}>
+                        </div>`;
+                }
+            });
                 subHtml = `
                     <div class="checkin-sub" id="checkinSub_${index}" style="display:none;">
-                        <label>${sub.label}</label>
-                        <input type="${tipoInput}" class="checkin-sub-input" data-index="${index}"${minMax}>
+                    ${camposHtml}
                     </div>`;
             }
-        }
         const div = document.createElement("div");
         div.className = "checkin-item";
         div.innerHTML = `
@@ -1656,47 +1702,46 @@ function getCheckinValues() {
 }
 
 function getCheckinSubValues() {
-    const subs = [];
     const checkins = getCheckinValues();
+    const out = [];
     rutinaActual.forEach((item, index) => {
         const esObjeto = typeof item === "object" && item !== null;
-        if (!esObjeto || !item.sub) {
-            subs.push("");
-            return;
-        }
-        if (checkins[item.label] !== "Si") {
-            subs.push("");
-            return;
-        }
+        const fields = esObjeto ? (item.expand || (item.sub ? [item.sub] : null)) : null;
+        if (!fields || fields.length === 0) return;
+        if (checkins[item.label] !== "Si") return;
         const subEl = document.getElementById("checkinSub_" + index);
-        if (!subEl) {
-            subs.push("");
-            return;
-        }
-        if (item.sub.type === "toggle") {
-            const btn = subEl.querySelector(".active-si, .active-no");
-            subs.push(btn ? btn.dataset.value : "");
+        if (!subEl) return;
+        fields.forEach((field, fi) => {
+            if (field.type === "toggle") {
+                const tg = subEl.querySelectorAll(".checkin-sub-toggle")[fi];
+                const btn = tg ? tg.querySelector(".active-si, .active-no") : null;
+                out.push({ label: field.label, value: btn ? btn.dataset.value : "", step: item.label });
         } else {
-            const inp = subEl.querySelector(".checkin-sub-input");
-            subs.push(inp ? inp.value.trim() : "");
+                const inp = subEl.querySelectorAll(".checkin-sub-input")[fi];
+                out.push({ label: field.label, value: inp ? inp.value.trim() : "", step: item.label });
         }
     });
-    return subs;
+    });
+    return out;
 }
 
 function checkinSubsCompletas() {
     const checkins = getCheckinValues();
     return rutinaActual.every((item, index) => {
         const esObjeto = typeof item === "object" && item !== null;
-        if (!esObjeto || !item.sub) return true;
+        const fields = esObjeto ? (item.expand || (item.sub ? [item.sub] : null)) : null;
+        if (!fields || fields.length === 0) return true;
         if (checkins[item.label] !== "Si") return true;
         const subEl = document.getElementById("checkinSub_" + index);
         if (!subEl) return false;
-        if (item.sub.type === "toggle") {
-            return !!subEl.querySelector(".active-si, .active-no");
+        return fields.every((field, fi) => {
+            if (field.type === "toggle") {
+                const tg = subEl.querySelectorAll(".checkin-sub-toggle")[fi];
+                return tg ? !!tg.querySelector(".active-si, .active-no") : false;
         }
-        const inp = subEl.querySelector(".checkin-sub-input");
+            const inp = subEl.querySelectorAll(".checkin-sub-input")[fi];
         return inp ? inp.value.trim() !== "" : false;
+        });
     });
 }
 
@@ -1885,12 +1930,9 @@ function enviarFormulario(e) {
     const subs = getCheckinSubValues();
     const checkinKeysFinal = keys.slice();
     const checkinValuesFinal = keys.map(c => checkins[c] || "");
-    keys.forEach((k, i) => {
-        if (subs[i]) {
-            const subLabel = rutinaActual[i] && rutinaActual[i].sub ? rutinaActual[i].sub.label : "Sub-pregunta";
-            checkinKeysFinal.push(subLabel + " (" + k + ")");
-            checkinValuesFinal.push(subs[i]);
-        }
+    subs.forEach(s => {
+        checkinKeysFinal.push(s.label + " (" + s.step + ")");
+        checkinValuesFinal.push(s.value);
     });
 
     const registro = {
@@ -2067,16 +2109,21 @@ function renderImagenesPreview() {
 
 function enviarAveria(e) {
     e.preventDefault();
+    if (averiaEnviando) return;
 
     const sedes = document.getElementById("aSedes").value;
     const zona = document.getElementById("aZona").value;
     const fecha = document.getElementById("aFecha").value;
     const hora = obtenerHora("a");
     const esEvento = sedes === "EVENTO";
+    const esExterior = !esEvento && zona === "Exterior";
     const equipoLibre = esEvento ? document.getElementById("aEquipoLibre").value.trim() : "";
     const eventoNombre = esEvento ? document.getElementById("aEventoLibre").value.trim() : "";
+    const equipoExterior = esExterior ? document.getElementById("aEquipoExterior").value.trim() : "";
     const equipo = esEvento
         ? (equipoLibre + (eventoNombre ? " / Evento: " + eventoNombre : ""))
+        : esExterior
+        ? equipoExterior
         : document.getElementById("aEquipo").value;
     const averia = document.querySelector("#aAvSi.active-si, #aAvNo.active-si, #aAvSi.active-no, #aAvNo.active-no");
     const descripcion = document.getElementById("aDescripcion").value.trim();
@@ -2091,7 +2138,7 @@ function enviarAveria(e) {
         return;
     }
     if (!equipo) {
-        alert(esEvento ? "Escribe el equipo del evento." : "Selecciona un equipo.");
+        alert(esEvento ? "Escribe el equipo del evento." : esExterior ? "Escribe el nombre del equipo." : "Selecciona un equipo.");
         return;
     }
     if (esEvento && !eventoNombre) {
@@ -2111,12 +2158,23 @@ function enviarAveria(e) {
         return;
     }
 
+    const idUnico = generarIdUnico(fecha, hora, sedes, equipo, empleadoNombre);
+    if (yaEnviado(idUnico)) {
+        alert("Este registro ya fue enviado anteriormente.");
+        clearAveriaForm();
+        document.getElementById("averiaForm").style.display = "none";
+        document.getElementById("loginSection").style.display = "block";
+        document.getElementById("codigoTecnico").value = "";
+        return;
+    }
+
     if (!confirm("Confirmar envio de la averia?\n\nSede: " + sedes + "\nEquipo: " + equipo + "\nDescripcion: " + descripcion)) {
         return;
     }
 
     const registro = {
         tipo: "averia",
+        id: idUnico,
         fecha: fecha,
         hora: hora,
         sedes: sedes,
@@ -2128,12 +2186,24 @@ function enviarAveria(e) {
         imagenes: averiaImagenes
     };
 
+    averiaEnviando = true;
+    const btnEnviar = document.getElementById("enviarAveriaBtn");
+    btnEnviar.disabled = true;
+
     postJSON(registro)
     .then(() => {
+        marcarEnviado(idUnico);
         alert("Averia reportada correctamente.");
         clearAveriaForm();
+        document.getElementById("averiaForm").style.display = "none";
+        document.getElementById("loginSection").style.display = "block";
+        document.getElementById("codigoTecnico").value = "";
+        averiaEnviando = false;
+        btnEnviar.disabled = false;
     })
     .catch(() => {
+        averiaEnviando = false;
+        btnEnviar.disabled = false;
         alert("Error al enviar. Intenta de nuevo.");
     });
 }
@@ -2145,6 +2215,8 @@ function clearAveriaForm() {
     document.getElementById("aEquipoLibreGroup").style.display = "none";
     document.getElementById("aEquipoLibre").value = "";
     document.getElementById("aEventoLibre").value = "";
+    document.getElementById("aEquipoExteriorGroup").style.display = "none";
+    document.getElementById("aEquipoExterior").value = "";
     document.getElementById("aEquipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
     document.getElementById("aAveriaDetalle").style.display = "none";
     document.getElementById("aImagenesPreview").innerHTML = "";
@@ -2204,11 +2276,43 @@ function renderResolucionImagenesPreview() {
     });
 }
 
+function huellaImagen(img) {
+    const s = (img.nombre || "") + "|" + (img.data || "");
+    let h = 0;
+    for (let i = 0; i < s.length; i++) {
+        h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+    }
+    return "f" + Math.abs(h).toString(36);
+}
+
+function getImagenesEnviadas(numero) {
+    try {
+        const stored = JSON.parse(localStorage.getItem("imagenesAveriaEnviadas") || "{}");
+        return stored[numero] || [];
+    } catch (err) {
+        return [];
+    }
+}
+
+function guardarImagenEnviada(numero, huella) {
+    try {
+        const stored = JSON.parse(localStorage.getItem("imagenesAveriaEnviadas") || "{}");
+        stored[numero] = stored[numero] || [];
+        if (stored[numero].indexOf(huella) === -1) stored[numero].push(huella);
+        localStorage.setItem("imagenesAveriaEnviadas", JSON.stringify(stored));
+    } catch (err) {}
+}
+
+function averiaCerrada(valor) {
+    return valor === "Si" || valor === "Falsa averia";
+}
+
 function enviarResolucion(e) {
     e.preventDefault();
+    if (resolucionEnviando) return;
 
     const numero = resolucionActualNumero;
-    const toggles = ["rSi", "rNo", "rProceso"].map(id => document.getElementById(id));
+    const toggles = ["rSi", "rNo", "rProceso", "rFalsa"].map(id => document.getElementById(id));
     const activo = toggles.find(b => b.classList.contains("active-si") || b.classList.contains("active-no"));
     const realizado = activo ? activo.dataset.value : "";
     const fecha = document.getElementById("rFecha").value;
@@ -2221,7 +2325,7 @@ function enviarResolucion(e) {
         return;
     }
     if (!realizado) {
-        alert("Indica si se realizo la averia (Si/No/En proceso).");
+        alert("Indica el estado de la averia (Si/No/En proceso/Falsa averia).");
         return;
     }
     if (!fecha || !hora) {
@@ -2233,9 +2337,20 @@ function enviarResolucion(e) {
         return;
     }
     if (realizado !== "Si" && !descripcion) {
-        alert("Escribe el motivo de por que no se realizo.");
+        alert("Escribe una descripcion.");
         return;
     }
+
+    const enviadas = getImagenesEnviadas(numero);
+    const imagenesNuevas = [];
+    const huellasNuevas = [];
+    resolucionImagenes.forEach(img => {
+        const h = huellaImagen(img);
+        if (enviadas.indexOf(h) === -1) {
+            imagenesNuevas.push(img);
+            huellasNuevas.push(h);
+        }
+    });
 
     const registro = {
         tipo: "resolucion",
@@ -2245,17 +2360,32 @@ function enviarResolucion(e) {
         tecnico: tecnico,
         realizado: realizado,
         descripcion: descripcion,
-        imagenes: resolucionImagenes
+        imagenes: imagenesNuevas
     };
+
+    resolucionEnviando = true;
+    const btnEnviar = document.getElementById("enviarResolucionBtn");
+    btnEnviar.disabled = true;
 
     postJSON(registro)
         .then(() => {
-            alert("Resolucion enviada correctamente.");
-            marcarAveriaResuelta(numero);
-            clearResolucionForm();
-            volverAlLogin();
+            huellasNuevas.forEach(h => guardarImagenEnviada(numero, h));
+            resolucionEnviando = false;
+            btnEnviar.disabled = false;
+            if (averiaCerrada(realizado)) {
+                alert("Averia " + numero + " cerrada correctamente.");
+                marcarAveriaResuelta(numero);
+                clearResolucionForm();
+                volverAlLogin();
+            } else {
+                alert("Resolucion enviada. Podras reingresar el codigo para volver a llenar el formulario.");
+                clearResolucionForm();
+                volverAlLogin();
+            }
         })
         .catch(() => {
+            resolucionEnviando = false;
+            btnEnviar.disabled = false;
             alert("Error al enviar. Intenta de nuevo.");
         });
 }
@@ -2276,7 +2406,7 @@ function clearResolucionForm() {
     document.getElementById("rImagenes").value = "";
     document.getElementById("rImagenesPreview").innerHTML = "";
     document.getElementById("rDescripcionGroup").style.display = "none";
-    ["rSi", "rNo", "rProceso"].forEach(id => {
+    ["rSi", "rNo", "rProceso", "rFalsa"].forEach(id => {
         document.getElementById(id).classList.remove("active-si", "active-no");
     });
     resolucionImagenes = [];
