@@ -236,6 +236,18 @@ function jsonAveria(obj) {
     ).setMimeType(ContentService.MimeType.JSON);
 }
 
+function formatearFecha(valor) {
+    if (!valor) return "";
+    if (typeof valor === "string") return valor;
+    if (valor instanceof Date) {
+        var dia = valor.getDate();
+        var mes = valor.getMonth() + 1;
+        var anio = valor.getFullYear();
+        return (dia < 10 ? "0" + dia : dia) + "/" + (mes < 10 ? "0" + mes : mes) + "/" + anio;
+    }
+    return String(valor);
+}
+
 function asegurarHojaAverias(sheet, ss) {
     if (!sheet) {
         sheet = ss.insertSheet("averias");
@@ -331,7 +343,7 @@ function procesarAveria(data) {
         data.empleado || "",
         data.equipo || "",
         data.descripcion || "",
-        "", "", "", "", "", "", correoReportero
+        "", "", "", "", "", "", ""
     ]);
 
     var attachments = [];
@@ -436,7 +448,7 @@ function procesarResolucionAveria(data) {
     var color = realizado === "Si" ? "#C6EFCE" : realizado === "Falsa averia" ? "#DDEBF7" : realizado === "No" ? "#FFC7CE" : "#FFEB9C";
     sheet.getRange(rowIndex, 1, 1, 15).setBackground(color);
 
-    var correoReportero = String(all[rowIndex - 1][14] || "").trim();
+    var correoReportero = buscarCorreoPorNombre(String(all[rowIndex - 1][5] || "").trim());
     var empleado = String(all[rowIndex - 1][5] || "");
     var equipo = String(all[rowIndex - 1][6] || "");
     var sede = String(all[rowIndex - 1][3] || "");
@@ -654,13 +666,14 @@ function asignarAveria(numero, tecnicoNombre, tecnicoWhatsapp, tecnicoCorreo) {
     var colAsignado = 14;
     sheet.getRange(rowIndex, colAsignado).setValue(tecnicoNombre);
 
-    var correoReportero = String(all[rowIndex - 1][14] || "").trim();
+    var empleadoNombre = String(all[rowIndex - 1][5] || "").trim();
+    var correoReportero = buscarCorreoPorNombre(empleadoNombre);
 
     var html = "<h3 style='color:#2e7d32;'>Averia Asignada - " + numero + "</h3>" +
         "<b>Se te ha asignado la siguiente averia:</b><br><br>" +
         "<b>Numero:</b> " + numero + "<br>" +
-        "<b>Fecha:</b> " + String(all[rowIndex - 1][1] || "") + "<br>" +
-        "<b>Hora:</b> " + String(all[rowIndex - 1][2] || "") + "<br>" +
+        "<b>Fecha:</b> " + formatearFecha(all[rowIndex - 1][1]) + "<br>" +
+        "<b>Hora:</b> " + formatearFecha(all[rowIndex - 1][2]) + "<br>" +
         "<b>Sede:</b> " + String(all[rowIndex - 1][3] || "") + "<br>" +
         "<b>Zona:</b> " + String(all[rowIndex - 1][4] || "") + "<br>" +
         "<b>Equipo:</b> " + String(all[rowIndex - 1][6] || "") + "<br>" +
@@ -717,6 +730,7 @@ function obtenerAveriaAsignada(numero) {
         if (String(all[i][0]) === String(numero)) {
             var asignado = String(all[i][13] || "").trim();
             if (asignado) {
+                var correoReportero = buscarCorreoPorNombre(String(all[i][5] || "").trim());
                 return {
                     numero: String(all[i][0] || ""),
                     asignado: asignado,
@@ -724,7 +738,8 @@ function obtenerAveriaAsignada(numero) {
                     zona: String(all[i][4] || ""),
                     equipo: String(all[i][6] || ""),
                     descripcion: String(all[i][7] || ""),
-                    resuelto: averiaCerrada(String(all[i][11] || ""))
+                    resuelto: averiaCerrada(String(all[i][11] || "")),
+                    correoReportero: correoReportero
                 };
             }
         }
