@@ -1,4 +1,21 @@
 function doGet(e) {
+    if (e && e.parameter) {
+        if (e.parameter.accion === "rutinas") {
+            return obtenerRutinasDinamicas();
+        }
+        if (e.parameter.accion === "averias") {
+            return obtenerAverias();
+        }
+        if (e.parameter.accion === "equipos") {
+            return obtenerEquipos();
+        }
+        if (e.parameter.accion === "tecnicos") {
+            return obtenerTecnicos();
+        }
+        if (e.parameter.accion === "personal") {
+            return obtenerPersonal();
+        }
+    }
     return ContentService.createTextOutput(
         JSON.stringify({})
     ).setMimeType(ContentService.MimeType.JSON);
