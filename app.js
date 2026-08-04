@@ -893,7 +893,7 @@ const EQUIPO_RUTINA = {
 
 };
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-5Rj90-yINukQfg8jbSMLST2XiMymOq6BOfzNHVpa6hGj4NJThw8ZXuFAL6B7MyynRw/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzShH2d4e42uMfLPfPzz4xt9SVe4jUBnBFSPRpzwV6UkeiIrrY29TOI1-x4Bd3c6sAqKw/exec";
 
 let rutinaActual = [];
 let nombreRutinaActual = "";
@@ -1044,6 +1044,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.getElementById("resolucionForm").addEventListener("submit", enviarResolucion);
     document.getElementById("btnAtrasResolucion").addEventListener("click", volverAlLogin);
+    document.getElementById("btnAsignarTecnico").addEventListener("click", function() { asignarTecnicoWeb(); });
     document.getElementById("rImagenes").addEventListener("change", async function () {
         const files = Array.from(this.files);
         if (files.length > 2) {
@@ -1263,7 +1264,82 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.getElementById("checkinForm").addEventListener("submit", enviarFormulario);
+
+    var urlParams = new URLSearchParams(window.location.search);
+    var avParam = urlParams.get("av");
+    if (avParam) {
+        mostrarInterfazAsignar(avParam);
+    }
 });
+
+function mostrarInterfazAsignar(numeroAv) {
+    document.getElementById("loginSection").style.display = "none";
+    document.getElementById("checkinForm").style.display = "none";
+    document.getElementById("averiaForm").style.display = "none";
+    document.getElementById("resolucionForm").style.display = "none";
+    document.getElementById("asignarSection").style.display = "block";
+    document.getElementById("asignarInfo").textContent = "Averia: " + numeroAv;
+
+    window._avAsignar = numeroAv;
+
+    cargarPersonal().then(function() {
+        var sel = document.getElementById("selTecnicoAsignar");
+        sel.innerHTML = '<option value="">Seleccionar tecnico...</option>';
+        var found = false;
+        datosPersonal.forEach(function(p) {
+            if (p.tipo === "Tecnico") {
+                var opt = document.createElement("option");
+                opt.value = p.nombre + "|" + p.whatsapp + "|" + p.correo;
+                opt.textContent = p.nombre;
+                sel.appendChild(opt);
+                found = true;
+            }
+        });
+        if (found) {
+            document.getElementById("btnAsignarTecnico").disabled = false;
+        } else {
+            sel.innerHTML = '<option value="">No hay tecnicos disponibles</option>';
+        }
+    });
+}
+
+function asignarTecnicoWeb() {
+    var sel = document.getElementById("selTecnicoAsignar");
+    var val = sel.value;
+    if (!val) {
+        alert("Selecciona un tecnico");
+        return;
+    }
+    var p = val.split("|");
+    var numeroAv = window._avAsignar;
+    var btn = document.getElementById("btnAsignarTecnico");
+    var msg = document.getElementById("asignarMsg");
+    var waDiv = document.getElementById("whatsappLink");
+
+    btn.disabled = true;
+    btn.textContent = "Asignando...";
+
+    fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ tipo: "asignar_averia", numero: numeroAv, tecnicoNombre: p[0], tecnicoWhatsapp: p[1], tecnicoCorreo: p[2] })
+    }).then(function(r) { return r.json(); }).then(function(result) {
+        if (result.status === "ok") {
+            msg.innerHTML = '<div style="color:#2e7d32;font-weight:600;">Tecnico asignado correctamente</div>';
+            if (result.urlWhatsApp) {
+                waDiv.style.display = "block";
+                waDiv.innerHTML = '<a href="' + result.urlWhatsApp + '" target="_blank" style="display:inline-block;background:#25d366;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;width:100%;text-align:center;">Abrir WhatsApp y notificar</a>';
+            }
+        } else {
+            msg.innerHTML = '<div style="color:#d32f2f;font-weight:600;">Error al asignar</div>';
+            btn.disabled = false;
+            btn.textContent = "Asignar y Notificar";
+        }
+    }).catch(function(err) {
+        msg.innerHTML = '<div style="color:#d32f2f;font-weight:600;">Error de conexion</div>';
+        btn.disabled = false;
+        btn.textContent = "Asignar y Notificar";
+    });
+}
 
 function irAlPaso2() {
     const sedes = document.getElementById("sedes").value;

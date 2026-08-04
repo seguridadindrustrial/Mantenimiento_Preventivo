@@ -290,6 +290,27 @@
                 <button type="submit" class="btn-primary" id="enviarResolucionBtn">Enviar </button>
             </div>
         </form>
+
+        <div id="asignarSection" style="display:none;">
+            <div class="card">
+                <h2 style="color:#1976d2;margin-bottom:10px;">Asignar Averia</h2>
+                <p id="asignarInfo" style="color:#666;margin-bottom:20px;"></p>
+
+                <div class="form-group">
+                    <label for="selTecnicoAsignar">Seleccionar tecnico:</label>
+                    <select id="selTecnicoAsignar">
+                        <option value="">Cargando tecnicos...</option>
+                    </select>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-primary" id="btnAsignarTecnico" disabled>Asignar y Notificar</button>
+                </div>
+
+                <div id="asignarMsg" style="margin-top:15px;"></div>
+                <div id="whatsappLink" style="margin-top:15px;display:none;"></div>
+            </div>
+        </div>
     </div>
 
     <script src="app.js"></script>
