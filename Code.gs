@@ -1,60 +1,4 @@
 function doGet(e) {
-    if (e && e.parameter) {
-        if (e.parameter.accion === "rutinas") {
-            return obtenerRutinasDinamicas();
-        }
-        if (e.parameter.accion === "averias") {
-            return obtenerAverias();
-        }
-        if (e.parameter.accion === "equipos") {
-            return obtenerEquipos();
-        }
-        if (e.parameter.accion === "tecnicos") {
-            return obtenerTecnicos();
-        }
-        if (e.parameter.accion === "personal") {
-            return obtenerPersonal();
-        }
-        if (e.parameter.accion === "asignar" && e.parameter.av) {
-            return HtmlService.createHtmlOutput(
-                '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">' +
-                '<title>Asignar Averia</title>' +
-                '<style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Segoe UI,sans-serif;background:#f0f0f0;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px;}' +
-                '.card{background:#fff;border-radius:12px;padding:30px;max-width:400px;width:100%;box-shadow:0 4px 20px rgba(0,0,0,0.1);}' +
-                'h2{color:#1976d2;margin-bottom:10px;font-size:1.3rem;}.info{color:#666;font-size:0.9rem;margin-bottom:20px;}' +
-                'label{display:block;margin-bottom:6px;font-weight:600;color:#333;font-size:0.9rem;}' +
-                'select{width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;margin-bottom:20px;}' +
-                'select:focus{outline:none;border-color:#1976d2;}' +
-                'button{width:100%;padding:12px;background:#1976d2;color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;}' +
-                'button:hover{background:#1565c0;}button:disabled{background:#ccc;cursor:not-allowed;}' +
-                '.ok{color:#2e7d32;font-weight:600;margin-top:15px;text-align:center;}' +
-                '.err{color:#d32f2f;font-weight:600;margin-top:15px;text-align:center;}' +
-                '.whatsapp-link{display:inline-block;margin-top:15px;background:#25d366;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;text-align:center;width:100%;}' +
-                '</style></head><body>' +
-                '<div class="card"><h2>Asignar Averia</h2>' +
-                '<p class="info">Averia: <b>' + e.parameter.av + '</b></p>' +
-                '<label for="selTecnico">Seleccionar tecnico:</label>' +
-                '<select id="selTecnico"><option value="">Cargando tecnicos...</option></select>' +
-                '<button id="btnAsignar" onclick="asignar()" disabled>Asignar y Notificar</button>' +
-                '<div id="msg"></div></div>' +
-                '<script>' +
-                'var av="' + e.parameter.av + '";' +
-                'var tecnicos=[];' +
-                'google.script.run.withSuccessHandler(function(d){tecnicos=d;var s=document.getElementById("selTecnico");s.innerHTML="<option value=\\"\\">Seleccionar tecnico...</option>";' +
-                'd.forEach(function(t){if(t.tipo==="Tecnico"){var o=document.createElement("option");o.value=t.nombre+"|"+t.whatsapp+"|"+t.correo;o.textContent=t.nombre;s.appendChild(o);}});' +
-                'document.getElementById("btnAsignar").disabled=false;' +
-                '}).withFailureHandler(function(){document.getElementById("selTecnico").innerHTML="<option>Error al cargar</option>";}).obtenerPersonal();' +
-                'function asignar(){var v=document.getElementById("selTecnico").value;if(!v){alert("Selecciona un tecnico");return;}' +
-                'var p=v.split("|");document.getElementById("btnAsignar").disabled=true;document.getElementById("btnAsignar").textContent="Asignando...";' +
-                'google.script.run.withSuccessHandler(function(r){if(r.status==="ok"){document.getElementById("msg").innerHTML="<div class=\\"ok\\">Tecnico asignado correctamente</div>";' +
-                'if(r.urlWhatsApp){document.getElementById("msg").innerHTML+="<a href=\\""+r.urlWhatsApp+"\\" target=\\"_blank\\" class=\\"whatsapp-link\\">Abrir WhatsApp y notificar</a>";}}' +
-                'else{document.getElementById("msg").innerHTML="<div class=\\"err\\">Error al asignar</div>";document.getElementById("btnAsignar").disabled=false;document.getElementById("btnAsignar").textContent="Asignar y Notificar";}}' +
-                '.withFailureHandler(function(e){document.getElementById("msg").innerHTML="<div class=\\"err\\">Error: "+e+"</div>";document.getElementById("btnAsignar").disabled=false;document.getElementById("btnAsignar").textContent="Asignar y Notificar";})' +
-                '.asignarAveria(av,p[0],p[1],p[2]);}' +
-                '</script></body></html>'
-            ).setTitle('Asignar Averia ' + e.parameter.av).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
-        }
-    }
     return ContentService.createTextOutput(
         JSON.stringify({})
     ).setMimeType(ContentService.MimeType.JSON);
@@ -386,11 +330,8 @@ function procesarAveria(data) {
         }
     }
 
-    var scriptUrl = ScriptApp.getService().getUrl();
-    if (!scriptUrl || scriptUrl === "undefined" || scriptUrl === "") {
-        scriptUrl = "https://script.google.com/macros/s/AKfycbwkGeMsUkVCSnGa-RGfAFLe6rNe_z8qXZ-U3g2oJVu8/exec";
-    }
-    var enlaceAsignacion = scriptUrl + "?accion=asignar&av=" + numero;
+    var webUrl = "https://seguridadindrustrial.github.io/Mantenimiento_Preventivo/";
+    var enlaceAsignacion = webUrl + "?av=" + numero;
 
     var html = "<h3 style='color:#d32f2f;'>Averia " + numero + "</h3>" +
         "<b>Fecha:</b> " + (data.fecha || "") + "<br>" +
@@ -401,10 +342,12 @@ function procesarAveria(data) {
         "<b>Descripcion:</b> " + (data.descripcion || "") + "<br>" +
         "<b>Empleado:</b> " + (data.empleado || "") +
         (attachments.length > 0 ? "<br><br><i>" + attachments.length + " foto(s) adjunta(s).</i>" : "") +
-        "<br><br><hr style='border:1px solid #ccc;'>" +
-        "<p style='font-size:16px;font-weight:bold;color:#1976d2;'>Para asignar un tecnico haz clic en el enlace:</p>" +
-        "<p><a href='" + enlaceAsignacion + "'>" + enlaceAsignacion + "</a></p>" +
-        "<hr style='border:1px solid #ccc;'>";
+        "<br><br>" +
+        "<table cellpadding='0' cellspacing='0' style='margin:auto;'>" +
+        "<tr><td style='background:#1976d2;border-radius:8px;padding:14px 30px;'>" +
+        "<a href='" + enlaceAsignacion + "' target='_blank' style='color:#ffffff;text-decoration:none;font-weight:bold;font-size:16px;font-family:Arial,sans-serif;'>Asignar Tecnico</a>" +
+        "</td></tr></table>" +
+        "<br><small style='color:#666;'>Haz clic en el boton para asignar un tecnico.</small>";
 
     var mailOptions = {
         to: "blancocarolina155@gmail.com",
@@ -809,6 +752,26 @@ function buscarCorreoPorNombre(nombre) {
         }
     }
     return "";
+}
+
+function obtenerPersonalArray() {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("personal");
+    if (!sheet) return [];
+    var data = sheet.getDataRange().getValues();
+    var personal = [];
+    for (var i = 1; i < data.length; i++) {
+        var nombre = String(data[i][0] || "").trim();
+        if (!nombre) continue;
+        personal.push({
+            nombre: nombre,
+            cedula: String(data[i][1] || "").trim(),
+            tipo: String(data[i][2] || "").trim(),
+            whatsapp: String(data[i][3] || "").trim(),
+            correo: String(data[i][4] || "").trim()
+        });
+    }
+    return personal;
 }
 
 function buscarPersonalPorCedula(cedula) {
