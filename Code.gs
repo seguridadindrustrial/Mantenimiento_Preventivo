@@ -6,6 +6,54 @@ function doGet(e) {
         if (e.parameter.accion === "averias") {
             return obtenerAverias();
         }
+        if (e.parameter.accion === "equipos") {
+            return obtenerEquipos();
+        }
+        if (e.parameter.accion === "tecnicos") {
+            return obtenerTecnicos();
+        }
+        if (e.parameter.accion === "personal") {
+            return obtenerPersonal();
+        }
+        if (e.parameter.accion === "asignar" && e.parameter.av) {
+            return HtmlService.createHtmlOutput(
+                '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+                '<title>Asignar Averia</title>' +
+                '<style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:Segoe UI,sans-serif;background:#f0f0f0;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px;}' +
+                '.card{background:#fff;border-radius:12px;padding:30px;max-width:400px;width:100%;box-shadow:0 4px 20px rgba(0,0,0,0.1);}' +
+                'h2{color:#1976d2;margin-bottom:10px;font-size:1.3rem;}.info{color:#666;font-size:0.9rem;margin-bottom:20px;}' +
+                'label{display:block;margin-bottom:6px;font-weight:600;color:#333;font-size:0.9rem;}' +
+                'select{width:100%;padding:10px;border:2px solid #e0e0e0;border-radius:8px;font-size:1rem;margin-bottom:20px;}' +
+                'select:focus{outline:none;border-color:#1976d2;}' +
+                'button{width:100%;padding:12px;background:#1976d2;color:#fff;border:none;border-radius:8px;font-size:1rem;font-weight:600;cursor:pointer;}' +
+                'button:hover{background:#1565c0;}button:disabled{background:#ccc;cursor:not-allowed;}' +
+                '.ok{color:#2e7d32;font-weight:600;margin-top:15px;text-align:center;}' +
+                '.err{color:#d32f2f;font-weight:600;margin-top:15px;text-align:center;}' +
+                '.whatsapp-link{display:inline-block;margin-top:15px;background:#25d366;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;text-align:center;width:100%;}' +
+                '</style></head><body>' +
+                '<div class="card"><h2>Asignar Averia</h2>' +
+                '<p class="info">Averia: <b>' + e.parameter.av + '</b></p>' +
+                '<label for="selTecnico">Seleccionar tecnico:</label>' +
+                '<select id="selTecnico"><option value="">Cargando tecnicos...</option></select>' +
+                '<button id="btnAsignar" onclick="asignar()" disabled>Asignar y Notificar</button>' +
+                '<div id="msg"></div></div>' +
+                '<script>' +
+                'var av="' + e.parameter.av + '";' +
+                'var tecnicos=[];' +
+                'google.script.run.withSuccessHandler(function(d){tecnicos=d;var s=document.getElementById("selTecnico");s.innerHTML="<option value=\\"\\">Seleccionar tecnico...</option>";' +
+                'd.forEach(function(t){if(t.tipo==="Tecnico"){var o=document.createElement("option");o.value=t.nombre+"|"+t.whatsapp+"|"+t.correo;o.textContent=t.nombre;s.appendChild(o);}});' +
+                'document.getElementById("btnAsignar").disabled=false;' +
+                '}).withFailureHandler(function(){document.getElementById("selTecnico").innerHTML="<option>Error al cargar</option>";}).obtenerPersonal();' +
+                'function asignar(){var v=document.getElementById("selTecnico").value;if(!v){alert("Selecciona un tecnico");return;}' +
+                'var p=v.split("|");document.getElementById("btnAsignar").disabled=true;document.getElementById("btnAsignar").textContent="Asignando...";' +
+                'google.script.run.withSuccessHandler(function(r){if(r.status==="ok"){document.getElementById("msg").innerHTML="<div class=\\"ok\\">Tecnico asignado correctamente</div>";' +
+                'if(r.urlWhatsApp){document.getElementById("msg").innerHTML+="<a href=\\""+r.urlWhatsApp+"\\" target=\\"_blank\\" class=\\"whatsapp-link\\">Abrir WhatsApp y notificar</a>";}}' +
+                'else{document.getElementById("msg").innerHTML="<div class=\\"err\\">Error al asignar</div>";document.getElementById("btnAsignar").disabled=false;document.getElementById("btnAsignar").textContent="Asignar y Notificar";}}' +
+                '.withFailureHandler(function(e){document.getElementById("msg").innerHTML="<div class=\\"err\\">Error: "+e+"</div>";document.getElementById("btnAsignar").disabled=false;document.getElementById("btnAsignar").textContent="Asignar y Notificar";})' +
+                '.asignarAveria(av,p[0],p[1],p[2]);}' +
+                '</script></body></html>'
+            ).setTitle('Asignar Averia ' + e.parameter.av).setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+        }
     }
     return ContentService.createTextOutput(
         JSON.stringify({})
@@ -25,6 +73,19 @@ function doPost(e) {
 
     if (data.tipo === "rutina") {
         return guardarRutinaDinamica(data);
+    }
+
+    if (data.tipo === "nuevo_equipo") {
+        return agregarEquipo(data.equipo, data.sede, data.zona);
+    }
+
+    if (data.tipo === "asignar_averia") {
+        return asignarAveria(data.numero, data.tecnicoNombre, data.tecnicoWhatsapp, data.tecnicoCorreo);
+    }
+
+    if (data.tipo === "obtener_asignacion") {
+        var resultado = obtenerAveriaAsignada(data.numero);
+        return jsonAveria(resultado || { status: "no_asignado" });
     }
 
     var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -206,7 +267,7 @@ function probarCorreo() {
     return "Correo de prueba enviado sin errores.";
 }
 
-var CABECERA_AVERIAS = ["Numero", "Fecha", "Hora", "Sede", "Zona", "Empleado", "Equipo", "Descripcion", "Fecha Resolucion", "Hora Resolucion", "Tecnico", "Realizado", "Descripcion Resolucion"];
+var CABECERA_AVERIAS = ["Numero", "Fecha", "Hora", "Sede", "Zona", "Empleado", "Equipo", "Descripcion", "Fecha Resolucion", "Hora Resolucion", "Tecnico", "Realizado", "Descripcion Resolucion", "Tecnico Asignado", "Correo Reportero"];
 
 function jsonAveria(obj) {
     return ContentService.createTextOutput(
@@ -273,7 +334,8 @@ function obtenerAverias() {
                 empleado: String(data[i][5] || ""),
                 equipo: String(data[i][6] || ""),
                 descripcion: String(data[i][7] || ""),
-                resuelto: averiaCerrada(String(data[i][11] || ""))
+                resuelto: averiaCerrada(String(data[i][11] || "")),
+                asignado: String(data[i][13] || "").trim()
             });
         }
     }
@@ -306,7 +368,7 @@ function procesarAveria(data) {
         data.empleado || "",
         data.equipo || "",
         data.descripcion || "",
-        "", "", "", "", ""
+        "", "", "", "", "", "", data.correoReportero || ""
     ]);
 
     var attachments = [];
@@ -322,7 +384,10 @@ function procesarAveria(data) {
         }
     }
 
-    var html = "<h3>Averia " + numero + "</h3>" +
+    var scriptUrl = ScriptApp.getService().getUrl();
+    var enlaceAsignacion = scriptUrl + "?accion=asignar&av=" + numero;
+
+    var html = "<h3 style='color:#d32f2f;'>Averia " + numero + "</h3>" +
         "<b>Fecha:</b> " + (data.fecha || "") + "<br>" +
         "<b>Hora:</b> " + (data.hora || "") + "<br>" +
         "<b>Sede:</b> " + (data.sedes || "") + "<br>" +
@@ -330,7 +395,10 @@ function procesarAveria(data) {
         "<b>Equipo:</b> " + (data.equipo || "") + "<br>" +
         "<b>Descripcion:</b> " + (data.descripcion || "") + "<br>" +
         "<b>Empleado:</b> " + (data.empleado || "") +
-        (attachments.length > 0 ? "<br><br><i>" + attachments.length + " foto(s) adjunta(s).</i>" : "");
+        (attachments.length > 0 ? "<br><br><i>" + attachments.length + " foto(s) adjunta(s).</i>" : "") +
+        "<br><br>" +
+        "<a href='" + enlaceAsignacion + "' style='display:inline-block;background:#1976d2;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;'>Asignar Averia a Tecnico</a>" +
+        "<br><br><small style='color:#666;'>Haz clic en el boton de arriba para asignar un tecnico a esta averia.</small>";
 
     var mailOptions = {
         to: "blancocarolina155@gmail.com",
@@ -399,7 +467,71 @@ function procesarResolucionAveria(data) {
     ]]);
 
     var color = realizado === "Si" ? "#C6EFCE" : realizado === "Falsa averia" ? "#DDEBF7" : realizado === "No" ? "#FFC7CE" : "#FFEB9C";
-    sheet.getRange(rowIndex, 1, 1, 13).setBackground(color);
+    sheet.getRange(rowIndex, 1, 1, 15).setBackground(color);
+
+    var correoReportero = String(all[rowIndex - 1][14] || "").trim();
+    var empleado = String(all[rowIndex - 1][5] || "");
+    var equipo = String(all[rowIndex - 1][6] || "");
+    var sede = String(all[rowIndex - 1][3] || "");
+
+    if (correoReportero) {
+        var asuntoReportero = "";
+        var htmlReportero = "";
+        var colorEstado = "";
+        var emoji = "";
+
+        if (realizado === "Si") {
+            colorEstado = "#2e7d32";
+            emoji = "✅";
+            asuntoReportero = emoji + " Averia " + numero + " RESUELTA";
+            htmlReportero = "<h3 style='color:" + colorEstado + ";'>" + emoji + " Averia " + numero + " Resuelta</h3>" +
+                "<b>Tu averia ha sido resuelta exitosamente.</b><br><br>" +
+                "<b>Equipo:</b> " + equipo + "<br>" +
+                "<b>Sede:</b> " + sede + "<br>" +
+                "<b>Tecnico:</b> " + (data.tecnico || "") + "<br>" +
+                "<b>Fecha:</b> " + (data.fecha || "") + "<br>" +
+                "<b>Hora:</b> " + (data.hora || "") + "<br>" +
+                (data.descripcion ? "<b>Descripcion:</b> " + data.descripcion + "<br>" : "") +
+                "<br><p style='color:#666;'>Gracias por reportar. Tu averia ha sido atendida.</p>";
+        } else if (realizado === "No") {
+            colorEstado = "#d32f2f";
+            emoji = "❌";
+            asuntoReportero = emoji + " Averia " + numero + " - No realizada";
+            htmlReportero = "<h3 style='color:" + colorEstado + ";'>" + emoji + " Averia " + numero + "</h3>" +
+                "<b>Tu averia no pudo ser resuelta en este momento.</b><br><br>" +
+                "<b>Equipo:</b> " + equipo + "<br>" +
+                "<b>Sede:</b> " + sede + "<br>" +
+                "<b>Tecnico:</b> " + (data.tecnico || "") + "<br>" +
+                "<b>Motivo:</b> " + (data.descripcion || "No especificado") + "<br><br>" +
+                "<p style='color:#666;'>Si tienes dudas, contacta al departamento de mantenimiento.</p>";
+        } else if (realizado === "Falsa averia") {
+            colorEstado = "#1976d2";
+            emoji = "ℹ️";
+            asuntoReportero = emoji + " Averia " + numero + " - Falsa averia";
+            htmlReportero = "<h3 style='color:" + colorEstado + ";'>" + emoji + " Averia " + numero + " - Falsa Averia</h3>" +
+                "<b>Se determino que no existe una averia real.</b><br><br>" +
+                "<b>Equipo:</b> " + equipo + "<br>" +
+                "<b>Sede:</b> " + sede + "<br>" +
+                "<b>Tecnico:</b> " + (data.tecnico || "") + "<br>" +
+                (data.descripcion ? "<b>Observacion:</b> " + data.descripcion + "<br>" : "") +
+                "<br><p style='color:#666;'>El equipo se encuentra operativo.</p>";
+        } else if (realizado === "En proceso") {
+            colorEstado = "#f57c00";
+            emoji = "⏳";
+            asuntoReportero = emoji + " Averia " + numero + " - En proceso";
+            htmlReportero = "<h3 style='color:" + colorEstado + ";'>" + emoji + " Averia " + numero + " - En Proceso</h3>" +
+                "<b>Tu averia esta siendo atendida.</b><br><br>" +
+                "<b>Equipo:</b> " + equipo + "<br>" +
+                "<b>Sede:</b> " + sede + "<br>" +
+                "<b>Tecnico:</b> " + (data.tecnico || "") + "<br>" +
+                (data.descripcion ? "<b>Observacion:</b> " + data.descripcion + "<br>" : "") +
+                "<br><p style='color:#666;'>Te mantendremos informado sobre el avance.</p>";
+        }
+
+        if (asuntoReportero) {
+            enviarCorreoReportero(numero, correoReportero, asuntoReportero, htmlReportero);
+        }
+    }
 
     var attachments = [];
     if (data.imagenes && data.imagenes.length > 0) {
@@ -469,4 +601,225 @@ function registrarError(origen, referencia, detalle) {
 function generarNumeroAveria(sheet) {
     var last = sheet.getLastRow();
     return "AV-" + String(last).padStart(6, "0");
+}
+
+function obtenerEquipos() {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("Equipos");
+    if (!sheet) {
+        return ContentService.createTextOutput(
+            JSON.stringify([])
+        ).setMimeType(ContentService.MimeType.JSON);
+    }
+    var data = sheet.getDataRange().getValues();
+    var equipos = [];
+    for (var i = 1; i < data.length; i++) {
+        var nombre = String(data[i][0] || "").trim();
+        if (!nombre) continue;
+        equipos.push({
+            equipo: nombre,
+            sede: String(data[i][1] || "").trim(),
+            zona: String(data[i][2] || "").trim()
+        });
+    }
+    return ContentService.createTextOutput(
+        JSON.stringify(equipos)
+    ).setMimeType(ContentService.MimeType.JSON);
+}
+
+function agregarEquipo(nombre, sede, zona) {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("Equipos");
+    if (!sheet) {
+        sheet = ss.insertSheet("Equipos");
+        sheet.appendRow(["Equipo", "Sede", "Zona"]);
+    }
+    sheet.appendRow([nombre, sede, zona || ""]);
+    return ContentService.createTextOutput(
+        JSON.stringify({ status: "ok" })
+    ).setMimeType(ContentService.MimeType.JSON);
+}
+
+function obtenerTecnicos() {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("tecnicos");
+    if (!sheet) {
+        return ContentService.createTextOutput(
+            JSON.stringify([])
+        ).setMimeType(ContentService.MimeType.JSON);
+    }
+    var data = sheet.getDataRange().getValues();
+    var tecnicos = [];
+    for (var i = 1; i < data.length; i++) {
+        var nombre = String(data[i][0] || "").trim();
+        if (!nombre) continue;
+        tecnicos.push({
+            nombre: nombre,
+            cedula: String(data[i][1] || "").trim(),
+            whatsapp: String(data[i][2] || "").trim(),
+            correo: String(data[i][3] || "").trim()
+        });
+    }
+    return ContentService.createTextOutput(
+        JSON.stringify(tecnicos)
+    ).setMimeType(ContentService.MimeType.JSON);
+}
+
+function asignarAveria(numero, tecnicoNombre, tecnicoWhatsapp, tecnicoCorreo) {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("averias");
+    if (!sheet) {
+        return jsonAveria({ status: "not_found" });
+    }
+
+    var all = sheet.getDataRange().getValues();
+    var rowIndex = -1;
+    for (var i = 1; i < all.length; i++) {
+        if (String(all[i][0]) === String(numero)) {
+            rowIndex = i + 1;
+            break;
+        }
+    }
+    if (rowIndex === -1) {
+        return jsonAveria({ status: "not_found" });
+    }
+
+    var colAsignado = 14;
+    sheet.getRange(rowIndex, colAsignado).setValue(tecnicoNombre);
+
+    var correoReportero = String(all[rowIndex - 1][14] || "").trim();
+
+    var html = "<h3 style='color:#2e7d32;'>Averia Asignada - " + numero + "</h3>" +
+        "<b>Se te ha asignado la siguiente averia:</b><br><br>" +
+        "<b>Numero:</b> " + numero + "<br>" +
+        "<b>Fecha:</b> " + String(all[rowIndex - 1][1] || "") + "<br>" +
+        "<b>Hora:</b> " + String(all[rowIndex - 1][2] || "") + "<br>" +
+        "<b>Sede:</b> " + String(all[rowIndex - 1][3] || "") + "<br>" +
+        "<b>Zona:</b> " + String(all[rowIndex - 1][4] || "") + "<br>" +
+        "<b>Equipo:</b> " + String(all[rowIndex - 1][6] || "") + "<br>" +
+        "<b>Descripcion:</b> " + String(all[rowIndex - 1][7] || "") + "<br><br>" +
+        "<b>Ingresa a la plataforma con el codigo <span style='color:#d32f2f;font-size:18px;'>" + numero + "</span> para resolver esta averia.</b>";
+
+    if (tecnicoCorreo) {
+        try {
+            MailApp.sendEmail({
+                to: tecnicoCorreo,
+                subject: "Averia Asignada " + numero + " - " + String(all[rowIndex - 1][3] || ""),
+                htmlBody: html
+            });
+        } catch (e) {
+            registrarError("asignacion_correo", numero, String(e));
+        }
+    }
+
+    if (correoReportero) {
+        var htmlReportero = "<h3 style='color:#1976d2;'>Tu averia " + numero + " ha sido asignada</h3>" +
+            "<b>Tu reporte esta siendo atendido.</b><br><br>" +
+            "<b>Numero:</b> " + numero + "<br>" +
+            "<b>Equipo:</b> " + String(all[rowIndex - 1][6] || "") + "<br>" +
+            "<b>Sede:</b> " + String(all[rowIndex - 1][3] || "") + "<br><br>" +
+            "<b>Tecnico asignado:</b> <span style='color:#2e7d32;font-size:16px;font-weight:bold;'>" + tecnicoNombre + "</span><br><br>" +
+            "<p style='color:#666;'>Te mantendremos informado sobre el estado de tu averia.</p>";
+        enviarCorreoReportero(numero, correoReportero,
+            "Averia " + numero + " asignada a " + tecnicoNombre,
+            htmlReportero);
+    }
+
+    if (tecnicoWhatsapp) {
+        var mensaje = "Averia " + numero + " asignada\n" +
+            "Sede: " + String(all[rowIndex - 1][3] || "") + "\n" +
+            "Zona: " + String(all[rowIndex - 1][4] || "") + "\n" +
+            "Equipo: " + String(all[rowIndex - 1][6] || "") + "\n" +
+            "Descripcion: " + String(all[rowIndex - 1][7] || "") + "\n\n" +
+            "Ingresa a la plataforma con el codigo " + numero + " para resolver esta averia.";
+        var urlWhatsApp = "https://wa.me/" + tecnicoWhatsapp.replace(/[^0-9]/g, "") + "?text=" + encodeURIComponent(mensaje);
+
+        return jsonAveria({ status: "ok", urlWhatsApp: urlWhatsApp });
+    }
+
+    return jsonAveria({ status: "ok" });
+}
+
+function obtenerAveriaAsignada(numero) {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("averias");
+    if (!sheet) return null;
+
+    var all = sheet.getDataRange().getValues();
+    for (var i = 1; i < all.length; i++) {
+        if (String(all[i][0]) === String(numero)) {
+            var asignado = String(all[i][13] || "").trim();
+            if (asignado) {
+                return {
+                    numero: String(all[i][0] || ""),
+                    asignado: asignado,
+                    sede: String(all[i][3] || ""),
+                    zona: String(all[i][4] || ""),
+                    equipo: String(all[i][6] || ""),
+                    descripcion: String(all[i][7] || ""),
+                    resuelto: averiaCerrada(String(all[i][11] || ""))
+                };
+            }
+        }
+    }
+    return null;
+}
+
+function obtenerPersonal() {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("personal");
+    if (!sheet) {
+        return ContentService.createTextOutput(
+            JSON.stringify([])
+        ).setMimeType(ContentService.MimeType.JSON);
+    }
+    var data = sheet.getDataRange().getValues();
+    var personal = [];
+    for (var i = 1; i < data.length; i++) {
+        var nombre = String(data[i][0] || "").trim();
+        if (!nombre) continue;
+        personal.push({
+            nombre: nombre,
+            cedula: String(data[i][1] || "").trim(),
+            tipo: String(data[i][2] || "").trim(),
+            whatsapp: String(data[i][3] || "").trim(),
+            correo: String(data[i][4] || "").trim()
+        });
+    }
+    return ContentService.createTextOutput(
+        JSON.stringify(personal)
+    ).setMimeType(ContentService.MimeType.JSON);
+}
+
+function buscarPersonalPorCedula(cedula) {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("personal");
+    if (!sheet) return null;
+
+    var data = sheet.getDataRange().getValues();
+    for (var i = 1; i < data.length; i++) {
+        if (String(data[i][1] || "").trim() === String(cedula).trim()) {
+            return {
+                nombre: String(data[i][0] || "").trim(),
+                cedula: String(data[i][1] || "").trim(),
+                tipo: String(data[i][2] || "").trim(),
+                whatsapp: String(data[i][3] || "").trim(),
+                correo: String(data[i][4] || "").trim()
+            };
+        }
+    }
+    return null;
+}
+
+function enviarCorreoReportero(numero, correoReportero, asunto, mensaje) {
+    if (!correoReportero) return;
+    try {
+        MailApp.sendEmail({
+            to: correoReportero,
+            subject: asunto,
+            htmlBody: mensaje
+        });
+    } catch (e) {
+        registrarError("correo_reportero", numero, String(e));
+    }
 }

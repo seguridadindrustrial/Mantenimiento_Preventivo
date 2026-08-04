@@ -1,25 +1,111 @@
 
-const SEDES = [
-    "DEPOSITO",
-    "RUICES",
-    "ALTAMIRA",
-    "EVENTO",
-];
+let SEDES = [];
+let SEDES_CHECKIN = [];
+let SEDE_ZONAS = {};
 
-const SEDES_CHECKIN = SEDES.filter(s => s !== "EVENTO");
+let datosEquiposRaw = [];
+let datosPersonal = [];
+let TECNICOS = {};
+let EMPLEADOS = {};
 
-const SEDE_ZONAS = {
-    "ALTAMIRA": ["Exterior", "Otros"],
-    "RUICES": ["PB", "Piso 1", "Piso 2", "Terraza"],
-    "DEPOSITO": ["PB", "Piso 1", "Nuevo espacio", "Taller"],
-    "EVENTO": []
-};
+function construirDatosEquipos(datos) {
+    datosEquiposRaw = datos;
+    const sedesSet = new Set();
+    const sedeZonasMap = {};
+    const zonaEquiposMap = {};
+    const sedeEquiposMap = {};
+
+    datos.forEach(function(eq) {
+        const sede = eq.sede;
+        const zona = eq.zona;
+        const nombre = eq.equipo;
+
+        if (!sede) return;
+        sedesSet.add(sede);
+
+        if (!sedeZonasMap[sede]) sedeZonasMap[sede] = new Set();
+        if (!sedeEquiposMap[sede]) sedeEquiposMap[sede] = [];
+
+        sedeEquiposMap[sede].push(nombre);
+
+        if (zona) {
+            sedeZonasMap[sede].add(zona);
+            const key = sede + "||" + zona;
+            if (!zonaEquiposMap[key]) zonaEquiposMap[key] = [];
+            zonaEquiposMap[key].push(nombre);
+        }
+    });
+
+    SEDES = Array.from(sedesSet);
+    if (SEDES.indexOf("EVENTO") === -1) SEDES.push("EVENTO");
+    SEDES_CHECKIN = SEDES.filter(function(s) { return s !== "EVENTO"; });
+
+    SEDE_ZONAS = {};
+    for (const sede in sedeZonasMap) {
+        const zonasArr = Array.from(sedeZonasMap[sede]);
+        zonasArr.sort();
+        if (sede !== "ALTAMIRA" && zonasArr.indexOf("Exterior") === -1) zonasArr.push("Exterior");
+        if (sede !== "EVENTO" && zonasArr.indexOf("Otros") === -1) zonasArr.push("Otros");
+        if (sede === "DEPOSITO" && zonasArr.indexOf("Taller") === -1) zonasArr.push("Taller");
+        SEDE_ZONAS[sede] = zonasArr;
+    }
+
+    ZONA_EQUIPOS = {};
+    for (const sede in sedeZonasMap) {
+        ZONA_EQUIPOS[sede] = {};
+        sedeZonasMap[sede].forEach(function(zona) {
+            const key = sede + "||" + zona;
+            ZONA_EQUIPOS[sede][zona] = zonaEquiposMap[key] || [];
+        });
+    }
+
+    SEDE_EQUIPOS = sedeEquiposMap;
+}
+
+function cargarEquipos() {
+    return fetch(APPS_SCRIPT_URL + "?accion=equipos")
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (Array.isArray(data)) {
+                construirDatosEquipos(data);
+            }
+        })
+        .catch(function() {});
+}
+
+function cargarPersonal() {
+    return fetch(APPS_SCRIPT_URL + "?accion=personal")
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (Array.isArray(data)) {
+                datosPersonal = data;
+                TECNICOS = {};
+                EMPLEADOS = {};
+                data.forEach(function(p) {
+                    if (p.tipo === "Tecnico") {
+                        TECNICOS[p.cedula] = p.nombre;
+                    } else if (p.tipo === "Empleado") {
+                        EMPLEADOS[p.cedula] = p.nombre;
+                    }
+                });
+            }
+        })
+        .catch(function() {});
+}
+
+function buscarPersonalPorCedula(cedula) {
+    for (var i = 0; i < datosPersonal.length; i++) {
+        if (datosPersonal[i].cedula === cedula) {
+            return datosPersonal[i];
+        }
+    }
+    return null;
+}
 
 function getAveriaZonas(sede) {
     if (sede === "EVENTO") return [];
-    if (sede === "ALTAMIRA") return ["Exterior", "Otros"];
-    const zonas = (SEDE_ZONAS[sede] || []).filter(z => z !== "Taller");
-    if (!zonas.includes("Exterior")) zonas.push("Exterior");
+    var zonas = (SEDE_ZONAS[sede] || []).filter(function(z) { return z !== "Taller"; });
+    if (zonas.indexOf("Exterior") === -1) zonas.push("Exterior");
     return zonas;
 }
 
@@ -31,10 +117,11 @@ const ZONA_EQUIPOS = {
             "Circuito Camaras Planta Baja",
             "Creperas",
             "Enfriador de Botellon 1",
-            "Enfriador de Botellon 3",
+            "Enfriador de Botellon 3 (Taller)",
             "Enfriador sushi cake",
             "Extractores (6)",
             "Extintores",
+            "Fumigacion",
             "Extintores Fijos",
             "Freidora Duker 1",
             "Freidora Duker 2",
@@ -63,7 +150,9 @@ const ZONA_EQUIPOS = {
             "Planchas a gas",
             "Reverberos dobles",
             "Reverberos sencillos",
-            "salamandras"
+            "salamandras",
+            "Microondas 3 (Taller)",
+            "Tableros",  
         ],
         "Piso 1": [
             "A/A 12000 Btu Ventana ///Dormitorio",
@@ -78,7 +167,17 @@ const ZONA_EQUIPOS = {
             "Peceras Pequenas",
             "Reverbero de mesa",
             "Plancha Electrica 110v 1",
+            "Fumigacion",
             "Plancha Electrica 110v 2",
+            "Lamparas de calor 1", 
+            "Lamparas de calor 2", 
+            "Lamparas de calor 3",
+            "Lamparas de calor 4", 
+            "Lamparas de calor 5 (Madera)",
+            "Lamparas de calor 6 (Madera)",
+            "Molino de cafe 4 ", 
+            "Molino de cafe 5",     
+            "Tableros",     
         ],
         "Nuevo espacio": [     
             "Planchas a gas 1",
@@ -88,6 +187,9 @@ const ZONA_EQUIPOS = {
             "Planchas a gas 5",
             "Plancha Electrica 220v 1",
             "Plancha Electrica 220v 2",
+            "Horno Unox", 
+            "Fumigacion",
+            "Tableros", 
         ],
         "Taller": null
     },
@@ -105,12 +207,13 @@ const ZONA_EQUIPOS = {
             "Empacadora al Vacio 2",
             "Enfriador de agua 1",
             "Filtro desbarrador",
+            "Fumigacion",
             "Freidora 1",
             "Horno Rational a Gas 220 V ph2",
             "Meson refrigerado 2 pta 1 Ursel",
             "Meson refrigerado 3 pta 1 Ursel",
             "MOTOR DE INYECCION DE AIRE 1",
-            
+            "Tableros", 
             "Nevera exhibidora",
             "Pela papas",
             "Rebanadora 1",
@@ -135,6 +238,7 @@ const ZONA_EQUIPOS = {
             "FERMENTADOR",
             "Freidora 2",
             "Freidora 3",
+            "Fumigacion",
             "Horno electrico Balsam 110 V-ph1 1",
             "Horno electrico Balsam 110 V-ph1 2",
             "Horno Rational trifasico 220V ph3",
@@ -152,18 +256,22 @@ const ZONA_EQUIPOS = {
             "Sarten Basculante Industrial",
             "SISTEMA DE DETENCION DE INCENDIO",
             "Tope Frances a Gas 1",
-            "Tope Frances a Gas 2"
+            "Tope Frances a Gas 2",
+            "Tableros", 
         ],
         "Piso 2": [
             "Aire acondicionado 5 ton Fan Coil 4",
             "Aire Acondicionado 5 ton Piso techo 1",
             "Aire Acondicionado 12000 Btu Cuarto de IT",
-            "Enfriador de agua 3"
+            "Enfriador de agua 3",
+            "Tableros", 
+            "Fumigacion",
         ],
         "Terraza": [
             "Ductos + trampa grasas",
             "Motor extractor 12000 CFM ",
-            "Motor extractor 21000 CFM "
+            "Motor extractor 21000 CFM ",
+            "Tableros", 
         ]
     }
 };
@@ -181,9 +289,9 @@ const SEDE_EQUIPOS = {
         "Creperas",
         "Enfriador de Botellon 1",
         "Enfriador de Botellon 2",
-        "Enfriador de Botellon 3", 
+        "Enfriador de Botellon 3 (Taller)", 
         "Enfriador sushi cake",
-        "Escalinatas", // SIN ZONA
+        "Escalinatas", 
         "Extractores (6)",
         "Extintores",
         "Extintores Fijos",
@@ -193,18 +301,18 @@ const SEDE_EQUIPOS = {
         "Freidora Star Book",
         "Freidora Vulcan 1",
         "Freidora Vulcan 2",
-        "Fumigacion", // SIN ZONA
+        "Fumigacion", 
         "Horno Asber",
         "Horno electrico 110v 1",
         "Horno electrico 110v 2",
         "Horno pizzero Ooni",
-        "Horno Unox", // SIN ZONA
-        "Lamparas de calor 1", // SIN ZONA
-        "Lamparas de calor 2", // SIN ZONA
-        "Lamparas de calor 3", // SIN ZONA
-        "Lamparas de calor 4", // SIN ZONA
-        "Lamparas de calor 5 (Madera)", // SIN ZONA
-        "Lamparas de calor 6 (Madera)", // SIN ZONA
+        "Horno Unox", 
+        "Lamparas de calor 1", 
+        "Lamparas de calor 2", 
+        "Lamparas de calor 3", 
+        "Lamparas de calor 4", 
+        "Lamparas de calor 5 (Madera)", 
+        "Lamparas de calor 6 (Madera)", 
         "Lava vajillas 1",
         "Lava vajillas 2",
         "Mallas anti ratas",
@@ -215,12 +323,12 @@ const SEDE_EQUIPOS = {
         "Maquina de cafe 5",
         "Microondas 1",
         "Microondas 2",
-        "Microondas 3", // SIN ZONA
+        "Microondas 3 (Taller)", 
         "Molino de cafe 1",
         "Molino de cafe 2",
         "Molino de cafe 3",
-        "Molino de cafe 4", // SIN ZONA
-        "Molino de cafe 5", // SIN ZONA
+        "Molino de cafe 4", 
+        "Molino de cafe 5", 
         "pantallas de vidrio",
         "parrilleras",
         "Peceras Grandes",
@@ -240,7 +348,7 @@ const SEDE_EQUIPOS = {
         "Reverberos dobles",
         "Reverberos sencillos",
         "salamandras",
-        "Tableros", // SIN ZONA
+        "Tableros", 
         "Tanques de agua (8000lts)", // SIN ZONA
         "Tanquillas" // SIN ZONA
     ],
@@ -284,7 +392,7 @@ const SEDE_EQUIPOS = {
         "Freidora 1",
         "Freidora 2",
         "Freidora 3",
-        "Fumigacion", // SIN ZONA
+        "Fumigacion", 
         "Horno electrico Balsam 110 V-ph1 1",
         "Horno electrico Balsam 110 V-ph1 2",
         "Horno Rational a Gas 220 V ph2",
@@ -318,6 +426,7 @@ const SEDE_EQUIPOS = {
         "Tableros Electricos",
         "Tanques de agua de 1000lts (8 un)",
         "Tope Frances a Gas 1",
+        "Tableros", 
         "Tope Frances a Gas 2"
     ],
     "ALTAMIRA": [
@@ -340,7 +449,9 @@ const SEDE_EQUIPOS = {
         "Pintura interna",
         "Revisio Microonda 1",
         "Revisio Microonda 2",
-        "Tableros Electricos"
+        "Tableros Electricos",
+        "Tableros", 
+        "Fumigacion",
     ]
 };
 
@@ -348,26 +459,6 @@ const MANTENIMIENTOS = [
     "PREVENTIVO",
     "CORRECTIVO",
 ];
-
-const TECNICOS = {
-    "180236394": "ALBERTO",
-    "143977568": "ANGEL",
-    "98636442": "AQUILES",
-    "79927276": "ALEXIS",
-    "196849519": "ENRIQUE",
-    "65160601": "RAFAEL",
-    "149708163": "SANDRY",
-    "001" : "CAROLINA"
-
-};
-
-const EMPLEADOS = {
-    "100": "EMPLEADO 1",
-    "101": "EMPLEADO 2",
-    "102": "EMPLEADO 3",
-    "103": "EMPLEADO 4",
-    "104": "EMPLEADO 5"
-};
 
 
 const RUTINA_PREVENTIVO = {
@@ -800,7 +891,7 @@ const EQUIPO_RUTINA = {
 
 };
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyLU9YTkjpE9er_EQ4A4EaJk_zWAzQrqRbCi53XQwR1S_RPRtT7uLCvfbjxguEEIBRS9Q/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz55PyH8JmcqS_dV_n2_kOKm9bfUqpSv1hZknuQ4C1HuFgCUlfKXMlcFwgX8yodfsMUxg/exec";
 
 let rutinaActual = [];
 let nombreRutinaActual = "";
@@ -934,6 +1025,7 @@ function cargarRutinasDinamicas() {
 document.addEventListener("DOMContentLoaded", () => {
     cargarRutinasDinamicas();
     cargarAverias();
+    cargarPersonal();
     document.getElementById("btnLogin").addEventListener("click", loginTecnico);
     document.getElementById("codigoTecnico").addEventListener("keydown", function (e) {
         if (e.key === "Enter") loginTecnico();
@@ -974,9 +1066,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const equipoGroup = document.getElementById("aEquipoGroup");
         const equipoLibreGroup = document.getElementById("aEquipoLibreGroup");
         const equipoExteriorGroup = document.getElementById("aEquipoExteriorGroup");
+        const equipoOtroGroup = document.getElementById("aEquipoOtroGroup");
 
         equipoExteriorGroup.style.display = "none";
         document.getElementById("aEquipoExterior").value = "";
+        equipoOtroGroup.style.display = "none";
+        document.getElementById("aEquipoOtro").value = "";
 
         if (sede === "EVENTO") {
             zonaGroup.style.display = "none";
@@ -1002,7 +1097,7 @@ document.addEventListener("DOMContentLoaded", () => {
             zonaGroup.style.display = "none";
             zonaSelect.value = "";
             const equipos = SEDE_EQUIPOS[sede] || [];
-            populateSelect("aEquipo", equipos);
+            populateSelect("aEquipo", equipos, true);
         }
     });
 
@@ -1011,6 +1106,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const zona = this.value;
         const equipoGroup = document.getElementById("aEquipoGroup");
         const equipoExteriorGroup = document.getElementById("aEquipoExteriorGroup");
+        const equipoOtroGroup = document.getElementById("aEquipoOtroGroup");
+
+        equipoOtroGroup.style.display = "none";
+        document.getElementById("aEquipoOtro").value = "";
 
         if (zona === "Exterior") {
             equipoGroup.style.display = "none";
@@ -1021,14 +1120,26 @@ document.addEventListener("DOMContentLoaded", () => {
         equipoExteriorGroup.style.display = "none";
         equipoGroup.style.display = "block";
         if (zona === "Otros") {
-            populateSelect("aEquipo", SEDE_EQUIPOS[sede] || []);
+            populateSelect("aEquipo", SEDE_EQUIPOS[sede] || [], true);
             return;
         }
         const zonaData = ZONA_EQUIPOS[sede]?.[zona] || [];
         if (zonaData.length > 0) {
-            populateSelect("aEquipo", zonaData);
+            populateSelect("aEquipo", zonaData, true);
         } else {
-            populateSelect("aEquipo", SEDE_EQUIPOS[sede] || []);
+            populateSelect("aEquipo", SEDE_EQUIPOS[sede] || [], true);
+        }
+    });
+
+    document.getElementById("aEquipo").addEventListener("change", function () {
+        const equipoOtroGroup = document.getElementById("aEquipoOtroGroup");
+        if (this.value === "__OTRO__") {
+            equipoOtroGroup.style.display = "block";
+            document.getElementById("aEquipoOtro").value = "";
+            document.getElementById("aEquipoOtro").focus();
+        } else {
+            equipoOtroGroup.style.display = "none";
+            document.getElementById("aEquipoOtro").value = "";
         }
     });
 
@@ -1067,7 +1178,7 @@ document.addEventListener("DOMContentLoaded", () => {
             zonaGroup.style.display = "none";
             zonaSelect.value = "";
             const equipos = SEDE_EQUIPOS[sede] || [];
-            populateSelect("equipo", equipos);
+            populateSelect("equipo", equipos, true);
         }
         document.getElementById("equipo").required = true;
         document.getElementById("mantenimiento").required = true;
@@ -1111,13 +1222,13 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("mantenimiento").required = true;
             esTaller = false;
             if (zona === "Otros") {
-                populateSelect("equipo", SEDE_EQUIPOS[sede] || []);
+                populateSelect("equipo", SEDE_EQUIPOS[sede] || [], true);
             } else {
-                const zonaData = ZONA_EQUIPOS[sede]?.[zona] || [];
-                if (zonaData.length > 0) {
-                    populateSelect("equipo", zonaData);
-                } else {
-                    populateSelect("equipo", SEDE_EQUIPOS[sede] || []);
+            const zonaData = ZONA_EQUIPOS[sede]?.[zona] || [];
+            if (zonaData.length > 0) {
+                    populateSelect("equipo", zonaData, true);
+            } else {
+                    populateSelect("equipo", SEDE_EQUIPOS[sede] || [], true);
                 }
             }
         }
@@ -1128,6 +1239,18 @@ document.addEventListener("DOMContentLoaded", () => {
         resetPaso3();
         document.getElementById("paso2").style.display = "none";
         document.getElementById("paso1").style.display = "block";
+    });
+
+    document.getElementById("equipo").addEventListener("change", function () {
+        const equipoOtroGroup = document.getElementById("equipoOtroGroup");
+        if (this.value === "__OTRO__") {
+            equipoOtroGroup.style.display = "block";
+            document.getElementById("equipoOtro").value = "";
+            document.getElementById("equipoOtro").focus();
+        } else {
+            equipoOtroGroup.style.display = "none";
+            document.getElementById("equipoOtro").value = "";
+        }
     });
 
     document.getElementById("btnSiguiente").addEventListener("click", irAlPaso2);
@@ -1146,11 +1269,15 @@ function irAlPaso2() {
     const hora = obtenerHora();
     const zona = document.getElementById("zona").value;
     const esExterior = !esTaller && zona === "Exterior";
+    const equipoSelect = document.getElementById("equipo").value;
+    const esOtro = equipoSelect === "__OTRO__";
     const equipo = esTaller
         ? "Taller"
         : esExterior
         ? document.getElementById("equipoExterior").value.trim()
-        : document.getElementById("equipo").value;
+        : esOtro
+        ? document.getElementById("equipoOtro").value.trim()
+        : equipoSelect;
     const mantenimiento = esTaller ? "" : document.getElementById("mantenimiento").value;
 
     if (!sedes || !fecha || !hora) {
@@ -1167,7 +1294,7 @@ function irAlPaso2() {
         return;
     }
     if (!esTaller && !equipo) {
-        alert(esExterior ? "Escribe el nombre del equipo." : "Selecciona un equipo.");
+        alert(esExterior ? "Escribe el nombre del equipo." : esOtro ? "Escribe el nombre del equipo." : "Selecciona un equipo.");
         return;
     }
 
@@ -1194,28 +1321,55 @@ function loginTecnico() {
                 document.getElementById("codigoTecnico").value = "";
                 return;
             }
+            if (av.asignado) {
+                tecnicoNombre = av.asignado;
+                abrirResolucion(av);
+                return;
+            }
             abrirResolucion(av);
             return;
         }
-        if (TECNICOS[codigo]) {
-            tecnicoNombre = TECNICOS[codigo];
+
+        var esMantenimiento = /2$/.test(codigo) && /^\d+$/.test(codigo);
+        var cedulaBusqueda = esMantenimiento ? codigo.slice(0, -1) : codigo;
+
+        var personal = buscarPersonalPorCedula(cedulaBusqueda);
+
+        if (personal && personal.tipo === "Tecnico" && esMantenimiento) {
+            tecnicoNombre = personal.nombre;
             errorEl.style.display = "none";
             document.getElementById("loginSection").style.display = "none";
             document.getElementById("checkinForm").style.display = "block";
             document.getElementById("tecnicoInfo").textContent = "Tecnico: " + tecnicoNombre;
-            populateSelect("sedes", SEDES_CHECKIN);
-            populateSelect("mantenimiento", MANTENIMIENTOS);
-            populateTimeSelects();
+            cargarEquipos().then(function() {
+                populateSelect("sedes", SEDES_CHECKIN);
+                populateSelect("mantenimiento", MANTENIMIENTOS);
+                populateTimeSelects();
+            });
             return;
         }
-        if (EMPLEADOS[codigo]) {
-            empleadoNombre = EMPLEADOS[codigo];
+        if (personal && personal.tipo === "Tecnico" && !esMantenimiento) {
+            tecnicoNombre = personal.nombre;
+            errorEl.style.display = "none";
+            document.getElementById("loginSection").style.display = "none";
+            document.getElementById("averiaForm").style.display = "block";
+            document.getElementById("empleadoInfo").textContent = "Tecnico: " + tecnicoNombre;
+            cargarEquipos().then(function() {
+                populateSelect("aSedes", SEDES);
+                populateTimeSelects("a");
+            });
+            return;
+        }
+        if (personal && personal.tipo === "Empleado") {
+            empleadoNombre = personal.nombre;
             errorEl.style.display = "none";
             document.getElementById("loginSection").style.display = "none";
             document.getElementById("averiaForm").style.display = "block";
             document.getElementById("empleadoInfo").textContent = "Empleado: " + empleadoNombre;
-            populateSelect("aSedes", SEDES);
-            populateTimeSelects("a");
+            cargarEquipos().then(function() {
+                populateSelect("aSedes", SEDES);
+                populateTimeSelects("a");
+            });
             return;
         }
         errorEl.textContent = "Credencial o codigo de averia no valido.";
@@ -1224,10 +1378,33 @@ function loginTecnico() {
     };
 
     if (/^av/i.test(codigo)) {
-        Promise.resolve(buscarAveriaLocal(codigo)).then(procesarLogin);
+        Promise.resolve(buscarAveriaLocal(codigo)).then(function(av) {
+            if (av && !av.asignado) {
+                fetch(APPS_SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    body: JSON.stringify({ tipo: "obtener_asignacion", numero: codigo.toUpperCase() })
+                }).then(function(r) { return r.text(); }).then(function(txt) {
+                    try {
+                        var asignacion = JSON.parse(txt);
+                        if (asignacion && asignacion.asignado) {
+                            av.asignado = asignacion.asignado;
+                        }
+                    } catch(e) {}
+                    procesarLogin(av);
+                }).catch(function() {
+                    procesarLogin(av);
+                });
+            } else {
+                procesarLogin(av);
+            }
+        });
         return;
     }
-    procesarLogin(null);
+
+    cargarPersonal().then(function() {
+        procesarLogin(null);
+    });
 }
 
 function populateTimeSelects(prefix) {
@@ -1266,7 +1443,7 @@ function populateTimeSelects(prefix) {
     });
 }
 
-function populateSelect(id, items) {
+function populateSelect(id, items, agregarOtro) {
     const select = document.getElementById(id);
     select.innerHTML = '<option value="" disabled selected>Seleccionar...</option>';
     items.forEach(item => {
@@ -1275,6 +1452,12 @@ function populateSelect(id, items) {
         option.textContent = item;
         select.appendChild(option);
     });
+    if (agregarOtro) {
+        const optionOtro = document.createElement("option");
+        optionOtro.value = "__OTRO__";
+        optionOtro.textContent = "Otro (escribir nombre)";
+        select.appendChild(optionOtro);
+    }
 }
 
 function obtenerHora(prefix) {
@@ -1871,11 +2054,15 @@ function enviarFormulario(e) {
     const hora = obtenerHora();
     const zona = document.getElementById("zona").value;
     const esExterior = !esTaller && zona === "Exterior";
+    const equipoSelect = document.getElementById("equipo").value;
+    const esOtro = equipoSelect === "__OTRO__";
     const equipo = esTaller
         ? "Taller"
         : esExterior
         ? document.getElementById("equipoExterior").value.trim()
-        : document.getElementById("equipo").value;
+        : esOtro
+        ? document.getElementById("equipoOtro").value.trim()
+        : equipoSelect;
     const mantenimiento = esTaller ? "" : document.getElementById("mantenimiento").value;
     const descripcion = document.getElementById("descripcion").value.trim();
 
@@ -1888,8 +2075,12 @@ function enviarFormulario(e) {
         return;
     }
     if (!esTaller && !equipo) {
-        alert(esExterior ? "Escribe el nombre del equipo." : "Selecciona un equipo.");
+        alert(esExterior ? "Escribe el nombre del equipo." : esOtro ? "Escribe el nombre del equipo." : "Selecciona un equipo.");
         return;
+    }
+
+    if (esOtro && equipo) {
+        postJSON({ tipo: "nuevo_equipo", equipo: equipo, sede: sedes, zona: zona }).catch(function() {});
     }
 
     if (esTaller) {
@@ -2070,6 +2261,8 @@ function clearForm() {
     document.getElementById("equipoGroup").style.display = "block";
     document.getElementById("equipoExteriorGroup").style.display = "none";
     document.getElementById("equipoExterior").value = "";
+    document.getElementById("equipoOtroGroup").style.display = "none";
+    document.getElementById("equipoOtro").value = "";
     document.getElementById("mantenimientoGroup").style.display = "block";
     document.getElementById("formActions").style.display = "flex";
     document.getElementById("equipo").required = true;
@@ -2155,13 +2348,19 @@ function enviarAveria(e) {
     const equipoLibre = esEvento ? document.getElementById("aEquipoLibre").value.trim() : "";
     const eventoNombre = esEvento ? document.getElementById("aEventoLibre").value.trim() : "";
     const equipoExterior = esExterior ? document.getElementById("aEquipoExterior").value.trim() : "";
+    const equipoSelect = document.getElementById("aEquipo").value;
+    const esOtro = equipoSelect === "__OTRO__";
+    const equipoOtro = esOtro ? document.getElementById("aEquipoOtro").value.trim() : "";
     const equipo = esEvento
         ? (equipoLibre + (eventoNombre ? " / Evento: " + eventoNombre : ""))
         : esExterior
         ? equipoExterior
-        : document.getElementById("aEquipo").value;
+        : esOtro
+        ? equipoOtro
+        : equipoSelect;
     const averia = document.querySelector("#aAvSi.active-si, #aAvNo.active-si, #aAvSi.active-no, #aAvNo.active-no");
     const descripcion = document.getElementById("aDescripcion").value.trim();
+    const correoReportero = document.getElementById("aCorreo").value.trim();
 
     if (!sedes || !fecha || !hora) {
         alert("Completa sede, fecha y hora.");
@@ -2173,11 +2372,15 @@ function enviarAveria(e) {
         return;
     }
     if (!equipo) {
-        alert(esEvento ? "Escribe el equipo del evento." : esExterior ? "Escribe el nombre del equipo." : "Selecciona un equipo.");
+        alert(esEvento ? "Escribe el equipo del evento." : esExterior ? "Escribe el nombre del equipo." : esOtro ? "Escribe el nombre del equipo." : "Selecciona un equipo.");
         return;
     }
     if (esEvento && !eventoNombre) {
         alert("Escribe el nombre del evento.");
+        return;
+    }
+    if (!correoReportero) {
+        alert("Escribe tu correo electronico para recibir actualizaciones.");
         return;
     }
     if (!averia) {
@@ -2191,6 +2394,10 @@ function enviarAveria(e) {
     if (!descripcion) {
         alert("Escribe una descripcion de la averia.");
         return;
+    }
+
+    if (esOtro && equipo) {
+        postJSON({ tipo: "nuevo_equipo", equipo: equipo, sede: sedes, zona: zona }).catch(function() {});
     }
 
     const idUnico = generarIdUnico(fecha, hora, sedes, equipo, empleadoNombre);
@@ -2218,6 +2425,7 @@ function enviarAveria(e) {
         averia: "Si",
         descripcion: descripcion,
         empleado: empleadoNombre,
+        correoReportero: correoReportero,
         imagenes: averiaImagenes
     };
 
@@ -2252,6 +2460,9 @@ function clearAveriaForm() {
     document.getElementById("aEventoLibre").value = "";
     document.getElementById("aEquipoExteriorGroup").style.display = "none";
     document.getElementById("aEquipoExterior").value = "";
+    document.getElementById("aEquipoOtroGroup").style.display = "none";
+    document.getElementById("aEquipoOtro").value = "";
+    document.getElementById("aCorreo").value = "";
     document.getElementById("aEquipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
     document.getElementById("aAveriaDetalle").style.display = "none";
     document.getElementById("aImagenesPreview").innerHTML = "";
@@ -2274,6 +2485,17 @@ function abrirResolucion(av) {
     populateSelect("rTecnico", Object.values(TECNICOS));
     populateTimeSelects("r");
     clearResolucionForm();
+
+    if (av.asignado) {
+        var rTecnicoSelect = document.getElementById("rTecnico");
+        for (var i = 0; i < rTecnicoSelect.options.length; i++) {
+            if (rTecnicoSelect.options[i].value === av.asignado) {
+                rTecnicoSelect.selectedIndex = i;
+                break;
+            }
+        }
+    }
+
     document.getElementById("resolucionForm").style.display = "block";
 }
 
