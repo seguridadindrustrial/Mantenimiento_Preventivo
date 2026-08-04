@@ -385,6 +385,9 @@ function procesarAveria(data) {
     }
 
     var scriptUrl = ScriptApp.getService().getUrl();
+    if (!scriptUrl || scriptUrl === "undefined") {
+        scriptUrl = "https://script.google.com/macros/s/AKfycbz55PyH8JmcqS_dV_n2_kOKm9bfUqpSv1hZknuQ4C1HuFgCUlfKXMlcFwgX8yodfsMUxg/exec";
+    }
     var enlaceAsignacion = scriptUrl + "?accion=asignar&av=" + numero;
 
     var html = "<h3 style='color:#d32f2f;'>Averia " + numero + "</h3>" +
@@ -397,7 +400,7 @@ function procesarAveria(data) {
         "<b>Empleado:</b> " + (data.empleado || "") +
         (attachments.length > 0 ? "<br><br><i>" + attachments.length + " foto(s) adjunta(s).</i>" : "") +
         "<br><br>" +
-        "<a href='" + enlaceAsignacion + "' style='display:inline-block;background:#1976d2;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;'>Asignar Averia a Tecnico</a>" +
+        "<a href='" + enlaceAsignacion + "' target='_blank' style='display:inline-block;background:#1976d2;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;'>Asignar Averia a Tecnico</a>" +
         "<br><br><small style='color:#666;'>Haz clic en el boton de arriba para asignar un tecnico a esta averia.</small>";
 
     var mailOptions = {
