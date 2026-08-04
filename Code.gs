@@ -358,6 +358,8 @@ function procesarAveria(data) {
         }
     }
 
+    var correoReportero = buscarCorreoPorNombre(data.empleado);
+
     var numero = generarNumeroAveria(sheet);
     sheet.appendRow([
         numero,
@@ -368,7 +370,7 @@ function procesarAveria(data) {
         data.empleado || "",
         data.equipo || "",
         data.descripcion || "",
-        "", "", "", "", "", "", data.correoReportero || ""
+        "", "", "", "", "", "", correoReportero
     ]);
 
     var attachments = [];
@@ -385,8 +387,8 @@ function procesarAveria(data) {
     }
 
     var scriptUrl = ScriptApp.getService().getUrl();
-    if (!scriptUrl || scriptUrl === "undefined") {
-        scriptUrl = "https://script.google.com/macros/s/AKfycbz55PyH8JmcqS_dV_n2_kOKm9bfUqpSv1hZknuQ4C1HuFgCUlfKXMlcFwgX8yodfsMUxg/exec";
+    if (!scriptUrl || scriptUrl === "undefined" || scriptUrl === "") {
+        scriptUrl = "https://script.google.com/macros/s/AKfycbwkGeMsUkVCSnGa-RGfAFLe6rNe_z8qXZ-U3g2oJVu8/exec";
     }
     var enlaceAsignacion = scriptUrl + "?accion=asignar&av=" + numero;
 
@@ -399,13 +401,15 @@ function procesarAveria(data) {
         "<b>Descripcion:</b> " + (data.descripcion || "") + "<br>" +
         "<b>Empleado:</b> " + (data.empleado || "") +
         (attachments.length > 0 ? "<br><br><i>" + attachments.length + " foto(s) adjunta(s).</i>" : "") +
-        "<br><br>" +
-        "<a href='" + enlaceAsignacion + "' target='_blank' style='display:inline-block;background:#1976d2;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:16px;'>Asignar Averia a Tecnico</a>" +
-        "<br><br><small style='color:#666;'>Haz clic en el boton de arriba para asignar un tecnico a esta averia.</small>";
+        "<br><br><hr style='border:1px solid #ccc;'>" +
+        "<p style='font-size:16px;font-weight:bold;color:#1976d2;'>Para asignar un tecnico haz clic en el enlace:</p>" +
+        "<p><a href='" + enlaceAsignacion + "'>" + enlaceAsignacion + "</a></p>" +
+        "<hr style='border:1px solid #ccc;'>";
 
     var mailOptions = {
         to: "blancocarolina155@gmail.com",
         subject: "Averia " + numero + " - " + (data.sedes || "") + " - " + (data.equipo || ""),
+        body: "Averia " + numero + "\n\nPara asignar un tecnico copia y pega este enlace en tu navegador:\n" + enlaceAsignacion,
         htmlBody: html
     };
     if (attachments.length > 0) {
@@ -794,6 +798,19 @@ function obtenerPersonal() {
     ).setMimeType(ContentService.MimeType.JSON);
 }
 
+function buscarCorreoPorNombre(nombre) {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("personal");
+    if (!sheet) return "";
+    var data = sheet.getDataRange().getValues();
+    for (var i = 1; i < data.length; i++) {
+        if (String(data[i][0] || "").trim().toUpperCase() === String(nombre || "").trim().toUpperCase()) {
+            return String(data[i][4] || "").trim();
+        }
+    }
+    return "";
+}
+
 function buscarPersonalPorCedula(cedula) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName("personal");
@@ -825,4 +842,38 @@ function enviarCorreoReportero(numero, correoReportero, asunto, mensaje) {
     } catch (e) {
         registrarError("correo_reportero", numero, String(e));
     }
+}
+
+function crearUsuariosPrueba() {
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("personal");
+    if (!sheet) {
+        sheet = ss.insertSheet("personal");
+        sheet.appendRow(["Nombre", "Cedula", "Tipo", "WhatsApp", "Correo"]);
+    }
+
+    var usuarios = [
+        ["CAROLINA", "001", "Tecnico", "584141234567", "blancocarolina155@gmail.com"],
+        ["ALBERTO", "180236394", "Tecnico", "584121111111", "alberto@test.com"],
+        ["ANGEL", "143977568", "Tecnico", "584122222222", "angel@test.com"],
+        ["EMPLEADO 1", "100", "Empleado", "584123333333", "empleado1@test.com"],
+        ["EMPLEADO 2", "101", "Empleado", "584124444444", "empleado2@test.com"]
+    ];
+
+    var existentes = sheet.getDataRange().getValues();
+    var cedulasExistentes = {};
+    for (var i = 1; i < existentes.length; i++) {
+        cedulasExistentes[String(existentes[i][1])] = true;
+    }
+
+    var agregados = 0;
+    for (var j = 0; j < usuarios.length; j++) {
+        var cedula = String(usuarios[j][1]);
+        if (!cedulasExistentes[cedula]) {
+            sheet.appendRow(usuarios[j]);
+            agregados++;
+        }
+    }
+
+    return "Se agregaron " + agregados + " usuarios. Total en hoja: " + (sheet.getLastRow() - 1);
 }

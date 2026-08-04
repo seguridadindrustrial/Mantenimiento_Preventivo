@@ -891,7 +891,7 @@ const EQUIPO_RUTINA = {
 
 };
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVHUVX8RFn61A2qSiY_3qLbAw5MpYW8ix_7lk7pjMOPlp2oo7PNXnOunFXj5znMrLqoQ/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby-5Rj90-yINukQfg8jbSMLST2XiMymOq6BOfzNHVpa6hGj4NJThw8ZXuFAL6B7MyynRw/exec";
 
 let rutinaActual = [];
 let nombreRutinaActual = "";
@@ -2360,7 +2360,8 @@ function enviarAveria(e) {
         : equipoSelect;
     const averia = document.querySelector("#aAvSi.active-si, #aAvNo.active-si, #aAvSi.active-no, #aAvNo.active-no");
     const descripcion = document.getElementById("aDescripcion").value.trim();
-    const correoReportero = document.getElementById("aCorreo").value.trim();
+    const averia = document.querySelector("#aAvSi.active-si, #aAvNo.active-si, #aAvSi.active-no, #aAvNo.active-no");
+    const descripcion = document.getElementById("aDescripcion").value.trim();
 
     if (!sedes || !fecha || !hora) {
         alert("Completa sede, fecha y hora.");
@@ -2377,10 +2378,6 @@ function enviarAveria(e) {
     }
     if (esEvento && !eventoNombre) {
         alert("Escribe el nombre del evento.");
-        return;
-    }
-    if (!correoReportero) {
-        alert("Escribe tu correo electronico para recibir actualizaciones.");
         return;
     }
     if (!averia) {
@@ -2425,7 +2422,6 @@ function enviarAveria(e) {
         averia: "Si",
         descripcion: descripcion,
         empleado: empleadoNombre,
-        correoReportero: correoReportero,
         imagenes: averiaImagenes
     };
 
@@ -2462,7 +2458,6 @@ function clearAveriaForm() {
     document.getElementById("aEquipoExterior").value = "";
     document.getElementById("aEquipoOtroGroup").style.display = "none";
     document.getElementById("aEquipoOtro").value = "";
-    document.getElementById("aCorreo").value = "";
     document.getElementById("aEquipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
     document.getElementById("aAveriaDetalle").style.display = "none";
     document.getElementById("aImagenesPreview").innerHTML = "";
