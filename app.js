@@ -90,7 +90,9 @@ function cargarPersonal() {
                 });
             }
         })
-        .catch(function() {});
+        .catch(function(err) {
+            console.error("Error cargando personal:", err);
+        });
 }
 
 function buscarPersonalPorCedula(cedula) {
@@ -1404,6 +1406,9 @@ function loginTecnico() {
 
     cargarPersonal().then(function() {
         procesarLogin(null);
+    }).catch(function(err) {
+        errorEl.textContent = "Error al cargar datos: " + err;
+        errorEl.style.display = "block";
     });
 }
 
@@ -2358,8 +2363,6 @@ function enviarAveria(e) {
         : esOtro
         ? equipoOtro
         : equipoSelect;
-    const averia = document.querySelector("#aAvSi.active-si, #aAvNo.active-si, #aAvSi.active-no, #aAvNo.active-no");
-    const descripcion = document.getElementById("aDescripcion").value.trim();
     const averia = document.querySelector("#aAvSi.active-si, #aAvNo.active-si, #aAvSi.active-no, #aAvNo.active-no");
     const descripcion = document.getElementById("aDescripcion").value.trim();
 
