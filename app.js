@@ -45,8 +45,8 @@ function construirDatosEquipos(datos) {
     for (const sede in sedeZonasMap) {
         const zonasArr = Array.from(sedeZonasMap[sede]);
         zonasArr.sort();
-        if (sede === "ALTAMIRA" && zonasArr.indexOf("Exterior") === -1) zonasArr.push("Exterior");
-        if (sede !== "EVENTO" && zonasArr.indexOf("Otros") === -1) zonasArr.push("Otros");
+        if (sede !== "EVENTO" && zonasArr.indexOf("Exterior") === -1) zonasArr.push("Exterior");
+        if (sede === "ALTAMIRA" && zonasArr.indexOf("Otros") === -1) zonasArr.push("Otros");
         if (sede === "DEPOSITO" && zonasArr.indexOf("Taller") === -1) zonasArr.push("Taller");
         SEDE_ZONAS[sede] = zonasArr;
     }
@@ -110,7 +110,7 @@ function buscarPersonalPorCedula(cedula) {
 function getAveriaZonas(sede) {
     if (sede === "EVENTO") return [];
     var zonas = (SEDE_ZONAS[sede] || []).filter(function(z) { return z !== "Taller"; });
-    if (sede === "ALTAMIRA" && zonas.indexOf("Exterior") === -1) zonas.push("Exterior");
+    if (sede !== "EVENTO" && zonas.indexOf("Exterior") === -1) zonas.push("Exterior");
     return zonas;
 }
 
