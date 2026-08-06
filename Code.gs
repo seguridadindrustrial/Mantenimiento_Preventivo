@@ -678,7 +678,8 @@ function asignarAveria(numero, tecnicoNombre, tecnicoWhatsapp, tecnicoCorreo) {
         "<b>Zona:</b> " + String(all[rowIndex - 1][4] || "") + "<br>" +
         "<b>Equipo:</b> " + String(all[rowIndex - 1][6] || "") + "<br>" +
         "<b>Descripcion:</b> " + String(all[rowIndex - 1][7] || "") + "<br><br>" +
-        "<b>Ingresa a la plataforma con el codigo <span style='color:#d32f2f;font-size:18px;'>" + numero + "</span> para resolver esta averia.</b>";
+        "<b>Ingresa a la plataforma con el codigo <span style='color:#d32f2f;font-size:18px;'>" + numero + "</span> para resolver esta averia.</b>" +
+        "<br><br><a href='https://chat.whatsapp.com/IRHMBeEiacI798ib2791ph' target='_blank' style='display:inline-block;background:#25d366;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;'>Unirse al grupo de WhatsApp</a>";
 
     if (tecnicoCorreo) {
         try {
@@ -711,9 +712,9 @@ function asignarAveria(numero, tecnicoNombre, tecnicoWhatsapp, tecnicoCorreo) {
             "Zona: " + String(all[rowIndex - 1][4] || "") + "\n" +
             "Equipo: " + String(all[rowIndex - 1][6] || "") + "\n" +
             "Descripcion: " + String(all[rowIndex - 1][7] || "") + "\n\n" +
-            "Ingresa a la plataforma con el codigo " + numero + " para resolver esta averia.";
-        var grupoWhatsApp = "584129946675";
-        var urlWhatsApp = "https://wa.me/" + grupoWhatsApp + "?text=" + encodeURIComponent(mensaje);
+            "Ingresa a la plataforma con el codigo " + numero + " para resolver esta averia.\n\n" +
+            "Unirse al grupo: https://chat.whatsapp.com/IRHMBeEiacI798ib2791ph";
+        var urlWhatsApp = "https://wa.me/?text=" + encodeURIComponent(mensaje);
 
         return jsonAveria({ status: "ok", urlWhatsApp: urlWhatsApp });
     }
