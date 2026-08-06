@@ -8,7 +8,6 @@ let datosPersonal = [];
 let TECNICOS = {};
 let EMPLEADOS = {};
 let personalCargado = false;
-let equiposCargados = false;
 
 function construirDatosEquipos(datos) {
     datosEquiposRaw = datos;
@@ -65,13 +64,11 @@ function construirDatosEquipos(datos) {
 }
 
 function cargarEquipos() {
-    if (equiposCargados) return Promise.resolve();
     return fetch(APPS_SCRIPT_URL + "?accion=equipos")
         .then(function(r) { return r.json(); })
         .then(function(data) {
             if (Array.isArray(data)) {
                 construirDatosEquipos(data);
-                equiposCargados = true;
             }
         })
         .catch(function() {});
@@ -1547,7 +1544,6 @@ function populateSelect(id, items, agregarOtro) {
 }
 
 function refrescarEquipos() {
-    equiposCargados = false;
     cargarEquipos().then(function() {
         var sedesCheckin = document.getElementById("sedes");
         var sedesAveria = document.getElementById("aSedes");
@@ -2184,9 +2180,7 @@ function enviarFormulario(e) {
     }
 
     if (esOtro && equipo) {
-        postJSON({ tipo: "nuevo_equipo", equipo: equipo, sede: sedes, zona: zona }).then(function() {
-            equiposCargados = false;
-        }).catch(function() {});
+        postJSON({ tipo: "nuevo_equipo", equipo: equipo, sede: sedes, zona: zona }).catch(function() {});
     }
 
     if (esTaller) {
@@ -2498,9 +2492,7 @@ function enviarAveria(e) {
     }
 
     if (esOtro && equipo) {
-        postJSON({ tipo: "nuevo_equipo", equipo: equipo, sede: sedes, zona: zona }).then(function() {
-            equiposCargados = false;
-        }).catch(function() {});
+        postJSON({ tipo: "nuevo_equipo", equipo: equipo, sede: sedes, zona: zona }).catch(function() {});
     }
 
     const idUnico = generarIdUnico(fecha, hora, sedes, equipo, empleadoNombre);
