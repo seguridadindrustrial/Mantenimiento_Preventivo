@@ -1546,6 +1546,24 @@ function populateSelect(id, items, agregarOtro) {
     }
 }
 
+function refrescarEquipos() {
+    equiposCargados = false;
+    cargarEquipos().then(function() {
+        var sedesCheckin = document.getElementById("sedes");
+        var sedesAveria = document.getElementById("aSedes");
+        if (sedesCheckin && sedesCheckin.offsetParent !== null) {
+            populateSelect("sedes", SEDES_CHECKIN);
+            sedesCheckin.value = "";
+            document.getElementById("equipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
+        }
+        if (sedesAveria && sedesAveria.offsetParent !== null) {
+            populateSelect("aSedes", SEDES);
+            sedesAveria.value = "";
+            document.getElementById("aEquipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
+        }
+    });
+}
+
 function obtenerHora(prefix) {
     prefix = prefix || "";
     const ids = {
@@ -2166,7 +2184,9 @@ function enviarFormulario(e) {
     }
 
     if (esOtro && equipo) {
-        postJSON({ tipo: "nuevo_equipo", equipo: equipo, sede: sedes, zona: zona }).catch(function() {});
+        postJSON({ tipo: "nuevo_equipo", equipo: equipo, sede: sedes, zona: zona }).then(function() {
+            equiposCargados = false;
+        }).catch(function() {});
     }
 
     if (esTaller) {
@@ -2478,7 +2498,9 @@ function enviarAveria(e) {
     }
 
     if (esOtro && equipo) {
-        postJSON({ tipo: "nuevo_equipo", equipo: equipo, sede: sedes, zona: zona }).catch(function() {});
+        postJSON({ tipo: "nuevo_equipo", equipo: equipo, sede: sedes, zona: zona }).then(function() {
+            equiposCargados = false;
+        }).catch(function() {});
     }
 
     const idUnico = generarIdUnico(fecha, hora, sedes, equipo, empleadoNombre);
