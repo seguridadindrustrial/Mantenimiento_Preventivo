@@ -712,7 +712,8 @@ function asignarAveria(numero, tecnicoNombre, tecnicoWhatsapp, tecnicoCorreo) {
             "Equipo: " + String(all[rowIndex - 1][6] || "") + "\n" +
             "Descripcion: " + String(all[rowIndex - 1][7] || "") + "\n\n" +
             "Ingresa a la plataforma con el codigo " + numero + " para resolver esta averia.";
-        var urlWhatsApp = "https://wa.me/" + tecnicoWhatsapp.replace(/[^0-9]/g, "") + "?text=" + encodeURIComponent(mensaje);
+        var grupoWhatsApp = "584129946675";
+        var urlWhatsApp = "https://wa.me/" + grupoWhatsApp + "?text=" + encodeURIComponent(mensaje);
 
         return jsonAveria({ status: "ok", urlWhatsApp: urlWhatsApp });
     }
