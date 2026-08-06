@@ -7,6 +7,8 @@ let datosEquiposRaw = [];
 let datosPersonal = [];
 let TECNICOS = {};
 let EMPLEADOS = {};
+let personalCargado = false;
+let equiposCargados = false;
 
 function construirDatosEquipos(datos) {
     datosEquiposRaw = datos;
@@ -63,17 +65,20 @@ function construirDatosEquipos(datos) {
 }
 
 function cargarEquipos() {
+    if (equiposCargados) return Promise.resolve();
     return fetch(APPS_SCRIPT_URL + "?accion=equipos")
         .then(function(r) { return r.json(); })
         .then(function(data) {
             if (Array.isArray(data)) {
                 construirDatosEquipos(data);
+                equiposCargados = true;
             }
         })
         .catch(function() {});
 }
 
 function cargarPersonal() {
+    if (personalCargado) return Promise.resolve();
     return fetch(APPS_SCRIPT_URL + "?accion=personal")
         .then(function(r) { return r.json(); })
         .then(function(data) {
@@ -88,6 +93,7 @@ function cargarPersonal() {
                         EMPLEADOS[p.cedula] = p.nombre;
                     }
                 });
+                personalCargado = true;
             }
         })
         .catch(function(err) {
@@ -915,7 +921,6 @@ let resolucionImagenes = [];
 function postJSON(body) {
     return fetch(APPS_SCRIPT_URL, {
         method: "POST",
-        mode: "no-cors",
         body: JSON.stringify(body)
     }).then(function (r) {
         return r.text().catch(function () { return ""; });
