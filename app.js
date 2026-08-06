@@ -893,7 +893,7 @@ const EQUIPO_RUTINA = {
 
 };
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyXeT3EqWyyUcAs7ZeXUBYUrs2wR-Ko2hBjOGLDgzMQVScYvRn8g6nwkeQrmC8WeoxTaQ/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwCzU5RICxMrmMA27L-IVR8muAp0Wlvke7Hh2WeyMZWjCcGwr7LJr_etdVf3gvBftQCug/exec";
 
 let rutinaActual = [];
 let nombreRutinaActual = "";
