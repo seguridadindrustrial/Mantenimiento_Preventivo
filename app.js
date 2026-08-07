@@ -153,6 +153,15 @@ const ZONA_EQUIPOS = {
             "Fogon bajo # 2",
             "Fogon bajo # 3",
             "Lavavajillas 1"
+        ],
+        "Taller (tareas)": [
+            "Microondas # 3",
+            "Tanques de agua (8000lts)",
+            "Enfriador de Botellon # 3",
+            "Fogon bajo # 1",
+            "Fogon bajo # 2",
+            "Fogon bajo # 3",
+            "Lavavajillas 1"
         ]
     },
     "RUICES": {
