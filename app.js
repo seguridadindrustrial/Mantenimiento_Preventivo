@@ -75,7 +75,7 @@ function buscarPersonalPorCedula(cedula) {
 
 function getAveriaZonas(sede) {
     if (sede === "EVENTO") return [];
-    var zonas = (SEDE_ZONAS[sede] || []).filter(function(z) { return z !== "Taller"; });
+    var zonas = (SEDE_ZONAS[sede] || []).filter(function(z) { return z !== "Taller" && z !== "Taller (tareas)"; });
     if (zonas.indexOf("Exterior") === -1) zonas.push("Exterior");
     return zonas;
 }
@@ -1248,7 +1248,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const eqGroup = document.getElementById("equipoGroup");
         const eqExteriorGroup = document.getElementById("equipoExteriorGroup");
 
-        if (zona === "Taller") {
+        if (zona === "Taller" || zona === "Taller (tareas)") {
             eqExteriorGroup.style.display = "none";
             eqGroup.style.display = "none";
             document.getElementById("mantenimientoGroup").style.display = "none";
