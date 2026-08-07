@@ -75,7 +75,7 @@ function buscarPersonalPorCedula(cedula) {
 
 function getAveriaZonas(sede) {
     if (sede === "EVENTO") return [];
-    var zonas = (SEDE_ZONAS[sede] || []).filter(function(z) { return z !== "Taller" && z !== "Taller (tareas)"; });
+    var zonas = (SEDE_ZONAS[sede] || []).filter(function(z) { return z !== "Taller"; });
     if (zonas.indexOf("Exterior") === -1) zonas.push("Exterior");
     return zonas;
 }
@@ -146,15 +146,6 @@ const ZONA_EQUIPOS = {
             "Lavavajillas 1"
         ],
         "TALLER": [
-            "Microondas # 3",
-            "Tanques de agua (8000lts)",
-            "Enfriador de Botellon # 3",
-            "Fogon bajo # 1",
-            "Fogon bajo # 2",
-            "Fogon bajo # 3",
-            "Lavavajillas 1"
-        ],
-        "Taller (tareas)": [
             "Microondas # 3",
             "Tanques de agua (8000lts)",
             "Enfriador de Botellon # 3",
@@ -1248,7 +1239,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const eqGroup = document.getElementById("equipoGroup");
         const eqExteriorGroup = document.getElementById("equipoExteriorGroup");
 
-        if (zona === "Taller" || zona === "Taller (tareas)") {
+        if (zona === "Taller") {
             eqExteriorGroup.style.display = "none";
             eqGroup.style.display = "none";
             document.getElementById("mantenimientoGroup").style.display = "none";
