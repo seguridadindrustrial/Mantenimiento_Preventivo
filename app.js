@@ -57,7 +57,7 @@ function inicializarDatosEquipos() {
     SEDE_ZONAS = {};
     for (const sede in sedeZonasMap) {
         const zonasArr = sedeZonasMap[sede].slice().sort();
-        if (sede !== "EVENTO" && sede !== "DEPOSITO" && zonasArr.indexOf("Exterior") === -1) zonasArr.push("Exterior");
+        if (sede !== "EVENTO" && zonasArr.indexOf("Exterior") === -1) zonasArr.push("Exterior");
         if (sede === "ALTAMIRA" && zonasArr.indexOf("Otros") === -1) zonasArr.push("Otros");
         SEDE_ZONAS[sede] = zonasArr;
     }
@@ -153,14 +153,6 @@ const ZONA_EQUIPOS = {
             "Microondas # 3",
             "Tanques de agua (8000lts)",
             "Enfriador de Botellon # 3",
-            "Fogon bajo # 1",
-            "Fogon bajo # 2",
-            "Fogon bajo # 3",
-            "Lavavajillas 1"
-        ],
-        "exterior": [
-            "Pintura Externa",
-            "Pintura interna",
             "Fogon bajo # 1",
             "Fogon bajo # 2",
             "Fogon bajo # 3",
