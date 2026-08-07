@@ -4,19 +4,19 @@ let SEDES_CHECKIN = [];
 let SEDE_ZONAS = {};
 
 const datosPersonal = [
-    { nombre: "CAROLINA", cedula: "001", tipo: "Tecnico", whatsapp: "584141234567", correo: "blancocarolina155@gmail.com" },
-    { nombre: "ALBERTO", cedula: "180236394", tipo: "Tecnico", whatsapp: "584121111111", correo: "alberto@test.com" },
-    { nombre: "ANGEL", cedula: "143977568", tipo: "Tecnico", whatsapp: "584122222222", correo: "angel@test.com" },
-    { nombre: "AQUILES", cedula: "98636442", tipo: "Tecnico", whatsapp: "584123456789", correo: "aquiles@test.com" },
-    { nombre: "ALEXIS", cedula: "79927276", tipo: "Tecnico", whatsapp: "584123456780", correo: "alexis@test.com" },
-    { nombre: "ENRIQUE", cedula: "196849519", tipo: "Tecnico", whatsapp: "584123456781", correo: "enrique@test.com" },
-    { nombre: "RAFAEL", cedula: "65160601", tipo: "Tecnico", whatsapp: "584123456782", correo: "rafael@test.com" },
-    { nombre: "SANDRY", cedula: "149708163", tipo: "Tecnico", whatsapp: "584123456783", correo: "sandry@test.com" },
-    { nombre: "EMPLEADO 1", cedula: "100", tipo: "Empleado", whatsapp: "584123333333", correo: "empleado1@test.com" },
-    { nombre: "EMPLEADO 2", cedula: "101", tipo: "Empleado", whatsapp: "584124444444", correo: "empleado2@test.com" },
-    { nombre: "EMPLEADO 3", cedula: "102", tipo: "Empleado", whatsapp: "584125555555", correo: "empleado3@test.com" },
-    { nombre: "EMPLEADO 4", cedula: "103", tipo: "Empleado", whatsapp: "584126666666", correo: "empleado4@test.com" },
-    { nombre: "EMPLEADO 5", cedula: "104", tipo: "Empleado", whatsapp: "584127777777", correo: "empleado5@test.com" }
+    { nombre: "CAROLINA", cedula: "001", tipo: "Tecnico", whatsapp: "584141234567", correo: "blancocarolina155@gmail.com", jefe: "" },
+    { nombre: "ALBERTO", cedula: "180236394", tipo: "Tecnico", whatsapp: "584121111111", correo: "alberto@test.com", jefe: "" },
+    { nombre: "ANGEL", cedula: "143977568", tipo: "Tecnico", whatsapp: "584122222222", correo: "angel@test.com", jefe: "" },
+    { nombre: "AQUILES", cedula: "98636442", tipo: "Tecnico", whatsapp: "584123456789", correo: "aquiles@test.com", jefe: "" },
+    { nombre: "ALEXIS", cedula: "79927276", tipo: "Tecnico", whatsapp: "584123456780", correo: "alexis@test.com", jefe: "" },
+    { nombre: "ENRIQUE", cedula: "196849519", tipo: "Tecnico", whatsapp: "584123456781", correo: "enrique@test.com", jefe: "" },
+    { nombre: "RAFAEL", cedula: "65160601", tipo: "Tecnico", whatsapp: "584123456782", correo: "rafael@test.com", jefe: "" },
+    { nombre: "SANDRY", cedula: "149708163", tipo: "Tecnico", whatsapp: "584123456783", correo: "sandry@test.com", jefe: "" },
+    { nombre: "EMPLEADO 1", cedula: "100", tipo: "Empleado", whatsapp: "584123333333", correo: "empleado1@test.com", jefe: "blancocarolina155@gmail.com" },
+    { nombre: "EMPLEADO 2", cedula: "101", tipo: "Empleado", whatsapp: "584124444444", correo: "empleado2@test.com", jefe: "blancocarolina155@gmail.com" },
+    { nombre: "EMPLEADO 3", cedula: "102", tipo: "Empleado", whatsapp: "584125555555", correo: "empleado3@test.com", jefe: "blancocarolina155@gmail.com" },
+    { nombre: "EMPLEADO 4", cedula: "103", tipo: "Empleado", whatsapp: "584126666666", correo: "empleado4@test.com", jefe: "blancocarolina155@gmail.com" },
+    { nombre: "EMPLEADO 5", cedula: "104", tipo: "Empleado", whatsapp: "584127777777", correo: "empleado5@test.com", jefe: "blancocarolina155@gmail.com" }
 ];
 
 const TECNICOS = {
@@ -76,7 +76,7 @@ function buscarPersonalPorCedula(cedula) {
 function getAveriaZonas(sede) {
     if (sede === "EVENTO") return [];
     var zonas = (SEDE_ZONAS[sede] || []).filter(function(z) { return z !== "Taller"; });
-    if (sede !== "EVENTO" && zonas.indexOf("Exterior") === -1) zonas.push("Exterior");
+    if (zonas.indexOf("Exterior") === -1) zonas.push("Exterior");
     return zonas;
 }
 
@@ -243,6 +243,32 @@ const ZONA_EQUIPOS = {
             "Motor extractor 12000 CFM ",
             "Motor extractor 21000 CFM ",
             "Tableros", 
+        ]
+    },
+    "ALTAMIRA": {
+        "Exterior": [
+            "Pintura Externa",
+            "Limpieza de canaletas",
+            "Limpieza de Tanques",
+            "Limpieza de Tanquilla",
+            "Extintor 1",
+            "Extintor 2",
+            "Alfombra Piso",
+            "Tableros",
+        ],
+        "Otros": [
+            "A/A 12000 BTU Gerencia",
+            "A/A 12000 BTU Lobby",
+            "A/A 12000 Btu Sala de Reuniones",
+            "A/A 12000 BTU Ventas",
+            "A/A Capicua 18000btu",
+            "Enfriador de Botellon",
+            "Extractores",
+            "Fumigacion",
+            "Nevera exhibidora",
+            "Revisio Microonda 1",
+            "Revisio Microonda 2",
+            "Tableros Electricos",
         ]
     }
 };
@@ -434,10 +460,10 @@ const MANTENIMIENTOS = [
 
 const RUTINA_PREVENTIVO = {
     "Rutina Horno A Gas": [
-        { label: "Verificar Entrada de Gas (Regulador y Manguera )", sub: { label: "¿Qué se realizó?", type: "text" } },
+        "Verificar Entrada de Gas (Regulador y Manguera )", 
         "Lubricar  Perilla Manual de Gas",
-        { label: "Lubricar Puertas", sub: { label: "¿Se aplicó grasa?", type: "toggle" } },
-        { label: "Ajustar Estructura General", sub: { label: "¿Cuántos tornillos se ajustaron?", type: "number", min: 0, max: 20 } }
+        "Lubricar Puertas", 
+        "Ajustar Estructura General",
     ],
     "Rutina Horno Electrico": [
         "Verificar Tomas Electricas",
@@ -1493,21 +1519,6 @@ function populateSelect(id, items, agregarOtro) {
         optionOtro.value = "__OTRO__";
         optionOtro.textContent = "Otro (escribir nombre)";
         select.appendChild(optionOtro);
-    }
-}
-
-function refrescarEquipos() {
-    var sedesCheckin = document.getElementById("sedes");
-    var sedesAveria = document.getElementById("aSedes");
-    if (sedesCheckin && sedesCheckin.offsetParent !== null) {
-        populateSelect("sedes", SEDES_CHECKIN);
-        sedesCheckin.value = "";
-        document.getElementById("equipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
-    }
-    if (sedesAveria && sedesAveria.offsetParent !== null) {
-        populateSelect("aSedes", SEDES);
-        sedesAveria.value = "";
-        document.getElementById("aEquipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
     }
 }
 

@@ -220,6 +220,43 @@ textarea:focus {
     background: #63bb60;
 }
 
+#loginSection {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 30px;
+}
+
+#loginSection label {
+    font-size: 1.1rem;
+}
+
+#loginSection input[type="text"] {
+    padding: 14px 18px;
+    font-size: 1.15rem;
+    border-radius: 10px;
+}
+
+#loginSection .btn-primary {
+    padding: 16px;
+    font-size: 1.2rem;
+    border-radius: 10px;
+}
+
+@media (min-width: 768px) {
+    #loginSection {
+        max-width: 450px;
+        padding: 40px;
+    }
+    #loginSection input[type="text"] {
+        padding: 16px 20px;
+        font-size: 1.25rem;
+    }
+    #loginSection .btn-primary {
+        padding: 18px;
+        font-size: 1.3rem;
+    }
+}
+
 .btn-secondary {
     flex: 1;
     padding: 12px;
