@@ -3,39 +3,52 @@ let SEDES = [];
 let SEDES_CHECKIN = [];
 let SEDE_ZONAS = {};
 
-let datosEquiposRaw = [];
-let datosPersonal = [];
-let TECNICOS = {};
-let EMPLEADOS = {};
-let personalCargado = false;
+const datosPersonal = [
+    { nombre: "CAROLINA", cedula: "001", tipo: "Tecnico", whatsapp: "584141234567", correo: "blancocarolina155@gmail.com" },
+    { nombre: "ALBERTO", cedula: "180236394", tipo: "Tecnico", whatsapp: "584121111111", correo: "alberto@test.com" },
+    { nombre: "ANGEL", cedula: "143977568", tipo: "Tecnico", whatsapp: "584122222222", correo: "angel@test.com" },
+    { nombre: "AQUILES", cedula: "98636442", tipo: "Tecnico", whatsapp: "584123456789", correo: "aquiles@test.com" },
+    { nombre: "ALEXIS", cedula: "79927276", tipo: "Tecnico", whatsapp: "584123456780", correo: "alexis@test.com" },
+    { nombre: "ENRIQUE", cedula: "196849519", tipo: "Tecnico", whatsapp: "584123456781", correo: "enrique@test.com" },
+    { nombre: "RAFAEL", cedula: "65160601", tipo: "Tecnico", whatsapp: "584123456782", correo: "rafael@test.com" },
+    { nombre: "SANDRY", cedula: "149708163", tipo: "Tecnico", whatsapp: "584123456783", correo: "sandry@test.com" },
+    { nombre: "EMPLEADO 1", cedula: "100", tipo: "Empleado", whatsapp: "584123333333", correo: "empleado1@test.com" },
+    { nombre: "EMPLEADO 2", cedula: "101", tipo: "Empleado", whatsapp: "584124444444", correo: "empleado2@test.com" },
+    { nombre: "EMPLEADO 3", cedula: "102", tipo: "Empleado", whatsapp: "584125555555", correo: "empleado3@test.com" },
+    { nombre: "EMPLEADO 4", cedula: "103", tipo: "Empleado", whatsapp: "584126666666", correo: "empleado4@test.com" },
+    { nombre: "EMPLEADO 5", cedula: "104", tipo: "Empleado", whatsapp: "584127777777", correo: "empleado5@test.com" }
+];
 
-function construirDatosEquipos(datos) {
-    datosEquiposRaw = datos;
+const TECNICOS = {
+    "001": "CAROLINA",
+    "180236394": "ALBERTO",
+    "143977568": "ANGEL",
+    "98636442": "AQUILES",
+    "79927276": "ALEXIS",
+    "196849519": "ENRIQUE",
+    "65160601": "RAFAEL",
+    "149708163": "SANDRY"
+};
+
+const EMPLEADOS = {
+    "100": "EMPLEADO 1",
+    "101": "EMPLEADO 2",
+    "102": "EMPLEADO 3",
+    "103": "EMPLEADO 4",
+    "104": "EMPLEADO 5"
+};
+
+function inicializarDatosEquipos() {
     const sedesSet = new Set();
     const sedeZonasMap = {};
-    const zonaEquiposMap = {};
-    const sedeEquiposMap = {};
 
-    datos.forEach(function(eq) {
-        const sede = eq.sede;
-        const zona = eq.zona;
-        const nombre = eq.equipo;
-
-        if (!sede) return;
+    for (const sede in ZONA_EQUIPOS) {
         sedesSet.add(sede);
-
-        if (!sedeZonasMap[sede]) sedeZonasMap[sede] = new Set();
-        if (!sedeEquiposMap[sede]) sedeEquiposMap[sede] = [];
-
-        sedeEquiposMap[sede].push(nombre);
-
-        if (zona) {
-            sedeZonasMap[sede].add(zona);
-            const key = sede + "||" + zona;
-            if (!zonaEquiposMap[key]) zonaEquiposMap[key] = [];
-            zonaEquiposMap[key].push(nombre);
+        if (!sedeZonasMap[sede]) sedeZonasMap[sede] = [];
+        for (const zona in ZONA_EQUIPOS[sede]) {
+            if (sedeZonasMap[sede].indexOf(zona) === -1) sedeZonasMap[sede].push(zona);
         }
-    });
+    }
 
     SEDES = Array.from(sedesSet);
     if (SEDES.indexOf("EVENTO") === -1) SEDES.push("EVENTO");
@@ -43,59 +56,12 @@ function construirDatosEquipos(datos) {
 
     SEDE_ZONAS = {};
     for (const sede in sedeZonasMap) {
-        const zonasArr = Array.from(sedeZonasMap[sede]);
-        zonasArr.sort();
+        const zonasArr = sedeZonasMap[sede].slice().sort();
         if (sede !== "EVENTO" && zonasArr.indexOf("Exterior") === -1) zonasArr.push("Exterior");
         if (sede === "ALTAMIRA" && zonasArr.indexOf("Otros") === -1) zonasArr.push("Otros");
         if (sede === "DEPOSITO" && zonasArr.indexOf("Taller") === -1) zonasArr.push("Taller");
         SEDE_ZONAS[sede] = zonasArr;
     }
-
-    ZONA_EQUIPOS = {};
-    for (const sede in sedeZonasMap) {
-        ZONA_EQUIPOS[sede] = {};
-        sedeZonasMap[sede].forEach(function(zona) {
-            const key = sede + "||" + zona;
-            ZONA_EQUIPOS[sede][zona] = zonaEquiposMap[key] || [];
-        });
-    }
-
-    SEDE_EQUIPOS = sedeEquiposMap;
-}
-
-function cargarEquipos() {
-    return fetch(APPS_SCRIPT_URL + "?accion=equipos")
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            if (Array.isArray(data)) {
-                construirDatosEquipos(data);
-            }
-        })
-        .catch(function() {});
-}
-
-function cargarPersonal() {
-    if (personalCargado) return Promise.resolve();
-    return fetch(APPS_SCRIPT_URL + "?accion=personal")
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            if (Array.isArray(data)) {
-                datosPersonal = data;
-                TECNICOS = {};
-                EMPLEADOS = {};
-                data.forEach(function(p) {
-                    if (p.tipo === "Tecnico") {
-                        TECNICOS[p.cedula] = p.nombre;
-                    } else if (p.tipo === "Empleado") {
-                        EMPLEADOS[p.cedula] = p.nombre;
-                    }
-                });
-                personalCargado = true;
-            }
-        })
-        .catch(function(err) {
-            console.error("Error cargando personal:", err);
-        });
 }
 
 function buscarPersonalPorCedula(cedula) {
@@ -1027,9 +993,9 @@ function cargarRutinasDinamicas() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    inicializarDatosEquipos();
     cargarRutinasDinamicas();
     cargarAverias();
-    cargarPersonal();
     document.getElementById("btnLogin").addEventListener("click", loginTecnico);
     document.getElementById("codigoTecnico").addEventListener("keydown", function (e) {
         if (e.key === "Enter") loginTecnico();
@@ -1284,25 +1250,23 @@ function mostrarInterfazAsignar(numeroAv) {
 
     window._avAsignar = numeroAv;
 
-    cargarPersonal().then(function() {
-        var sel = document.getElementById("selTecnicoAsignar");
-        sel.innerHTML = '<option value="">Seleccionar tecnico...</option>';
-        var found = false;
-        datosPersonal.forEach(function(p) {
-            if (p.tipo === "Tecnico") {
-                var opt = document.createElement("option");
-                opt.value = p.nombre + "|" + p.whatsapp + "|" + p.correo;
-                opt.textContent = p.nombre;
-                sel.appendChild(opt);
-                found = true;
-            }
-        });
-        if (found) {
-            document.getElementById("btnAsignarTecnico").disabled = false;
-        } else {
-            sel.innerHTML = '<option value="">No hay tecnicos disponibles</option>';
+    var sel = document.getElementById("selTecnicoAsignar");
+    sel.innerHTML = '<option value="">Seleccionar tecnico...</option>';
+    var found = false;
+    datosPersonal.forEach(function(p) {
+        if (p.tipo === "Tecnico") {
+            var opt = document.createElement("option");
+            opt.value = p.nombre + "|" + p.whatsapp + "|" + p.correo;
+            opt.textContent = p.nombre;
+            sel.appendChild(opt);
+            found = true;
         }
     });
+    if (found) {
+        document.getElementById("btnAsignarTecnico").disabled = false;
+    } else {
+        sel.innerHTML = '<option value="">No hay tecnicos disponibles</option>';
+    }
 }
 
 function asignarTecnicoWeb() {
@@ -1421,11 +1385,9 @@ function loginTecnico() {
             document.getElementById("loginSection").style.display = "none";
             document.getElementById("checkinForm").style.display = "block";
             document.getElementById("tecnicoInfo").textContent = "Tecnico: " + tecnicoNombre;
-            cargarEquipos().then(function() {
-                populateSelect("sedes", SEDES_CHECKIN);
-                populateSelect("mantenimiento", MANTENIMIENTOS);
-                populateTimeSelects();
-            });
+            populateSelect("sedes", SEDES_CHECKIN);
+            populateSelect("mantenimiento", MANTENIMIENTOS);
+            populateTimeSelects();
             return;
         }
         if (personal && personal.tipo === "Tecnico" && !esMantenimiento) {
@@ -1434,10 +1396,8 @@ function loginTecnico() {
             document.getElementById("loginSection").style.display = "none";
             document.getElementById("averiaForm").style.display = "block";
             document.getElementById("empleadoInfo").textContent = "Tecnico: " + tecnicoNombre;
-            cargarEquipos().then(function() {
-                populateSelect("aSedes", SEDES);
-                populateTimeSelects("a");
-            });
+            populateSelect("aSedes", SEDES);
+            populateTimeSelects("a");
             return;
         }
         if (personal && personal.tipo === "Empleado") {
@@ -1446,10 +1406,8 @@ function loginTecnico() {
             document.getElementById("loginSection").style.display = "none";
             document.getElementById("averiaForm").style.display = "block";
             document.getElementById("empleadoInfo").textContent = "Empleado: " + empleadoNombre;
-            cargarEquipos().then(function() {
-                populateSelect("aSedes", SEDES);
-                populateTimeSelects("a");
-            });
+            populateSelect("aSedes", SEDES);
+            populateTimeSelects("a");
             return;
         }
         errorEl.textContent = "Credencial o codigo de averia no valido.";
@@ -1482,12 +1440,7 @@ function loginTecnico() {
         return;
     }
 
-    cargarPersonal().then(function() {
-        procesarLogin(null);
-    }).catch(function(err) {
-        errorEl.textContent = "Error al cargar datos: " + err;
-        errorEl.style.display = "block";
-    });
+    procesarLogin(null);
 }
 
 function populateTimeSelects(prefix) {
@@ -1544,20 +1497,18 @@ function populateSelect(id, items, agregarOtro) {
 }
 
 function refrescarEquipos() {
-    cargarEquipos().then(function() {
-        var sedesCheckin = document.getElementById("sedes");
-        var sedesAveria = document.getElementById("aSedes");
-        if (sedesCheckin && sedesCheckin.offsetParent !== null) {
-            populateSelect("sedes", SEDES_CHECKIN);
-            sedesCheckin.value = "";
-            document.getElementById("equipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
-        }
-        if (sedesAveria && sedesAveria.offsetParent !== null) {
-            populateSelect("aSedes", SEDES);
-            sedesAveria.value = "";
-            document.getElementById("aEquipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
-        }
-    });
+    var sedesCheckin = document.getElementById("sedes");
+    var sedesAveria = document.getElementById("aSedes");
+    if (sedesCheckin && sedesCheckin.offsetParent !== null) {
+        populateSelect("sedes", SEDES_CHECKIN);
+        sedesCheckin.value = "";
+        document.getElementById("equipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
+    }
+    if (sedesAveria && sedesAveria.offsetParent !== null) {
+        populateSelect("aSedes", SEDES);
+        sedesAveria.value = "";
+        document.getElementById("aEquipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
+    }
 }
 
 function obtenerHora(prefix) {
