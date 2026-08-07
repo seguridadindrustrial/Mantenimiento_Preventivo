@@ -4,7 +4,7 @@ let SEDES_CHECKIN = [];
 let SEDE_ZONAS = {};
 
 const datosPersonal = [
-    { nombre: "CAROLINA", cedula: "001", tipo: "Tecnico", whatsapp: "584141234567", correo: "blancocarolina155@gmail.com", jefe: "" },
+    { nombre: "CAROLINA", cedula: "001", tipo: "Tecnico", whatsapp: "584124756318", correo: "blancocarolina155@gmail.com", jefe: "" },
     { nombre: "ALBERTO", cedula: "180236394", tipo: "Tecnico", whatsapp: "584121111111", correo: "alberto@test.com", jefe: "" },
     { nombre: "ANGEL", cedula: "143977568", tipo: "Tecnico", whatsapp: "584122222222", correo: "angel@test.com", jefe: "" },
     { nombre: "AQUILES", cedula: "98636442", tipo: "Tecnico", whatsapp: "584123456789", correo: "aquiles@test.com", jefe: "" },
@@ -965,11 +965,8 @@ function postJSON(body) {
     return fetch(APPS_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
-        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify(body)
-    }).then(function (r) {
-        return r.text().catch(function () { return ""; });
-    });
+    }).then(function () {}).catch(function () {});
 }
 
 function cargarAverias() {
@@ -1016,7 +1013,6 @@ function guardarRutinaDinamica(equipo, pasos) {
         fetch(APPS_SCRIPT_URL, {
             method: "POST",
             mode: "no-cors",
-            headers: { "Content-Type": "text/plain" },
             body: JSON.stringify({ tipo: "rutina", equipo: equipo, pasos: pasos, creadoPor: creadoPor })
         }).catch(() => {});
     } catch (err) {}
@@ -1385,23 +1381,15 @@ function asignarTecnicoWeb() {
     fetch(APPS_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
-        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify({ tipo: "asignar_averia", numero: numeroAv, tecnicoNombre: p[0], tecnicoWhatsapp: p[1], tecnicoCorreo: p[2], correoReportero: correoReportero })
-    }).then(function(r) { return r.text(); }).then(function(txt) {
-        var result = {};
-        try { result = JSON.parse(txt); } catch(e) {}
-        if (result.status === "ok") {
-            msg.innerHTML = '<div style="color:#2e7d32;font-weight:600;">Tecnico asignado correctamente</div>';
-            if (result.urlWhatsApp) {
-                waDiv.style.display = "block";
-                waDiv.innerHTML = '<a href="' + result.urlWhatsApp + '" target="_blank" style="display:inline-block;background:#25d366;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;width:100%;text-align:center;">Abrir WhatsApp y notificar</a>';
-            }
-        } else {
-            msg.innerHTML = '<div style="color:#d32f2f;font-weight:600;">Error al asignar</div>';
-            btn.disabled = false;
-            btn.textContent = "Asignar y Notificar";
-        }
-    }).catch(function(err) {
+    }).then(function() {
+        msg.innerHTML = '<div style="color:#2e7d32;font-weight:600;">Tecnico asignado correctamente</div>';
+        var waUrl = "https://wa.me/" + p[1].replace(/[^0-9]/g, "") + "?text=" + encodeURIComponent("Hola, se te ha asignado la averia " + numeroAv);
+        waDiv.style.display = "block";
+        waDiv.innerHTML = '<a href="' + waUrl + '" target="_blank" style="display:inline-block;background:#25d366;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;width:100%;text-align:center;">Abrir WhatsApp y notificar</a>';
+        btn.disabled = false;
+        btn.textContent = "Asignar y Notificar";
+    }).catch(function() {
         msg.innerHTML = '<div style="color:#d32f2f;font-weight:600;">Error de conexion</div>';
         btn.disabled = false;
         btn.textContent = "Asignar y Notificar";
@@ -1522,19 +1510,9 @@ function loginTecnico() {
                 fetch(APPS_SCRIPT_URL, {
                     method: "POST",
                     mode: "no-cors",
-                    headers: { "Content-Type": "text/plain" },
                     body: JSON.stringify({ tipo: "obtener_asignacion", numero: codigo.toUpperCase() })
-                }).then(function(r) { return r.text(); }).then(function(txt) {
-                    try {
-                        var asignacion = JSON.parse(txt);
-                        if (asignacion && asignacion.asignado) {
-                            av.asignado = asignacion.asignado;
-                        }
-                    } catch(e) {}
-                    procesarLogin(av);
-                }).catch(function() {
-                    procesarLogin(av);
-                });
+                }).catch(function() {});
+                procesarLogin(av);
             } else {
                 procesarLogin(av);
             }
@@ -2320,7 +2298,6 @@ function enviarFormulario(e) {
     fetch(APPS_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
-        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify(registro)
     })
     .then(() => {
@@ -2374,7 +2351,6 @@ function enviarTaller(sedes, fecha, hora, zona, mantenimiento, descripcion) {
         fetch(APPS_SCRIPT_URL, {
             method: "POST",
             mode: "no-cors",
-            headers: { "Content-Type": "text/plain" },
             body: JSON.stringify(registro)
         }).then(() => {}).catch(() => {});
     }
