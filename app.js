@@ -57,9 +57,8 @@ function inicializarDatosEquipos() {
     SEDE_ZONAS = {};
     for (const sede in sedeZonasMap) {
         const zonasArr = sedeZonasMap[sede].slice().sort();
-        if (sede !== "EVENTO" && zonasArr.indexOf("Exterior") === -1) zonasArr.push("Exterior");
+        if (sede !== "EVENTO" && sede !== "DEPOSITO" && zonasArr.indexOf("Exterior") === -1) zonasArr.push("Exterior");
         if (sede === "ALTAMIRA" && zonasArr.indexOf("Otros") === -1) zonasArr.push("Otros");
-        if (sede === "DEPOSITO" && zonasArr.indexOf("Taller (Tareas)") === -1) zonasArr.push("Taller (Tareas)");
         SEDE_ZONAS[sede] = zonasArr;
     }
 }
@@ -125,10 +124,9 @@ const ZONA_EQUIPOS = {
             "Lavadora Frigidaire",
             "Fogon bajo # 1",
             "Fogon bajo # 2",
-            "Fogon bajo # 3",
-            "Lavavajillas 1"
+            "Fogon bajo # 3"
         ],
-        "PISO 1": [
+        "Piso 1": [
             "A/A 12000 Btu Ventana ///Dormitorio",
             "A/A 24000 Btu Split 77 Oficina Pa",
             "A/A 8000 BTU Ventana // dormitorio",
@@ -145,10 +143,30 @@ const ZONA_EQUIPOS = {
             "Fogon bajo # 3",
             "Lavavajillas 1"
         ],
-        "Taller (Tareas)": [
+        "Nuevo espacio": [
+            "Fogon bajo # 1",
+            "Fogon bajo # 2",
+            "Fogon bajo # 3",
+            "Lavavajillas 1"
+        ],
+        "TALLER": [
             "Microondas # 3",
             "Tanques de agua (8000lts)",
             "Enfriador de Botellon # 3",
+            "Fogon bajo # 1",
+            "Fogon bajo # 2",
+            "Fogon bajo # 3",
+            "Lavavajillas 1"
+        ],
+        "exterior": [
+            "Pintura Externa",
+            "Pintura interna",
+            "Fogon bajo # 1",
+            "Fogon bajo # 2",
+            "Fogon bajo # 3",
+            "Lavavajillas 1"
+        ],
+        "Taller (Tareas)": [
             "Fogon bajo # 1",
             "Fogon bajo # 2",
             "Fogon bajo # 3",
