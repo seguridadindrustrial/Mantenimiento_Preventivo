@@ -59,7 +59,7 @@ function inicializarDatosEquipos() {
         const zonasArr = sedeZonasMap[sede].slice().sort();
         if (sede !== "EVENTO" && zonasArr.indexOf("Exterior") === -1) zonasArr.push("Exterior");
         if (sede === "ALTAMIRA" && zonasArr.indexOf("Otros") === -1) zonasArr.push("Otros");
-        if (sede === "DEPOSITO" && zonasArr.indexOf("Taller") === -1) zonasArr.push("Taller");
+        if (sede === "DEPOSITO" && zonasArr.indexOf("Taller (Tareas)") === -1) zonasArr.push("Taller (Tareas)");
         SEDE_ZONAS[sede] = zonasArr;
     }
 }
@@ -75,7 +75,7 @@ function buscarPersonalPorCedula(cedula) {
 
 function getAveriaZonas(sede) {
     if (sede === "EVENTO") return [];
-    var zonas = (SEDE_ZONAS[sede] || []).filter(function(z) { return z !== "Taller"; });
+    var zonas = (SEDE_ZONAS[sede] || []).filter(function(z) { return z !== "Taller (Tareas)"; });
     if (zonas.indexOf("Exterior") === -1) zonas.push("Exterior");
     return zonas;
 }
@@ -145,7 +145,7 @@ const ZONA_EQUIPOS = {
             "Fogon bajo # 3",
             "Lavavajillas 1"
         ],
-        "TALLER": [
+        "Taller (Tareas)": [
             "Microondas # 3",
             "Tanques de agua (8000lts)",
             "Enfriador de Botellon # 3",
@@ -1239,7 +1239,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const eqGroup = document.getElementById("equipoGroup");
         const eqExteriorGroup = document.getElementById("equipoExteriorGroup");
 
-        if (zona === "Taller") {
+        if (zona === "Taller (Tareas)") {
             eqExteriorGroup.style.display = "none";
             eqGroup.style.display = "none";
             document.getElementById("mantenimientoGroup").style.display = "none";
@@ -1400,7 +1400,7 @@ function irAlPaso2() {
     const equipoSelect = document.getElementById("equipo").value;
     const esOtro = equipoSelect === "__OTRO__";
     const equipo = esTaller
-        ? "Taller"
+        ? "Taller (Tareas)"
         : esExterior
         ? document.getElementById("equipoExterior").value.trim()
         : esOtro
@@ -2177,7 +2177,7 @@ function enviarFormulario(e) {
     const equipoSelect = document.getElementById("equipo").value;
     const esOtro = equipoSelect === "__OTRO__";
     const equipo = esTaller
-        ? "Taller"
+        ? "Taller (Tareas)"
         : esExterior
         ? document.getElementById("equipoExterior").value.trim()
         : esOtro
@@ -2340,7 +2340,7 @@ function enviarTaller(sedes, fecha, hora, zona, mantenimiento, descripcion) {
             sedes: sedes,
             zona: zona,
             tecnico: tecnicoNombre,
-            equipo: "Taller",
+            equipo: "Taller (Tareas)",
             mantenimiento: mantenimiento,
             rutina: "Actividades de Semaneros - " + taskLabel,
             task: taskLabel,
