@@ -965,6 +965,7 @@ function postJSON(body) {
     return fetch(APPS_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify(body)
     }).then(function (r) {
         return r.text().catch(function () { return ""; });
@@ -1015,6 +1016,7 @@ function guardarRutinaDinamica(equipo, pasos) {
         fetch(APPS_SCRIPT_URL, {
             method: "POST",
             mode: "no-cors",
+            headers: { "Content-Type": "text/plain" },
             body: JSON.stringify({ tipo: "rutina", equipo: equipo, pasos: pasos, creadoPor: creadoPor })
         }).catch(() => {});
     } catch (err) {}
@@ -1383,6 +1385,7 @@ function asignarTecnicoWeb() {
     fetch(APPS_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify({ tipo: "asignar_averia", numero: numeroAv, tecnicoNombre: p[0], tecnicoWhatsapp: p[1], tecnicoCorreo: p[2], correoReportero: correoReportero })
     }).then(function(r) { return r.text(); }).then(function(txt) {
         var result = {};
@@ -1519,6 +1522,7 @@ function loginTecnico() {
                 fetch(APPS_SCRIPT_URL, {
                     method: "POST",
                     mode: "no-cors",
+                    headers: { "Content-Type": "text/plain" },
                     body: JSON.stringify({ tipo: "obtener_asignacion", numero: codigo.toUpperCase() })
                 }).then(function(r) { return r.text(); }).then(function(txt) {
                     try {
@@ -2316,6 +2320,7 @@ function enviarFormulario(e) {
     fetch(APPS_SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
+        headers: { "Content-Type": "text/plain" },
         body: JSON.stringify(registro)
     })
     .then(() => {
@@ -2369,6 +2374,7 @@ function enviarTaller(sedes, fecha, hora, zona, mantenimiento, descripcion) {
         fetch(APPS_SCRIPT_URL, {
             method: "POST",
             mode: "no-cors",
+            headers: { "Content-Type": "text/plain" },
             body: JSON.stringify(registro)
         }).then(() => {}).catch(() => {});
     }
