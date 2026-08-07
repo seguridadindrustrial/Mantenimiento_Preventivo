@@ -465,7 +465,7 @@ function procesarResolucionAveria(data) {
         data.descripcion || ""
     ]]);
 
-    var color = realizado === "Si" ? "#C6EFCE" : realizado === "Falsa averia" ? "#DDEBF7" : realizado === "No" ? "#FFC7CE" : "#FFEB9C";
+    var color = realizado === "Si" ? "#C6EFCE" : realizado === "Falsa averia" ? "#f7897a" : realizado === "No" ? "#FFC7CE" : "#FFEB9C";
     sheet.getRange(rowIndex, 1, 1, 15).setBackground(color);
 
     var correoReportero = data.correoReportero || "";
