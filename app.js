@@ -964,6 +964,7 @@ let resolucionImagenes = [];
 function postJSON(body) {
     return fetch(APPS_SCRIPT_URL, {
         method: "POST",
+        mode: "no-cors",
         body: JSON.stringify(body)
     }).then(function (r) {
         return r.text().catch(function () { return ""; });
@@ -1381,8 +1382,11 @@ function asignarTecnicoWeb() {
 
     fetch(APPS_SCRIPT_URL, {
         method: "POST",
+        mode: "no-cors",
         body: JSON.stringify({ tipo: "asignar_averia", numero: numeroAv, tecnicoNombre: p[0], tecnicoWhatsapp: p[1], tecnicoCorreo: p[2], correoReportero: correoReportero })
-    }).then(function(r) { return r.json(); }).then(function(result) {
+    }).then(function(r) { return r.text(); }).then(function(txt) {
+        var result = {};
+        try { result = JSON.parse(txt); } catch(e) {}
         if (result.status === "ok") {
             msg.innerHTML = '<div style="color:#2e7d32;font-weight:600;">Tecnico asignado correctamente</div>';
             if (result.urlWhatsApp) {
