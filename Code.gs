@@ -331,7 +331,7 @@ function procesarAveria(data) {
         }
     }
 
-    var correoReportero = buscarCorreoPorNombre(data.empleado);
+    var correoReportero = data.correoReportero || "";
 
     var numero = generarNumeroAveria(sheet);
     sheet.appendRow([
@@ -408,7 +408,7 @@ function procesarAveria(data) {
         registrarError("averia", numero, mailError);
     }
 
-    var correoJefe = buscarJefePorNombre(data.empleado);
+    var correoJefe = data.correoJefe || "";
     if (correoJefe) {
         var htmlJefe = "<h3 style='color:#d32f2f;'>Averia " + numero + " reportada por " + (data.empleado || "") + "</h3>" +
             "<b>Reporto:</b> " + (data.empleado || "") + "<br>" +
@@ -468,7 +468,7 @@ function procesarResolucionAveria(data) {
     var color = realizado === "Si" ? "#C6EFCE" : realizado === "Falsa averia" ? "#DDEBF7" : realizado === "No" ? "#FFC7CE" : "#FFEB9C";
     sheet.getRange(rowIndex, 1, 1, 15).setBackground(color);
 
-    var correoReportero = buscarCorreoPorNombre(String(all[rowIndex - 1][5] || "").trim());
+    var correoReportero = data.correoReportero || "";
     var empleado = String(all[rowIndex - 1][5] || "");
     var equipo = String(all[rowIndex - 1][6] || "");
     var sede = String(all[rowIndex - 1][3] || "");
@@ -687,7 +687,7 @@ function asignarAveria(numero, tecnicoNombre, tecnicoWhatsapp, tecnicoCorreo) {
     sheet.getRange(rowIndex, colAsignado).setValue(tecnicoNombre);
 
     var empleadoNombre = String(all[rowIndex - 1][5] || "").trim();
-    var correoReportero = buscarCorreoPorNombre(empleadoNombre);
+    var correoReportero = data.correoReportero || "";
 
     var html = "<h3 style='color:#2e7d32;'>Averia Asignada - " + numero + "</h3>" +
         "<b>Se te ha asignado la siguiente averia:</b><br><br>" +
@@ -750,7 +750,6 @@ function obtenerAveriaAsignada(numero) {
         if (String(all[i][0]) === String(numero)) {
             var asignado = String(all[i][13] || "").trim();
             if (asignado) {
-                var correoReportero = buscarCorreoPorNombre(String(all[i][5] || "").trim());
                 return {
                     numero: String(all[i][0] || ""),
                     asignado: asignado,
@@ -758,8 +757,7 @@ function obtenerAveriaAsignada(numero) {
                     zona: String(all[i][4] || ""),
                     equipo: String(all[i][6] || ""),
                     descripcion: String(all[i][7] || ""),
-                    resuelto: averiaCerrada(String(all[i][11] || "")),
-                    correoReportero: correoReportero
+                    resuelto: averiaCerrada(String(all[i][11] || ""))
                 };
             }
         }
@@ -767,57 +765,10 @@ function obtenerAveriaAsignada(numero) {
     return null;
 }
 
-var PERSONAL_HARDARCODED = [
-    { nombre: "CAROLINA", cedula: "001", tipo: "Tecnico", whatsapp: "584141234567", correo: "blancocarolina155@gmail.com", jefe: "" },
-    { nombre: "ALBERTO", cedula: "180236394", tipo: "Tecnico", whatsapp: "584121111111", correo: "alberto@test.com", jefe: "" },
-    { nombre: "ANGEL", cedula: "143977568", tipo: "Tecnico", whatsapp: "584122222222", correo: "angel@test.com", jefe: "" },
-    { nombre: "AQUILES", cedula: "98636442", tipo: "Tecnico", whatsapp: "584123456789", correo: "aquiles@test.com", jefe: "" },
-    { nombre: "ALEXIS", cedula: "79927276", tipo: "Tecnico", whatsapp: "584123456780", correo: "alexis@test.com", jefe: "" },
-    { nombre: "ENRIQUE", cedula: "196849519", tipo: "Tecnico", whatsapp: "584123456781", correo: "enrique@test.com", jefe: "" },
-    { nombre: "RAFAEL", cedula: "65160601", tipo: "Tecnico", whatsapp: "584123456782", correo: "rafael@test.com", jefe: "" },
-    { nombre: "SANDRY", cedula: "149708163", tipo: "Tecnico", whatsapp: "584123456783", correo: "sandry@test.com", jefe: "" },
-    { nombre: "EMPLEADO 1", cedula: "100", tipo: "Empleado", whatsapp: "584123333333", correo: "empleado1@test.com", jefe: "blancocarolina155@gmail.com" },
-    { nombre: "EMPLEADO 2", cedula: "101", tipo: "Empleado", whatsapp: "584124444444", correo: "empleado2@test.com", jefe: "blancocarolina155@gmail.com" },
-    { nombre: "EMPLEADO 3", cedula: "102", tipo: "Empleado", whatsapp: "584125555555", correo: "empleado3@test.com", jefe: "blancocarolina155@gmail.com" },
-    { nombre: "EMPLEADO 4", cedula: "103", tipo: "Empleado", whatsapp: "584126666666", correo: "empleado4@test.com", jefe: "blancocarolina155@gmail.com" },
-    { nombre: "EMPLEADO 5", cedula: "104", tipo: "Empleado", whatsapp: "584127777777", correo: "empleado5@test.com", jefe: "blancocarolina155@gmail.com" }
-];
-
 function obtenerPersonal() {
     return ContentService.createTextOutput(
-        JSON.stringify(PERSONAL_HARDARCODED)
+        JSON.stringify([])
     ).setMimeType(ContentService.MimeType.JSON);
-}
-
-function buscarCorreoPorNombre(nombre) {
-    for (var i = 0; i < PERSONAL_HARDARCODED.length; i++) {
-        if (PERSONAL_HARDARCODED[i].nombre.toUpperCase() === String(nombre || "").trim().toUpperCase()) {
-            return PERSONAL_HARDARCODED[i].correo;
-        }
-    }
-    return "";
-}
-
-function buscarJefePorNombre(nombre) {
-    for (var i = 0; i < PERSONAL_HARDARCODED.length; i++) {
-        if (PERSONAL_HARDARCODED[i].nombre.toUpperCase() === String(nombre || "").trim().toUpperCase()) {
-            return PERSONAL_HARDARCODED[i].jefe;
-        }
-    }
-    return "";
-}
-
-function obtenerPersonalArray() {
-    return PERSONAL_HARDARCODED;
-}
-
-function buscarPersonalPorCedula(cedula) {
-    for (var i = 0; i < PERSONAL_HARDARCODED.length; i++) {
-        if (PERSONAL_HARDARCODED[i].cedula === String(cedula).trim()) {
-            return PERSONAL_HARDARCODED[i];
-        }
-    }
-    return null;
 }
 
 function enviarCorreoReportero(numero, correoReportero, asunto, mensaje) {

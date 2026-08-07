@@ -1311,9 +1311,23 @@ function asignarTecnicoWeb() {
     btn.disabled = true;
     btn.textContent = "Asignando...";
 
+    var correoReportero = "";
+    for (var i = 0; i < averiasDisponibles.length; i++) {
+        if (String(averiasDisponibles[i].numero) === String(numeroAv)) {
+            var nombreReportero = averiasDisponibles[i].empleado;
+            for (var j = 0; j < datosPersonal.length; j++) {
+                if (datosPersonal[j].nombre === nombreReportero) {
+                    correoReportero = datosPersonal[j].correo;
+                    break;
+                }
+            }
+            break;
+        }
+    }
+
     fetch(APPS_SCRIPT_URL, {
         method: "POST",
-        body: JSON.stringify({ tipo: "asignar_averia", numero: numeroAv, tecnicoNombre: p[0], tecnicoWhatsapp: p[1], tecnicoCorreo: p[2] })
+        body: JSON.stringify({ tipo: "asignar_averia", numero: numeroAv, tecnicoNombre: p[0], tecnicoWhatsapp: p[1], tecnicoCorreo: p[2], correoReportero: correoReportero })
     }).then(function(r) { return r.json(); }).then(function(result) {
         if (result.status === "ok") {
             msg.innerHTML = '<div style="color:#2e7d32;font-weight:600;">Tecnico asignado correctamente</div>';
@@ -2485,6 +2499,14 @@ function enviarAveria(e) {
         imagenes: averiaImagenes
     };
 
+    for (var i = 0; i < datosPersonal.length; i++) {
+        if (datosPersonal[i].nombre === empleadoNombre) {
+            registro.correoReportero = datosPersonal[i].correo;
+            registro.correoJefe = datosPersonal[i].jefe;
+            break;
+        }
+    }
+
     averiaEnviando = true;
     const btnEnviar = document.getElementById("enviarAveriaBtn");
     btnEnviar.disabled = true;
@@ -2674,6 +2696,26 @@ function enviarResolucion(e) {
         descripcion: descripcion,
         imagenes: imagenesNuevas
     };
+
+    for (var i = 0; i < datosPersonal.length; i++) {
+        if (datosPersonal[i].nombre === tecnico) {
+            registro.correoReportero = datosPersonal[i].correo;
+            break;
+        }
+    }
+
+    for (var i = 0; i < averiasDisponibles.length; i++) {
+        if (String(averiasDisponibles[i].numero) === String(numero)) {
+            var nombreReportero = averiasDisponibles[i].empleado;
+            for (var j = 0; j < datosPersonal.length; j++) {
+                if (datosPersonal[j].nombre === nombreReportero) {
+                    registro.correoReportero = datosPersonal[j].correo;
+                    break;
+                }
+            }
+            break;
+        }
+    }
 
     resolucionEnviando = true;
     const btnEnviar = document.getElementById("enviarResolucionBtn");
