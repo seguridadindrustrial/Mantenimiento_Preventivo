@@ -408,6 +408,26 @@ function procesarAveria(data) {
         registrarError("averia", numero, mailError);
     }
 
+    var correoJefe = buscarJefePorNombre(data.empleado);
+    if (correoJefe) {
+        var htmlJefe = "<h3 style='color:#d32f2f;'>Averia " + numero + " reportada por " + (data.empleado || "") + "</h3>" +
+            "<b>Reporto:</b> " + (data.empleado || "") + "<br>" +
+            "<b>Fecha:</b> " + (data.fecha || "") + "<br>" +
+            "<b>Hora:</b> " + (data.hora || "") + "<br>" +
+            "<b>Sede:</b> " + (data.sedes || "") + "<br>" +
+            "<b>Zona:</b> " + (data.zona || "") + "<br>" +
+            "<b>Equipo:</b> " + (data.equipo || "") + "<br>" +
+            "<b>Descripcion:</b> " + (data.descripcion || "");
+        try {
+            MailApp.sendEmail({
+                to: correoJefe,
+                subject: "Averia " + numero + " - " + (data.empleado || "") + " - " + (data.equipo || ""),
+                body: "Averia " + numero + "\nReporto: " + (data.empleado || "") + "\nEquipo: " + (data.equipo || ""),
+                htmlBody: htmlJefe
+            });
+        } catch (eJefe) {}
+    }
+
     return jsonAveria({ status: "ok", numero: numero, mailEnviado: mailEnviado });
 }
 
@@ -747,80 +767,54 @@ function obtenerAveriaAsignada(numero) {
     return null;
 }
 
+var PERSONAL_HARDARCODED = [
+    { nombre: "CAROLINA", cedula: "001", tipo: "Tecnico", whatsapp: "584141234567", correo: "blancocarolina155@gmail.com", jefe: "" },
+    { nombre: "ALBERTO", cedula: "180236394", tipo: "Tecnico", whatsapp: "584121111111", correo: "alberto@test.com", jefe: "" },
+    { nombre: "ANGEL", cedula: "143977568", tipo: "Tecnico", whatsapp: "584122222222", correo: "angel@test.com", jefe: "" },
+    { nombre: "AQUILES", cedula: "98636442", tipo: "Tecnico", whatsapp: "584123456789", correo: "aquiles@test.com", jefe: "" },
+    { nombre: "ALEXIS", cedula: "79927276", tipo: "Tecnico", whatsapp: "584123456780", correo: "alexis@test.com", jefe: "" },
+    { nombre: "ENRIQUE", cedula: "196849519", tipo: "Tecnico", whatsapp: "584123456781", correo: "enrique@test.com", jefe: "" },
+    { nombre: "RAFAEL", cedula: "65160601", tipo: "Tecnico", whatsapp: "584123456782", correo: "rafael@test.com", jefe: "" },
+    { nombre: "SANDRY", cedula: "149708163", tipo: "Tecnico", whatsapp: "584123456783", correo: "sandry@test.com", jefe: "" },
+    { nombre: "EMPLEADO 1", cedula: "100", tipo: "Empleado", whatsapp: "584123333333", correo: "empleado1@test.com", jefe: "blancocarolina155@gmail.com" },
+    { nombre: "EMPLEADO 2", cedula: "101", tipo: "Empleado", whatsapp: "584124444444", correo: "empleado2@test.com", jefe: "blancocarolina155@gmail.com" },
+    { nombre: "EMPLEADO 3", cedula: "102", tipo: "Empleado", whatsapp: "584125555555", correo: "empleado3@test.com", jefe: "blancocarolina155@gmail.com" },
+    { nombre: "EMPLEADO 4", cedula: "103", tipo: "Empleado", whatsapp: "584126666666", correo: "empleado4@test.com", jefe: "blancocarolina155@gmail.com" },
+    { nombre: "EMPLEADO 5", cedula: "104", tipo: "Empleado", whatsapp: "584127777777", correo: "empleado5@test.com", jefe: "blancocarolina155@gmail.com" }
+];
+
 function obtenerPersonal() {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName("personal");
-    if (!sheet) {
-        return ContentService.createTextOutput(
-            JSON.stringify([])
-        ).setMimeType(ContentService.MimeType.JSON);
-    }
-    var data = sheet.getDataRange().getValues();
-    var personal = [];
-    for (var i = 1; i < data.length; i++) {
-        var nombre = String(data[i][0] || "").trim();
-        if (!nombre) continue;
-        personal.push({
-            nombre: nombre,
-            cedula: String(data[i][1] || "").trim(),
-            tipo: String(data[i][2] || "").trim(),
-            whatsapp: String(data[i][3] || "").trim(),
-            correo: String(data[i][4] || "").trim()
-        });
-    }
     return ContentService.createTextOutput(
-        JSON.stringify(personal)
+        JSON.stringify(PERSONAL_HARDARCODED)
     ).setMimeType(ContentService.MimeType.JSON);
 }
 
 function buscarCorreoPorNombre(nombre) {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName("personal");
-    if (!sheet) return "";
-    var data = sheet.getDataRange().getValues();
-    for (var i = 1; i < data.length; i++) {
-        if (String(data[i][0] || "").trim().toUpperCase() === String(nombre || "").trim().toUpperCase()) {
-            return String(data[i][4] || "").trim();
+    for (var i = 0; i < PERSONAL_HARDARCODED.length; i++) {
+        if (PERSONAL_HARDARCODED[i].nombre.toUpperCase() === String(nombre || "").trim().toUpperCase()) {
+            return PERSONAL_HARDARCODED[i].correo;
+        }
+    }
+    return "";
+}
+
+function buscarJefePorNombre(nombre) {
+    for (var i = 0; i < PERSONAL_HARDARCODED.length; i++) {
+        if (PERSONAL_HARDARCODED[i].nombre.toUpperCase() === String(nombre || "").trim().toUpperCase()) {
+            return PERSONAL_HARDARCODED[i].jefe;
         }
     }
     return "";
 }
 
 function obtenerPersonalArray() {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName("personal");
-    if (!sheet) return [];
-    var data = sheet.getDataRange().getValues();
-    var personal = [];
-    for (var i = 1; i < data.length; i++) {
-        var nombre = String(data[i][0] || "").trim();
-        if (!nombre) continue;
-        personal.push({
-            nombre: nombre,
-            cedula: String(data[i][1] || "").trim(),
-            tipo: String(data[i][2] || "").trim(),
-            whatsapp: String(data[i][3] || "").trim(),
-            correo: String(data[i][4] || "").trim()
-        });
-    }
-    return personal;
+    return PERSONAL_HARDARCODED;
 }
 
 function buscarPersonalPorCedula(cedula) {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName("personal");
-    if (!sheet) return null;
-
-    var data = sheet.getDataRange().getValues();
-    for (var i = 1; i < data.length; i++) {
-        if (String(data[i][1] || "").trim() === String(cedula).trim()) {
-            return {
-                nombre: String(data[i][0] || "").trim(),
-                cedula: String(data[i][1] || "").trim(),
-                tipo: String(data[i][2] || "").trim(),
-                whatsapp: String(data[i][3] || "").trim(),
-                correo: String(data[i][4] || "").trim()
-            };
+    for (var i = 0; i < PERSONAL_HARDARCODED.length; i++) {
+        if (PERSONAL_HARDARCODED[i].cedula === String(cedula).trim()) {
+            return PERSONAL_HARDARCODED[i];
         }
     }
     return null;
@@ -837,38 +831,4 @@ function enviarCorreoReportero(numero, correoReportero, asunto, mensaje) {
     } catch (e) {
         registrarError("correo_reportero", numero, String(e));
     }
-}
-
-function crearUsuariosPrueba() {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName("personal");
-    if (!sheet) {
-        sheet = ss.insertSheet("personal");
-        sheet.appendRow(["Nombre", "Cedula", "Tipo", "WhatsApp", "Correo"]);
-    }
-
-    var usuarios = [
-        ["CAROLINA", "001", "Tecnico", "584141234567", "blancocarolina155@gmail.com"],
-        ["ALBERTO", "180236394", "Tecnico", "584121111111", "alberto@test.com"],
-        ["ANGEL", "143977568", "Tecnico", "584122222222", "angel@test.com"],
-        ["EMPLEADO 1", "100", "Empleado", "584123333333", "empleado1@test.com"],
-        ["EMPLEADO 2", "101", "Empleado", "584124444444", "empleado2@test.com"]
-    ];
-
-    var existentes = sheet.getDataRange().getValues();
-    var cedulasExistentes = {};
-    for (var i = 1; i < existentes.length; i++) {
-        cedulasExistentes[String(existentes[i][1])] = true;
-    }
-
-    var agregados = 0;
-    for (var j = 0; j < usuarios.length; j++) {
-        var cedula = String(usuarios[j][1]);
-        if (!cedulasExistentes[cedula]) {
-            sheet.appendRow(usuarios[j]);
-            agregados++;
-        }
-    }
-
-    return "Se agregaron " + agregados + " usuarios. Total en hoja: " + (sheet.getLastRow() - 1);
 }
