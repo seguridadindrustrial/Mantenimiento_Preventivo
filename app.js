@@ -1441,7 +1441,7 @@ function asignarTecnicoWeb() {
         body: JSON.stringify({ tipo: "asignar_averia", numero: numeroAv, tecnicoNombre: p[0], tecnicoWhatsapp: p[1], tecnicoCorreo: p[2], correoReportero: correoReportero })
     }).then(function() {
         msg.innerHTML = '<div style="color:#2e7d32;font-weight:600;">Tecnico asignado correctamente</div>';
-        var waUrl = "https://wa.me/" + p[1].replace(/[^0-9]/g, "") + "?text=" + encodeURIComponent("Hola, se te ha asignado la averia " + numeroAv);
+        var waUrl = "https://wa.me/" + p[1].replace(/[^0-9]/g, "") + "?text=" + encodeURIComponent("Hola " + p[0] + ", se te ha asignado la averia " + numeroAv);
         waDiv.style.display = "block";
         waDiv.innerHTML = '<a href="' + waUrl + '" target="_blank" style="display:inline-block;background:#25d366;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;width:100%;text-align:center;">Abrir WhatsApp y notificar</a>';
         btn.disabled = false;
