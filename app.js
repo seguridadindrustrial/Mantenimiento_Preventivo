@@ -7,7 +7,7 @@ const datosPersonal = [
     {nombre: "CAROLINA BLANCO", cedula: "31451530", tipo: "Tecnico", whatsapp: "584124756318", correo: "carolinablanco8419@gmail.com", jefe:""},
     { nombre: "JHONNY BARAJAS", cedula: "9467216", tipo: "Empleado", whatsapp: "584127548281", correo: "", jefe: "kliviat..muñoz@caracascatering.com" },
     { nombre: "MANUEL ACOSTA", cedula: "15613616", tipo: "Empleado", whatsapp: "584121476287", correo: "", jefe: "kliviat..muñoz@caracascatering.com" },
-    { nombre: "ALBERTO BLANCO", cedula: "18023639", tipo: "Empleado", whatsapp: "584129477827", correo: "", jefe: "" },
+    { nombre: "ALBERTO BLANCO", cedula: "18023639", tipo: "Tecnico", whatsapp: "584129477827", correo: "", jefe: "" },
     { nombre: "ELVIS BLANCO", cedula: "18329733", tipo: "Empleado", whatsapp: "584149057146", correo: "", jefe: "kliviat..muñoz@caracascatering.com" },
     { nombre: "CARMEN CAMACHO", cedula: "13251004", tipo: "Empleado", whatsapp: "584123848123", correo: "", jefe: "kliviat..muñoz@caracascatering.com" },
     { nombre: "DAYANA MARTÍNEZ", cedula: "14326240", tipo: "Empleado", whatsapp: "584242552271", correo: "", jefe: "kliviat..muñoz@caracascatering.com" },
@@ -54,14 +54,14 @@ const TECNICOS = {
     "13472978": "LUCAS SUAZO",
     "6516060": "RAFAEL LEAL",
     "19684951": "ENRIQUE MARIN",
-    "31451530": "CAROLINA BLANCO"
+    "31451530": "CAROLINA BLANCO",
+    "18023638": "ALBERTO BLANCO",
 };
 
 const EMPLEADOS = {
-    "31451530": "CAROLINA BLANCO",
+    
     "9467216": "JHONNY BARAJAS",
     "15613616": "MANUEL ACOSTA",
-    "18023638": "ALBERTO BLANCO",
     "18329733": "ELVIS BLANCO",
     "13251004": "CARMEN CAMACHO",
     "14326240": "DAYANA MARTÍNEZ",
@@ -86,13 +86,12 @@ const EMPLEADOS = {
     "27535304": "BENYI CADET",
     "26951720": "EFREN SANCHEZ",
     "31604422": "CASTILLO LUIYER",
-    "19684951": "ENRIQUE MARIN",
     "19967455": "ANDRES BALANTA",
     "15574381": "JOHANNA ADMS",
     "13128145": "LUCY MÁRQUEZ",
     "15421066": "KLYVIAT MUÑOZ",
     "23811822": "MERCY CHIRINOS",
-    "6516060": "RAFAEL LEAL"
+    
 };
 
 function inicializarDatosEquipos() {
