@@ -4,9 +4,10 @@ let SEDES_CHECKIN = [];
 let SEDE_ZONAS = {};
 
 const datosPersonal = [
+    {nombre: "CAROLINA BLANCO", cedula: "31451530", tipo: "Tecnico", whatsapp: "584124756318", correo: "carolinablanco8419@gmail.com", jefe:""},
     { nombre: "JHONNY BARAJAS", cedula: "9467216", tipo: "Empleado", whatsapp: "584127548281", correo: "", jefe: "kliviat..muñoz@caracascatering.com" },
     { nombre: "MANUEL ACOSTA", cedula: "15613616", tipo: "Empleado", whatsapp: "584121476287", correo: "", jefe: "kliviat..muñoz@caracascatering.com" },
-    { nombre: "ALBERTO BLANCO", cedula: "18023638", tipo: "Empleado", whatsapp: "584129477827", correo: "", jefe: "" },
+    { nombre: "ALBERTO BLANCO", cedula: "18023639", tipo: "Empleado", whatsapp: "584129477827", correo: "", jefe: "" },
     { nombre: "ELVIS BLANCO", cedula: "18329733", tipo: "Empleado", whatsapp: "584149057146", correo: "", jefe: "kliviat..muñoz@caracascatering.com" },
     { nombre: "CARMEN CAMACHO", cedula: "13251004", tipo: "Empleado", whatsapp: "584123848123", correo: "", jefe: "kliviat..muñoz@caracascatering.com" },
     { nombre: "DAYANA MARTÍNEZ", cedula: "14326240", tipo: "Empleado", whatsapp: "584242552271", correo: "", jefe: "kliviat..muñoz@caracascatering.com" },
@@ -30,8 +31,8 @@ const datosPersonal = [
     { nombre: "ODEMARIS GUERRERO", cedula: "11813641", tipo: "Empleado", whatsapp: "584123029842", correo: "", jefe: "kliviat..muñoz@caracascatering.com" },
     { nombre: "BENYI CADET", cedula: "27535304", tipo: "Empleado", whatsapp: "584242235642", correo: "", jefe: "" },
     { nombre: "EFREN SANCHEZ", cedula: "26951720", tipo: "Empleado", whatsapp: "584124172416", correo: "", jefe: "" },
-    { nombre: "CASTILLO AUDIVET LUIYER", cedula: "31604422", tipo: "Empleado", whatsapp: "584129051329", correo: "", jefe: "" },
-    { nombre: "ENRIQUE JOSE MARIN", cedula: "19684951", tipo: "Empleado", whatsapp: "584125523024", correo: "", jefe: "" },
+    { nombre: "CASTILLO LUIYER", cedula: "31604422", tipo: "Empleado", whatsapp: "584129051329", correo: "", jefe: "" },
+    { nombre: "ENRIQUE MARIN", cedula: "19684951", tipo: "Tecnico", whatsapp: "584125523024", correo: "", jefe: "" },
     { nombre: "ANDRES BALANTA", cedula: "19967455", tipo: "Empleado", whatsapp: "584142778546", correo: "", jefe: "" },
     { nombre: "JOHANNA ADMS", cedula: "15574381", tipo: "Empleado", whatsapp: "584121149621", correo: "", jefe: "kliviat..muñoz@caracascatering.com" },
     { nombre: "LUCY MÁRQUEZ", cedula: "13128145", tipo: "Empleado", whatsapp: "584126878576", correo: "", jefe: "" },
@@ -42,7 +43,7 @@ const datosPersonal = [
     { nombre: "SANDRY FUENMAYOR", cedula: "14970816", tipo: "Tecnico", whatsapp: "584122571365", correo: "", jefe: "" },
     { nombre: "LEONEL LÓPEZ", cedula: "9863644", tipo: "Tecnico", whatsapp: "584163062842", correo: "", jefe: "" },
     { nombre: "LUCAS SUAZO", cedula: "13472978", tipo: "Tecnico", whatsapp: "584140334660", correo: "", jefe: "" },
-    { nombre: "RAFAEL LEAL CARMONA", cedula: "6516060", tipo: "Tecnico", whatsapp: "584263135913", correo: "", jefe: "" }
+    { nombre: "RAFAEL LEAL ", cedula: "6516060", tipo: "Tecnico", whatsapp: "584263135913", correo: "", jefe: "" }
 ];
 
 const TECNICOS = {
@@ -51,10 +52,13 @@ const TECNICOS = {
     "14970816": "SANDRY FUENMAYOR",
     "9863644": "LEONEL LÓPEZ",
     "13472978": "LUCAS SUAZO",
-    "6516060": "RAFAEL LEAL CARMONA"
+    "6516060": "RAFAEL LEAL",
+    "19684951": "ENRIQUE MARIN",
+    "31451530": "CAROLINA BLANCO"
 };
 
 const EMPLEADOS = {
+    "31451530": "CAROLINA BLANCO",
     "9467216": "JHONNY BARAJAS",
     "15613616": "MANUEL ACOSTA",
     "18023638": "ALBERTO BLANCO",
@@ -81,13 +85,14 @@ const EMPLEADOS = {
     "11813641": "ODEMARIS GUERRERO",
     "27535304": "BENYI CADET",
     "26951720": "EFREN SANCHEZ",
-    "31604422": "CASTILLO AUDIVET LUIYER",
-    "19684951": "ENRIQUE JOSE MARIN",
+    "31604422": "CASTILLO LUIYER",
+    "19684951": "ENRIQUE MARIN",
     "19967455": "ANDRES BALANTA",
     "15574381": "JOHANNA ADMS",
     "13128145": "LUCY MÁRQUEZ",
     "15421066": "KLYVIAT MUÑOZ",
-    "23811822": "MERCY CHIRINOS"
+    "23811822": "MERCY CHIRINOS",
+    "6516060": "RAFAEL LEAL"
 };
 
 function inicializarDatosEquipos() {
