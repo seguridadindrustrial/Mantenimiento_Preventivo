@@ -114,7 +114,7 @@ function inicializarDatosEquipos() {
     for (const sede in sedeZonasMap) {
         const zonasArr = sedeZonasMap[sede].slice().sort();
         if (sede !== "EVENTO" && zonasArr.indexOf("Exterior") === -1) zonasArr.push("Exterior");
-        if (sede === "ALTAMIRA" && zonasArr.indexOf("Otros") === -1) zonasArr.push("Otros");
+        if (sede === "ALTAMIRA" && zonasArr.indexOf("Otros") === -1 && zonasArr.indexOf("OTROS") === -1) zonasArr.push("Otros");
         SEDE_ZONAS[sede] = zonasArr;
     }
 }
