@@ -1187,6 +1187,7 @@ document.addEventListener("DOMContentLoaded", () => {
             equipoLibreGroup.style.display = "block";
             document.getElementById("aEquipoLibre").value = "";
             document.getElementById("aEventoLibre").value = "";
+            actualizarLabelFotos();
             return;
         }
 
