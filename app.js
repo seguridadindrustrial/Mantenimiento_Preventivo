@@ -198,6 +198,12 @@ const ZONA_EQUIPOS = {
             "MICROONDAS DEL TALLER # 3",
             "ENFRIADOR DE BOTELLON # 3 TALLER"
         ],
+        "Taller (Tareas)": [
+            "FOGON BAJO # 1",
+            "FOGON BAJO # 2",
+            "FOGON BAJO # 3",
+            "LAVAVAJILLAS 1"
+        ],
         "ESTACIONAMIENTO": [
             "CHAMBRANAS",
             "MOLINO DE CAFE 3",
