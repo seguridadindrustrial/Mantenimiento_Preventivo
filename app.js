@@ -1205,6 +1205,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const equipos = SEDE_EQUIPOS[sede] || [];
             populateSelect("aEquipo", equipos, true);
         }
+        actualizarLabelFotos();
     });
 
     document.getElementById("aZona").addEventListener("change", function () {
@@ -1247,6 +1248,7 @@ document.addEventListener("DOMContentLoaded", () => {
             equipoOtroGroup.style.display = "none";
             document.getElementById("aEquipoOtro").value = "";
         }
+        actualizarLabelFotos();
     });
 
     document.getElementById("aImagenes").addEventListener("change", async function () {
@@ -1595,6 +1597,21 @@ function loginTecnico() {
     }
 
     procesarLogin(null);
+}
+
+function actualizarLabelFotos() {
+    var sede = document.getElementById("aSedes").value;
+    var equipoSelect = document.getElementById("aEquipo").value;
+    var esEvento = sede === "EVENTO";
+    var esOtro = equipoSelect === "__OTRO__";
+    var label = document.querySelector('label[for="aImagenes"]');
+    if (esEvento || esOtro) {
+        label.textContent = "Fotos (maximo 2) *";
+        label.style.color = "#d32f2f";
+    } else {
+        label.textContent = "Fotos (maximo 2)";
+        label.style.color = "";
+    }
 }
 
 function populateTimeSelects(prefix) {
@@ -2580,6 +2597,10 @@ function enviarAveria(e) {
     }
     if (!descripcion) {
         alert("Escribe una descripcion de la averia.");
+        return;
+    }
+    if ((esEvento || esOtro) && averiaImagenes.length === 0) {
+        alert("Debes adjuntar al menos 1 foto.");
         return;
     }
 
