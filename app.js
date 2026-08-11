@@ -1604,13 +1604,15 @@ function actualizarLabelFotos() {
     var equipoSelect = document.getElementById("aEquipo").value;
     var esEvento = sede === "EVENTO";
     var esOtro = equipoSelect === "__OTRO__";
-    var label = document.querySelector('label[for="aImagenes"]');
+    var label = document.getElementById("aFotosLabel");
     if (esEvento || esOtro) {
-        label.textContent = "Fotos (maximo 2) *";
+        label.textContent = "Fotos (maximo 2) - Obligatoria";
         label.style.color = "#d32f2f";
+        label.style.fontWeight = "700";
     } else {
-        label.textContent = "Fotos (maximo 2)";
+        label.textContent = "Fotos (maximo 2) - Opcional";
         label.style.color = "";
+        label.style.fontWeight = "";
     }
 }
 
@@ -2684,6 +2686,10 @@ function clearAveriaForm() {
         b.classList.remove("active-si", "active-no");
     });
     averiaImagenes = [];
+    var label = document.getElementById("aFotosLabel");
+    label.textContent = "Fotos (maximo 2) - Opcional";
+    label.style.color = "";
+    label.style.fontWeight = "";
     populateTimeSelects("a");
 }
 
