@@ -311,13 +311,6 @@ const ZONA_EQUIPOS = {
         ]
     },
     "ALTAMIRA": {
-        "TERRAZA": [
-            "LIMPIEZA DE CANALETAS",
-            "LIMPIEZA DE TANQUES"
-        ],
-        "ESTACIONAMIENTO": [
-            "LIMPIEZA DE TANQUILLA"
-        ],
         "OTROS": [
             "ALFOMBRA PISO",
             "EXTINTOR # 2",
@@ -325,7 +318,10 @@ const ZONA_EQUIPOS = {
             "LAMPARAS",
             "FUMIGACION",
             "PINTURA EXTERNA",
-            "PINTURA INTERNA"
+            "PINTURA INTERNA",
+            "LIMPIEZA DE CANALETAS",
+            "LIMPIEZA DE TANQUES",
+            "LIMPIEZA DE TANQUILLA"
         ]
     }
 };
