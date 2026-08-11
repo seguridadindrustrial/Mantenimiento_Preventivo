@@ -607,6 +607,38 @@ input[type="file"] {
     width: 100%;
 }
 
+.photo-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.btn-photo {
+    flex: 1;
+    display: block;
+    text-align: center;
+    padding: 12px;
+    border-radius: 8px;
+    background: #1976d2;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-photo:hover {
+    background: #1565c0;
+}
+
+.btn-photo-alt {
+    background: #63bb60;
+}
+
+.btn-photo-alt:hover {
+    background: #4caf50;
+}
+
 .imagenes-preview {
     display: flex;
     gap: 8px;

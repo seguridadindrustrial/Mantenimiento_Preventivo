@@ -220,7 +220,12 @@
 
                 <div class="form-group">
                     <label for="aImagenes">Fotos (maximo 2)</label>
-                    <input type="file" id="aImagenes" accept="image/*" multiple>
+                    <div class="photo-buttons">
+                        <label for="aImagenes" class="btn-photo">Tomar foto</label>
+                        <label for="aImagenesUpload" class="btn-photo btn-photo-alt">Subir foto</label>
+                    </div>
+                    <input type="file" id="aImagenes" accept="image/*" capture="environment" style="display:none;">
+                    <input type="file" id="aImagenesUpload" accept="image/*" multiple style="display:none;">
                     <div id="aImagenesPreview" class="imagenes-preview"></div>
                 </div>
             </div>

@@ -1254,14 +1254,32 @@ document.addEventListener("DOMContentLoaded", () => {
         if (files.length > 2) {
             alert("Puedes adjuntar un maximo de 2 fotos.");
         }
-        averiaImagenes = [];
         for (const file of files.slice(0, 2)) {
+            if (averiaImagenes.length >= 2) break;
             try {
                 averiaImagenes.push(await fileToImagen(file));
             } catch (err) {
                 alert(err.message);
             }
         }
+        this.value = "";
+        renderImagenesPreview();
+    });
+
+    document.getElementById("aImagenesUpload").addEventListener("change", async function () {
+        const files = Array.from(this.files);
+        if (files.length > 2) {
+            alert("Puedes adjuntar un maximo de 2 fotos.");
+        }
+        for (const file of files.slice(0, 2)) {
+            if (averiaImagenes.length >= 2) break;
+            try {
+                averiaImagenes.push(await fileToImagen(file));
+            } catch (err) {
+                alert(err.message);
+            }
+        }
+        this.value = "";
         renderImagenesPreview();
     });
 
@@ -2458,7 +2476,9 @@ function toggleAveriaToggle(btn) {
     if (btn.dataset.value === "No") {
         document.getElementById("aDescripcion").value = "";
         document.getElementById("aImagenes").value = "";
-        document.getElementById("aImagenesPreview").innerHTML = "";
+    document.getElementById("aImagenesPreview").innerHTML = "";
+    document.getElementById("aImagenes").value = "";
+    document.getElementById("aImagenesUpload").value = "";
         averiaImagenes = [];
     }
 }
