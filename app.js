@@ -1095,7 +1095,7 @@ const EQUIPO_RUTINA = {
     "TOPE FRANCES A GAS 2": "Rutina Cocinas",
 };
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwyYG7dqQjE9BDTt5Hon9RfYQWhqwUfMranJQxBbhwagdGKlbNcOHdWXyruSkgWPeMw5A/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyCdRfVH7jDh_DYWML4swomY_CYczBimPugrw2iqPVqohzE10Vq2RMrJw6WGGeVBOG3pw/exec";
 
 let rutinaActual = [];
 let nombreRutinaActual = "";

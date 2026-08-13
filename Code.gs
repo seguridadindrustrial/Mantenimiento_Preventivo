@@ -73,7 +73,6 @@ function doPost(e) {
 
         if (data.task) {
             headers.push("Tarea");
-            headers.push("Valor Tarea");
             if (data.taskSub) {
                 for (var k in data.taskSub) {
                     if (data.taskSub.hasOwnProperty(k)) headers.push(k);
@@ -84,6 +83,8 @@ function doPost(e) {
         headers.push("Descripcion");
         sheet.appendRow(headers);
     }
+
+    eliminarColumnaSiExiste(sheet, "Valor Tarea");
 
     var allData = sheet.getDataRange().getValues();
     var headersRow = allData[0];
@@ -108,7 +109,6 @@ function doPost(e) {
         else if (h === "Equipo") row.push(data.equipo || "");
         else if (h === "Mantenimiento") row.push(data.mantenimiento || "");
         else if (h === "Tarea") row.push(data.task || "");
-        else if (h === "Valor Tarea") row.push(data.taskValue || "");
         else if (h === "Descripcion") row.push(data.descripcion || "");
         else if (data.checkinKeys && data.checkinKeys.indexOf(h) !== -1) {
             var idx = data.checkinKeys.indexOf(h);
@@ -246,6 +246,18 @@ function guardarSemanarioRuices(data) {
 
 function sanitizeSheetName(name) {
     return String(name).replace(/[\[\]:*?\/\\]/g, "-").slice(0, 100);
+}
+
+function eliminarColumnaSiExiste(sheet, nombreColumna) {
+    try {
+        var lastCol = sheet.getLastColumn();
+        if (lastCol < 1) return;
+        var hdr = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+        var idx = hdr.indexOf(nombreColumna);
+        if (idx !== -1) {
+            sheet.deleteColumn(idx + 1);
+        }
+    } catch (err) {}
 }
 
 function guardarRepuestos(data) {
