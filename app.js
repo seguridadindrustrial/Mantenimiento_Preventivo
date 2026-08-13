@@ -883,46 +883,46 @@ const RUTINA_SEMANARIO_RUICES = [
             { label: "Armario To Go", type: "number" },
             { label: "Armario refrigerado", type: "number" },
             { label: "Mesón refrigerado", type: "number" },
-            { label: "Aire acondicionado", type: "number" },
-            { label: "Extracción", type: "number" },
-            { label: "Inyección", type: "number" },
-            { label: "Llave de gas", type: "number" },
+            { label: "Aire acondicionado", type: "select", options: ["Encendido", "Apagado"] },
+            { label: "Extracción", type: "select", options: ["Encendido", "Apagado"] },
+            { label: "Inyección", type: "select", options: ["Encendido", "Apagado"] },
+            { label: "Llave de gas", type: "select", options: ["Abierta", "Cerrada"] },
             { label: "Tanques en reserva", type: "number" },
             { label: "Tanques en uso", type: "number" },
-            { label: "Bomba de agua", type: "number" },
-            { label: "Agua de la calle", type: "number" },
-            { label: "Horno Rational a gas", type: "number" }
+            { label: "Bomba de agua", type: "select", options: ["Automático", "Manual", "Apagada"] },
+            { label: "Agua de la calle", type: "select", options: ["Si", "No"] },
+            { label: "Horno Rational a gas", type: "select", options: ["Encendido", "Apagado"] }
         ]
     },
     {
         titulo: "Piso 1",
         campos: [
-            { label: "Llave de gas", type: "number" },
+            { label: "Llave de gas", type: "select", options: ["Abierta", "Cerrada"] },
             { label: "Armario refrigerado", type: "number" },
             { label: "Mesón refrigerado E", type: "number" },
             { label: "Mesón refrigerado F", type: "number" },
-            { label: "Horno Rational", type: "number" },
-            { label: "Abatidor", type: "number" },
-            { label: "Aires de sala", type: "number" },
-            { label: "Aire party / pantry", type: "number" },
-            { label: "Aire de panadería", type: "number" },
-            { label: "Inyección", type: "number" },
-            { label: "Extractor", type: "number" },
-            { label: "Ascensor", type: "number" }
+            { label: "Horno Rational", type: "select", options: ["Encendido", "Apagado"] },
+            { label: "Abatidor", type: "select", options: ["Encendido", "Apagado"] },
+            { label: "Aires de sala", type: "select", options: ["Encendido", "Apagado"] },
+            { label: "Aire party / pantry", type: "select", options: ["Encendido", "Apagado"] },
+            { label: "Aire de panadería", type: "select", options: ["Encendido", "Apagado"] },
+            { label: "Inyección", type: "select", options: ["Encendido", "Apagado"] },
+            { label: "Extractor", type: "select", options: ["Encendido", "Apagado"] },
+            { label: "Ascensor", type: "select", options: ["Sin novedad", "Con novedad", "Fuera de servicio"] }
         ]
     },
     {
         titulo: "Estacionamiento",
         campos: [
-            { label: "Santa María", type: "number" },
-            { label: "Reflectores", type: "number" },
-            { label: "Cerco eléctrico", type: "number" }
+            { label: "Santa María", type: "select", options: ["Abierta", "Cerrada"] },
+            { label: "Reflectores", type: "select", options: ["Encendido", "Apagado"] },
+            { label: "Cerco eléctrico", type: "select", options: ["Encendido", "Apagado"] }
         ]
     },
     {
         titulo: "Terraza",
         campos: [
-            { label: "Tanque de agua", type: "number" },
+            { label: "Tanque de agua", type: "select", options: ["En servicio", "Fuera de servicio"] },
             { label: "Aires acondicionados", type: "number" },
             { label: "Reflectores", type: "number" },
             { label: "Extractor 12000 CFM", type: "number" },
@@ -2631,16 +2631,76 @@ function renderSemanarioRuices(container) {
             parte.campos.forEach((campo, ci) => {
                 const f = document.createElement("div");
                 f.className = "semanario-campo";
+                f.dataset.part = pi;
+                f.dataset.campo = ci;
+
                 const l = document.createElement("label");
                 l.textContent = campo.label;
-                const inp = document.createElement("input");
-                inp.type = campo.type === "text" ? "text" : "number";
-                inp.step = "any";
-                inp.className = "semanario-number-input";
+
+                const wrap = document.createElement("div");
+                wrap.className = "semanario-respuesta";
+
+                const tg = document.createElement("div");
+                tg.className = "semanario-toggle";
+
+                const btnSi = document.createElement("button");
+                btnSi.type = "button";
+                btnSi.className = "toggle-btn";
+                btnSi.dataset.value = "Si";
+                btnSi.textContent = "Si";
+
+                const btnNo = document.createElement("button");
+                btnNo.type = "button";
+                btnNo.className = "toggle-btn";
+                btnNo.dataset.value = "No";
+                btnNo.textContent = "No";
+
+                let inp;
+                if (campo.type === "select") {
+                    inp = document.createElement("select");
+                    inp.className = "semanario-select";
+                    const optEmpty = document.createElement("option");
+                    optEmpty.value = "";
+                    optEmpty.textContent = "Seleccionar...";
+                    inp.appendChild(optEmpty);
+                    (campo.options || []).forEach(op => {
+                        const o = document.createElement("option");
+                        o.value = op;
+                        o.textContent = op;
+                        inp.appendChild(o);
+                    });
+                } else {
+                    inp = document.createElement("input");
+                    inp.type = campo.type === "text" ? "text" : "number";
+                    inp.step = "any";
+                    inp.className = "semanario-number-input";
+                }
                 inp.dataset.part = pi;
                 inp.dataset.campo = ci;
+                inp.style.display = "none";
+
+                function setCampoSemanario(val) {
+                    tg.querySelectorAll(".toggle-btn").forEach(b => {
+                        b.classList.remove("active-si", "active-no");
+                    });
+                    (val === "Si" ? btnSi : btnNo).classList.add(val === "Si" ? "active-si" : "active-no");
+                    if (val === "Si") {
+                        inp.style.display = "block";
+                    } else {
+                        inp.style.display = "none";
+                        inp.value = "";
+                    }
+                }
+
+                btnSi.addEventListener("click", function () { setCampoSemanario("Si"); });
+                btnNo.addEventListener("click", function () { setCampoSemanario("No"); });
+
+                tg.appendChild(btnSi);
+                tg.appendChild(btnNo);
+                wrap.appendChild(tg);
+                wrap.appendChild(inp);
                 f.appendChild(l);
-                f.appendChild(inp);
+                f.appendChild(wrap);
                 div.appendChild(f);
             });
         } else if (parte.tareas) {
@@ -2673,8 +2733,15 @@ function semanarioRuicesCompleto() {
         const parte = RUTINA_SEMANARIO_RUICES[pi];
         if (!parte) return;
         if (parte.campos) {
-            partEl.querySelectorAll(".semanario-number-input").forEach(inp => {
-                if (inp.value.trim() === "") ok = false;
+            parte.campos.forEach((campo, ci) => {
+                const campoEl = partEl.querySelector('.semanario-campo[data-campo="' + ci + '"]');
+                if (!campoEl) return;
+                const active = campoEl.querySelector(".semanario-toggle .active-si, .semanario-toggle .active-no");
+                if (!active) { ok = false; return; }
+                if (active.dataset.value === "Si") {
+                    const inp = campoEl.querySelector(".semanario-number-input, .semanario-select");
+                    if (!inp || inp.value.trim() === "") ok = false;
+                }
             });
         } else if (parte.tareas) {
             partEl.querySelectorAll(".taller-task").forEach(wrapper => {
@@ -2695,7 +2762,15 @@ function getSemanarioRuicesValues() {
         if (parte.campos) {
             const respuestas = {};
             parte.campos.forEach((campo, ci) => {
-                const inp = partEl.querySelector('.semanario-number-input[data-campo="' + ci + '"]');
+                const campoEl = partEl.querySelector('.semanario-campo[data-campo="' + ci + '"]');
+                if (!campoEl) { respuestas[campo.label] = ""; return; }
+                const active = campoEl.querySelector(".semanario-toggle .active-si, .semanario-toggle .active-no");
+                if (!active) { respuestas[campo.label] = ""; return; }
+                if (active.dataset.value === "No") {
+                    respuestas[campo.label] = "No";
+                    return;
+                }
+                const inp = campoEl.querySelector(".semanario-number-input, .semanario-select");
                 respuestas[campo.label] = inp ? inp.value.trim() : "";
             });
             partes.push({ titulo: parte.titulo, tipo: "campos", respuestas: respuestas });

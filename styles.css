@@ -534,6 +534,18 @@ textarea:focus {
     flex: 1;
 }
 
+.semanario-respuesta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.semanario-toggle {
+    display: flex;
+    gap: 6px;
+}
+
 .semanario-number-input {
     width: 90px;
     padding: 8px;
@@ -543,7 +555,16 @@ textarea:focus {
     text-align: center;
 }
 
-.semanario-number-input:focus {
+.semanario-select {
+    width: 160px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.semanario-number-input:focus,
+.semanario-select:focus {
     outline: none;
     border-color: #1976d2;
     box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.15);
