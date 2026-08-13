@@ -155,7 +155,7 @@ function solicitarCisterna(data) {
         "<b>Fecha:</b> " + (data.fecha || "") + "<br>" +
         "<b>Hora:</b> " + (data.hora || "") + "<br>" +
         "<b>Tecnico:</b> " + (data.tecnico || "") + "<br><br>" +
-        "<p style='color:#666;'>Se solicita cisterna segun el semanario.</p>";
+        "<p style='color:#666;'>Se solicita cisterna segun el semanero.</p>";
 
     var mailEnviado = false;
     var mailError = "";
@@ -180,7 +180,7 @@ function solicitarCisterna(data) {
 
 function guardarSemanarioRuices(data) {
     var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName("Semanarios");
+    var sheet = ss.getSheetByName("Semanero");
     var titulos = data.titulos || [];
 
     var headers = ["Fecha", "Hora", "Turno", "Sede", "Zona", "Tecnico"];
@@ -195,7 +195,7 @@ function guardarSemanarioRuices(data) {
     headers.push("Descripcion");
 
     if (!sheet) {
-        sheet = ss.insertSheet("Semanarios");
+        sheet = ss.insertSheet("Semanero");
         sheet.appendRow(headers);
     } else if (sheet.getLastRow() === 0) {
         sheet.appendRow(headers);

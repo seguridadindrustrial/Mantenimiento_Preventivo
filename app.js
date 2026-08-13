@@ -129,7 +129,7 @@ function buscarPersonalPorCedula(cedula) {
 
 function getAveriaZonas(sede) {
     if (sede === "EVENTO") return [];
-    var zonas = (SEDE_ZONAS[sede] || []).filter(function(z) { return z !== "SEMANARIOS"; });
+    var zonas = (SEDE_ZONAS[sede] || []).filter(function(z) { return z !== "SEMANERO"; });
     if (zonas.indexOf("EXTERIOR") === -1) zonas.push("EXTERIOR");
     return zonas;
 }
@@ -278,7 +278,7 @@ const ZONA_EQUIPOS = {
             "LAMPARAS",
             "ESCRITORIOS",
         ],
-        "SEMANARIOS": [],
+        "SEMANERO": [],
     },
     "DEPOSITO": {
         "PB": [
@@ -398,7 +398,7 @@ const ZONA_EQUIPOS = {
             "LAMPARAS",
             "ESCRITORIOS",
         ],
-        "SEMANARIOS": [],
+        "SEMANERO": [],
     },
     "ALTAMIRA": {
         "OTROS": [
@@ -923,10 +923,10 @@ const RUTINA_SEMANARIO_RUICES = [
         titulo: "Terraza",
         campos: [
             { label: "Tanque de agua", type: "select", options: ["En servicio", "Fuera de servicio"] },
-            { label: "Aires acondicionados", type: "number" },
-            { label: "Reflectores", type: "number" },
-            { label: "Extractor 12000 CFM", type: "number" },
-            { label: "Extractor 21000 CFM", type: "number" }
+            { label: "Aires acondicionados", type: "select", options: ["Encendido", "Apagado"] },
+            { label: "Reflectores", type: "select", options: ["Encendido", "Apagado"] },
+            { label: "Extractor 12000 CFM", type: "select", options: ["Encendido", "Apagado"] },
+            { label: "Extractor 21000 CFM", type: "select", options: ["Encendido", "Apagado"] }
         ]
     },
     {
@@ -1432,7 +1432,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const eqGroup = document.getElementById("equipoGroup");
         const eqExteriorGroup = document.getElementById("equipoExteriorGroup");
 
-        if (zona === "SEMANARIOS") {
+        if (zona === "SEMANERO") {
             eqExteriorGroup.style.display = "none";
             eqGroup.style.display = "none";
             document.getElementById("mantenimientoGroup").style.display = "none";
@@ -1598,7 +1598,7 @@ function irAlPaso2() {
     const equipoSelect = document.getElementById("equipo").value;
     const esOtro = equipoSelect === "__OTRO__";
     const equipo = esTaller
-        ? "SEMANARIOS"
+        ? "SEMANERO"
         : esExterior
         ? document.getElementById("equipoExterior").value.trim()
         : esOtro
@@ -1819,7 +1819,7 @@ function renderRutina(equipo, mantenimiento) {
 
     if (esTaller) {
         if (esSemanarioRuices) {
-            nombreRutinaActual = "Semanario RUICES";
+            nombreRutinaActual = "Semanero RUICES";
             renderSemanarioRuices(container);
         } else {
             nombreRutinaActual = "Actividades de Semaneros";
@@ -2413,7 +2413,7 @@ function enviarFormulario(e) {
     const equipoSelect = document.getElementById("equipo").value;
     const esOtro = equipoSelect === "__OTRO__";
     const equipo = esTaller
-        ? "SEMANARIOS"
+        ? "SEMANERO"
         : esExterior
         ? document.getElementById("equipoExterior").value.trim()
         : esOtro
@@ -2442,7 +2442,7 @@ function enviarFormulario(e) {
     if (esTaller) {
         if (esSemanarioRuices) {
             if (!semanarioRuicesCompleto()) {
-                alert("Completa todas las partes y sub-preguntas del semanario antes de enviar.");
+                alert("Completa todas las partes y sub-preguntas del semanero antes de enviar.");
                 return;
             }
             enviarSemanarioRuices(sedes, fecha, hora, zona, descripcion);
@@ -2589,7 +2589,7 @@ function enviarTaller(sedes, fecha, hora, zona, mantenimiento, descripcion) {
             sedes: sedes,
             zona: zona,
             tecnico: tecnicoNombre,
-            equipo: "SEMANARIOS",
+            equipo: "SEMANERO",
             mantenimiento: mantenimiento,
             rutina: "Actividades de Semaneros - " + taskLabel,
             task: taskLabel,
@@ -2767,7 +2767,7 @@ function getSemanarioRuicesValues() {
                 const active = campoEl.querySelector(".semanario-toggle .active-si, .semanario-toggle .active-no");
                 if (!active) { respuestas[campo.label] = ""; return; }
                 if (active.dataset.value === "No") {
-                    respuestas[campo.label] = "No";
+                    respuestas[campo.label] = "";
                     return;
                 }
                 const inp = campoEl.querySelector(".semanario-number-input, .semanario-select");
@@ -2804,13 +2804,13 @@ function enviarSemanarioRuices(sedes, fecha, hora, zona, descripcion) {
     const valores = getSemanarioRuicesValues();
     const turno = calcularTurno(hora);
 
-    const idUnico = generarIdUnico(fecha, hora, sedes, "Semanario RUICES", tecnicoNombre);
+    const idUnico = generarIdUnico(fecha, hora, sedes, "Semanero RUICES", tecnicoNombre);
     if (yaEnviado(idUnico)) {
         alert("Este registro ya fue enviado anteriormente.");
         return;
     }
 
-    if (!confirm("Confirmar envio del Semanario de RUICES?\n\nFecha: " + fecha + "\nHora: " + hora + "\nTecnico: " + tecnicoNombre)) {
+    if (!confirm("Confirmar envio del Semanero de RUICES?\n\nFecha: " + fecha + "\nHora: " + hora + "\nTecnico: " + tecnicoNombre)) {
         return;
     }
 
@@ -2837,7 +2837,7 @@ function enviarSemanarioRuices(sedes, fecha, hora, zona, descripcion) {
                     sedes: sedes,
                     zona: zona,
                     tecnico: tecnicoNombre,
-                    equipo: "SEMANARIOS",
+                    equipo: "SEMANERO",
                     mantenimiento: "",
                     rutina: "Actividades de Semaneros - Tanques",
                     task: "Tanques",
@@ -2878,7 +2878,7 @@ function enviarSemanarioRuices(sedes, fecha, hora, zona, descripcion) {
         body: JSON.stringify(registro)
     })
     .then(() => {
-        alert("Semanario de RUICES enviado correctamente.");
+        alert("Semanero de RUICES enviado correctamente.");
         clearForm();
     })
     .catch(() => {
