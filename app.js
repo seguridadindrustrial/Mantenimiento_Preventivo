@@ -1834,6 +1834,7 @@ function renderRutina(equipo, mantenimiento) {
 function setPaso2Buttons() {
     document.getElementById("btnPaso3").style.display = esTaller ? "none" : "block";
     document.getElementById("btnEnviar").style.display = esTaller ? "block" : "none";
+    document.getElementById("descripcionTallerGroup").style.display = esTaller ? "block" : "none";
 }
 
 function renderRutinaDinamica(container, equipo) {
@@ -1961,8 +1962,8 @@ function toggleRepuestosToggle(btn) {
     }
 }
 
-function agregarRepuestoRow() {
-    const rows = document.getElementById("repuestosRows");
+function agregarRepuestoRow(containerId) {
+    const rows = document.getElementById(containerId || "repuestosRows");
     const row = document.createElement("div");
     row.className = "repuesto-row";
     row.innerHTML = `
@@ -1974,14 +1975,29 @@ function agregarRepuestoRow() {
     row.querySelector(".repuesto-nombre").focus();
 }
 
-function getRepuestos() {
+function getRepuestos(containerId) {
+    const rowsEl = document.getElementById(containerId || "repuestosRows");
     const repuestos = [];
-    document.querySelectorAll(".repuesto-row").forEach(row => {
+    rowsEl.querySelectorAll(".repuesto-row").forEach(row => {
         const nombre = row.querySelector(".repuesto-nombre").value.trim();
         const cantidad = row.querySelector(".repuesto-cantidad").value.trim();
         if (nombre) repuestos.push({ nombre: nombre, cantidad: cantidad });
     });
     return repuestos;
+}
+
+function toggleRepuestosResolucion(btn) {
+    const group = btn.parentElement;
+    group.querySelectorAll(".toggle-btn").forEach(b => {
+        b.classList.remove("active-si", "active-no");
+    });
+    btn.classList.add(btn.dataset.value === "Si" ? "active-si" : "active-no");
+
+    const repuestosGroup = document.getElementById("rRepuestosGroup");
+    repuestosGroup.style.display = btn.dataset.value === "Si" ? "block" : "none";
+    if (btn.dataset.value === "No") {
+        document.getElementById("rRepuestosRows").innerHTML = "";
+    }
 }
 
 function resetPaso3() {
@@ -2320,7 +2336,7 @@ function enviarFormulario(e) {
         ? document.getElementById("equipoOtro").value.trim()
         : equipoSelect;
     const mantenimiento = esTaller ? "" : document.getElementById("mantenimiento").value;
-    const descripcion = document.getElementById("descripcion").value.trim();
+    const descripcion = document.getElementById(esTaller ? "descripcionTaller" : "descripcion").value.trim();
 
     if (!sedes || !fecha || !hora) {
         alert("Por favor completa todos los campos.");
@@ -2509,6 +2525,8 @@ function clearForm() {
     document.getElementById("checkinForm").reset();
     document.getElementById("equipo").innerHTML = '<option value="" disabled selected>Seleccionar equipo...</option>';
     document.getElementById("descripcion").value = "";
+    document.getElementById("descripcionTaller").value = "";
+    document.getElementById("descripcionTallerGroup").style.display = "none";
     document.getElementById("checkinsContainer").innerHTML = "";
     document.getElementById("paso2").style.display = "none";
     document.getElementById("paso1").style.display = "block";
@@ -2865,6 +2883,16 @@ function enviarResolucion(e) {
         return;
     }
 
+    const repuestoToggle = document.querySelector("#rRepSi.active-si, #rRepNo.active-si, #rRepSi.active-no, #rRepNo.active-no");
+    let repuestos = [];
+    if (repuestoToggle && repuestoToggle.dataset.value === "Si") {
+        repuestos = getRepuestos("rRepuestosRows");
+        if (repuestos.length === 0) {
+            alert("Agrega al menos un repuesto.");
+            return;
+        }
+    }
+
     const enviadas = getImagenesEnviadas(numero);
     const imagenesNuevas = [];
     const huellasNuevas = [];
@@ -2884,6 +2912,7 @@ function enviarResolucion(e) {
         tecnico: tecnico,
         realizado: realizado,
         descripcion: descripcion,
+        repuestos: repuestos,
         imagenes: imagenesNuevas
     };
 
@@ -2950,7 +2979,12 @@ function clearResolucionForm() {
     document.getElementById("rImagenes").value = "";
     document.getElementById("rImagenesPreview").innerHTML = "";
     document.getElementById("rDescripcionGroup").style.display = "none";
+    document.getElementById("rRepuestosGroup").style.display = "none";
+    document.getElementById("rRepuestosRows").innerHTML = "";
     ["rSi", "rNo", "rProceso", "rFalsa"].forEach(id => {
+        document.getElementById(id).classList.remove("active-si", "active-no");
+    });
+    ["rRepSi", "rRepNo"].forEach(id => {
         document.getElementById(id).classList.remove("active-si", "active-no");
     });
     resolucionImagenes = [];
