@@ -549,13 +549,6 @@ textarea:focus {
     box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.15);
 }
 
-.semanario-nav {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    margin-top: 16px;
-}
-
 .info-banner {
     background: #e8f5e9;
     padding: 10px;

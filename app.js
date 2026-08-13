@@ -101,7 +101,8 @@ function inicializarDatosEquipos() {
         sedesSet.add(sede);
         if (!sedeZonasMap[sede]) sedeZonasMap[sede] = [];
         for (const zona in ZONA_EQUIPOS[sede]) {
-            if (sedeZonasMap[sede].indexOf(zona) === -1) sedeZonasMap[sede].push(zona);
+            const zonaUp = zona.toUpperCase();
+            if (sedeZonasMap[sede].indexOf(zonaUp) === -1) sedeZonasMap[sede].push(zonaUp);
         }
     }
 
@@ -112,8 +113,7 @@ function inicializarDatosEquipos() {
     SEDE_ZONAS = {};
     for (const sede in sedeZonasMap) {
         const zonasArr = sedeZonasMap[sede].slice().sort();
-        if (sede !== "EVENTO" && zonasArr.indexOf("Exterior") === -1) zonasArr.push("Exterior");
-        if (sede === "ALTAMIRA" && zonasArr.indexOf("Otros") === -1 && zonasArr.indexOf("OTROS") === -1) zonasArr.push("Otros");
+        if (sede !== "EVENTO" && zonasArr.indexOf("EXTERIOR") === -1) zonasArr.push("EXTERIOR");
         SEDE_ZONAS[sede] = zonasArr;
     }
 }
@@ -129,8 +129,8 @@ function buscarPersonalPorCedula(cedula) {
 
 function getAveriaZonas(sede) {
     if (sede === "EVENTO") return [];
-    var zonas = (SEDE_ZONAS[sede] || []).filter(function(z) { return z !== "Semanarios"; });
-    if (zonas.indexOf("Exterior") === -1) zonas.push("Exterior");
+    var zonas = (SEDE_ZONAS[sede] || []).filter(function(z) { return z !== "SEMANARIOS"; });
+    if (zonas.indexOf("EXTERIOR") === -1) zonas.push("EXTERIOR");
     return zonas;
 }
 
@@ -278,7 +278,7 @@ const ZONA_EQUIPOS = {
             "LAMPARAS",
             "ESCRITORIOS",
         ],
-        "Semanarios": [],
+        "SEMANARIOS": [],
     },
     "DEPOSITO": {
         "PB": [
@@ -398,10 +398,10 @@ const ZONA_EQUIPOS = {
             "LAMPARAS",
             "ESCRITORIOS",
         ],
-        "Semanarios": [],
+        "SEMANARIOS": [],
     },
     "ALTAMIRA": {
-        "PB": [
+        "OTROS": [
             "ALFOMBRA PISO",
             "EXTINTOR # 2",
             "FILTRO DE CARBON ACTIVADO",
@@ -414,33 +414,9 @@ const ZONA_EQUIPOS = {
             "TABLEROS",
             "LAMPARAS",
             "ESCRITORIOS",
-        ],
-        "TERRAZA": [
             "LIMPIEZA DE CANALETAS",
             "LIMPIEZA DE TANQUES",
-            "FILTRO DE CARBON ACTIVADO",
-            "ELEVADOR DE CARGA",
-            "TABLEROS ELECTRICOS",
-            "FUMIGACION",
-            "EXTINTORES",
-            "PINTURA EXTERNA",
-            "PINTURA INTERNA",
-            "TABLEROS",
-            "LAMPARAS",
-            "ESCRITORIOS",
-        ],
-        "ESTACIONAMIENTO": [
             "LIMPIEZA DE TANQUILLA",
-            "FILTRO DE CARBON ACTIVADO",
-            "ELEVADOR DE CARGA",
-            "TABLEROS ELECTRICOS",
-            "FUMIGACION",
-            "EXTINTORES",
-            "PINTURA EXTERNA",
-            "PINTURA INTERNA",
-            "TABLEROS",
-            "LAMPARAS",
-            "ESCRITORIOS",
         ],
     },
 };
@@ -1126,6 +1102,7 @@ let nombreRutinaActual = "";
 let tecnicoNombre = "";
 let esTaller = false;
 let esSemanarioRuices = false;
+let parteSemanarioActual = 0;
 let esDinamica = false;
 let empleadoNombre = "";
 let averiaImagenes = [];
@@ -1258,7 +1235,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (e.key === "Enter") loginTecnico();
     });
 
-    document.getElementById("btnPaso3").addEventListener("click", irAlPaso3);
+    document.getElementById("btnPaso3").addEventListener("click", function () {
+        if (esTaller && esSemanarioRuices) {
+            semanarioSiguiente();
+        } else {
+            irAlPaso3();
+        }
+    });
 
     document.getElementById("btnAtras3").addEventListener("click", function () {
         document.getElementById("paso3").style.display = "none";
@@ -1341,7 +1324,7 @@ document.addEventListener("DOMContentLoaded", () => {
         equipoOtroGroup.style.display = "none";
         document.getElementById("aEquipoOtro").value = "";
 
-        if (zona === "Exterior") {
+        if (zona === "EXTERIOR") {
             equipoGroup.style.display = "none";
             equipoExteriorGroup.style.display = "block";
             document.getElementById("aEquipoExterior").value = "";
@@ -1349,7 +1332,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         equipoExteriorGroup.style.display = "none";
         equipoGroup.style.display = "block";
-        if (zona === "Otros") {
+        if (zona === "OTROS") {
             populateSelect("aEquipo", SEDE_EQUIPOS[sede] || [], true);
             return;
         }
@@ -1436,6 +1419,7 @@ document.addEventListener("DOMContentLoaded", () => {
         nombreRutinaActual = "";
         esTaller = false;
         esSemanarioRuices = false;
+        parteSemanarioActual = 0;
         esDinamica = false;
         resetPaso3();
         document.getElementById("paso2").style.display = "none";
@@ -1448,7 +1432,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const eqGroup = document.getElementById("equipoGroup");
         const eqExteriorGroup = document.getElementById("equipoExteriorGroup");
 
-        if (zona === "Semanarios") {
+        if (zona === "SEMANARIOS") {
             eqExteriorGroup.style.display = "none";
             eqGroup.style.display = "none";
             document.getElementById("mantenimientoGroup").style.display = "none";
@@ -1457,7 +1441,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("mantenimiento").required = false;
             esTaller = true;
             esSemanarioRuices = sede === "RUICES";
-        } else if (zona === "Exterior") {
+        } else if (zona === "EXTERIOR") {
             eqGroup.style.display = "none";
             eqExteriorGroup.style.display = "block";
             document.getElementById("equipoExterior").value = "";
@@ -1474,7 +1458,7 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("mantenimiento").required = true;
             esTaller = false;
             esSemanarioRuices = false;
-            if (zona === "Otros") {
+            if (zona === "OTROS") {
                 populateSelect("equipo", SEDE_EQUIPOS[sede] || [], true);
             } else {
             const zonaData = ZONA_EQUIPOS[sede]?.[zona] || [];
@@ -1509,6 +1493,12 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("btnSiguiente").addEventListener("click", irAlPaso2);
 
     document.getElementById("btnAtras").addEventListener("click", function () {
+        if (esTaller && esSemanarioRuices && parteSemanarioActual > 0) {
+            parteSemanarioActual--;
+            mostrarParteSemanario();
+            setPaso2Buttons();
+            return;
+        }
         document.getElementById("paso2").style.display = "none";
         document.getElementById("paso1").style.display = "block";
     });
@@ -1604,11 +1594,11 @@ function irAlPaso2() {
     const fecha = document.getElementById("fecha").value;
     const hora = obtenerHora();
     const zona = document.getElementById("zona").value;
-    const esExterior = !esTaller && zona === "Exterior";
+    const esExterior = !esTaller && zona === "EXTERIOR";
     const equipoSelect = document.getElementById("equipo").value;
     const esOtro = equipoSelect === "__OTRO__";
     const equipo = esTaller
-        ? "Semanarios"
+        ? "SEMANARIOS"
         : esExterior
         ? document.getElementById("equipoExterior").value.trim()
         : esOtro
@@ -1917,8 +1907,14 @@ function renderRutina(equipo, mantenimiento) {
 }
 
 function setPaso2Buttons() {
-    document.getElementById("btnPaso3").style.display = esTaller ? "none" : "block";
-    document.getElementById("btnEnviar").style.display = esTaller ? "block" : "none";
+    if (esTaller && esSemanarioRuices) {
+        const esUltima = parteSemanarioActual >= RUTINA_SEMANARIO_RUICES.length - 1;
+        document.getElementById("btnPaso3").style.display = esUltima ? "none" : "block";
+        document.getElementById("btnEnviar").style.display = esUltima ? "block" : "none";
+    } else {
+        document.getElementById("btnPaso3").style.display = esTaller ? "none" : "block";
+        document.getElementById("btnEnviar").style.display = esTaller ? "block" : "none";
+    }
     document.getElementById("descripcionTallerGroup").style.display = esTaller ? "block" : "none";
 }
 
@@ -2413,11 +2409,11 @@ function enviarFormulario(e) {
     const fecha = document.getElementById("fecha").value;
     const hora = obtenerHora();
     const zona = document.getElementById("zona").value;
-    const esExterior = !esTaller && zona === "Exterior";
+    const esExterior = !esTaller && zona === "EXTERIOR";
     const equipoSelect = document.getElementById("equipo").value;
     const esOtro = equipoSelect === "__OTRO__";
     const equipo = esTaller
-        ? "Semanarios"
+        ? "SEMANARIOS"
         : esExterior
         ? document.getElementById("equipoExterior").value.trim()
         : esOtro
@@ -2593,7 +2589,7 @@ function enviarTaller(sedes, fecha, hora, zona, mantenimiento, descripcion) {
             sedes: sedes,
             zona: zona,
             tecnico: tecnicoNombre,
-            equipo: "Semanarios",
+            equipo: "SEMANARIOS",
             mantenimiento: mantenimiento,
             rutina: "Actividades de Semaneros - " + taskLabel,
             task: taskLabel,
@@ -2618,7 +2614,7 @@ function enviarTaller(sedes, fecha, hora, zona, mantenimiento, descripcion) {
 
 function renderSemanarioRuices(container) {
     container.innerHTML = "";
-    let parteActual = 0;
+    parteSemanarioActual = 0;
 
     RUTINA_SEMANARIO_RUICES.forEach((parte, pi) => {
         const div = document.createElement("div");
@@ -2654,42 +2650,20 @@ function renderSemanarioRuices(container) {
 
         container.appendChild(div);
     });
+}
 
-    const nav = document.createElement("div");
-    nav.className = "semanario-nav";
-    nav.innerHTML = `
-        <button type="button" class="btn-secondary" id="semanarioAtras" style="display:none;">Atras</button>
-        <button type="button" class="btn-primary" id="semanarioSiguiente">Siguiente</button>
-    `;
-    container.appendChild(nav);
+function mostrarParteSemanario() {
+    document.querySelectorAll(".semanario-part").forEach(p => {
+        p.style.display = parseInt(p.dataset.part) === parteSemanarioActual ? "block" : "none";
+    });
+}
 
-    const btnAtras = document.getElementById("semanarioAtras");
-    const btnSiguiente = document.getElementById("semanarioSiguiente");
-
-    function actualizarNav() {
-        document.querySelectorAll(".semanario-part").forEach(p => {
-            p.style.display = parseInt(p.dataset.part) === parteActual ? "block" : "none";
-        });
-        btnAtras.style.display = parteActual === 0 ? "none" : "block";
-        if (parteActual >= RUTINA_SEMANARIO_RUICES.length - 1) {
-            btnSiguiente.style.display = "none";
-        } else {
-            btnSiguiente.style.display = "block";
-        }
+function semanarioSiguiente() {
+    if (parteSemanarioActual < RUTINA_SEMANARIO_RUICES.length - 1) {
+        parteSemanarioActual++;
+        mostrarParteSemanario();
+        setPaso2Buttons();
     }
-
-    btnAtras.addEventListener("click", function () {
-        if (parteActual > 0) {
-            parteActual--;
-            actualizarNav();
-        }
-    });
-    btnSiguiente.addEventListener("click", function () {
-        if (parteActual < RUTINA_SEMANARIO_RUICES.length - 1) {
-            parteActual++;
-            actualizarNav();
-        }
-    });
 }
 
 function semanarioRuicesCompleto() {
@@ -2788,7 +2762,7 @@ function enviarSemanarioRuices(sedes, fecha, hora, zona, descripcion) {
                     sedes: sedes,
                     zona: zona,
                     tecnico: tecnicoNombre,
-                    equipo: "Semanarios",
+                    equipo: "SEMANARIOS",
                     mantenimiento: "",
                     rutina: "Actividades de Semaneros - Tanques",
                     task: "Tanques",
@@ -2869,6 +2843,7 @@ function clearForm() {
     nombreRutinaActual = "";
     esTaller = false;
     esSemanarioRuices = false;
+    parteSemanarioActual = 0;
     esDinamica = false;
     resetPaso3();
 }
@@ -2944,7 +2919,7 @@ function enviarAveria(e) {
     const fecha = document.getElementById("aFecha").value;
     const hora = obtenerHora("a");
     const esEvento = sedes === "EVENTO";
-    const esExterior = !esEvento && zona === "Exterior";
+    const esExterior = !esEvento && zona === "EXTERIOR";
     const equipoLibre = esEvento ? document.getElementById("aEquipoLibre").value.trim() : "";
     const eventoNombre = esEvento ? document.getElementById("aEventoLibre").value.trim() : "";
     const equipoExterior = esExterior ? document.getElementById("aEquipoExterior").value.trim() : "";
