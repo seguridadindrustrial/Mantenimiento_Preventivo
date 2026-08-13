@@ -7,7 +7,7 @@ const datosPersonal = [
     {nombre: "CAROLINA BLANCO", cedula: "31451530", tipo: "Tecnico", whatsapp: "584124756318", correo: "carolinablanco8419@gmail.com", jefe:"msuje3536@gmail.com, blancocarolina155@gmail.com"},
     { nombre: "JHONNY BARAJAS", cedula: "9467216", tipo: "Empleado", whatsapp: "584127548281", correo: "", jefe: "kliviat..muñoz@caracascatering.com" },
     { nombre: "MANUEL ACOSTA", cedula: "15613616", tipo: "Empleado", whatsapp: "584121476287", correo: "", jefe: "kliviat..muñoz@caracascatering.com" },
-    { nombre: "ALBERTO BLANCO", cedula: "18023638", tipo: "Tecnico", whatsapp: "584129477827", correo: "", jefe: "loly.garcia@caracascatering.com, alberto.blanco@caracascatering.com" },
+    { nombre: "ALBERTO BLANCO", cedula: "18023639", tipo: "Tecnico", whatsapp: "584129477827", correo: "", jefe: "loly.garcia@caracascatering.com, alberto.blanco@caracascatering.com" },
     { nombre: "ELVIS BLANCO", cedula: "18329733", tipo: "Empleado", whatsapp: "584149057146", correo: "", jefe: "elvis.blanco@caracascatering.com" },
     { nombre: "CARMEN CAMACHO", cedula: "13251004", tipo: "Empleado", whatsapp: "584123848123", correo: "", jefe: "kliviat..muñoz@caracascatering.com" },
     { nombre: "DAYANA MARTÍNEZ", cedula: "14326240", tipo: "Empleado", whatsapp: "584242552271", correo: "", jefe: "kliviat..muñoz@caracascatering.com" },
@@ -54,7 +54,7 @@ const TECNICOS = {
     "6516060": "RAFAEL LEAL",
     "19684951": "ENRIQUE MARIN",
     "31451530": "CAROLINA BLANCO",
-    "18023638": "ALBERTO BLANCO",
+    "18023639": "ALBERTO BLANCO",
 };
 
 const EMPLEADOS = {
@@ -1692,7 +1692,7 @@ function loginTecnico() {
             populateTimeSelects("a");
             return;
         }
-        errorEl.textContent = "Credencial o codigo de averia no valido.";
+        errorEl.textContent = "Credencial o codigo de averia no valido. Solicita tu registro al administrador.";
         errorEl.style.display = "block";
         document.getElementById("codigoTecnico").value = "";
     };
