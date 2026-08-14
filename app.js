@@ -1255,19 +1255,12 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("btnAtrasResolucion").addEventListener("click", volverAlLogin);
     document.getElementById("btnAsignarTecnico").addEventListener("click", function() { asignarTecnicoWeb(); });
     document.getElementById("rImagenes").addEventListener("change", async function () {
-        const files = Array.from(this.files);
-        if (files.length > 2) {
-            alert("Puedes adjuntar un maximo de 2 fotos.");
-        }
-        resolucionImagenes = [];
-        for (const file of files.slice(0, 2)) {
-            try {
-                resolucionImagenes.push(await fileToImagen(file));
-            } catch (err) {
-                alert(err.message);
-            }
-        }
-        renderResolucionImagenesPreview();
+        await agregarImagenesResolucion(Array.from(this.files));
+        this.value = "";
+    });
+    document.getElementById("rImagenesUpload").addEventListener("change", async function () {
+        await agregarImagenesResolucion(Array.from(this.files));
+        this.value = "";
     });
 
     document.getElementById("aSedes").addEventListener("change", function () {
@@ -3147,21 +3140,27 @@ function abrirResolucion(av) {
         (av.zona ? " | Zona: " + av.zona : "") +
         " | Descripcion: " + (av.descripcion || "");
     document.getElementById("resolucionEquipo").textContent = "Equipo: " + (av.equipo || "No especificado");
-    populateSelect("rTecnico", Object.values(TECNICOS));
     populateTimeSelects("r");
     clearResolucionForm();
-
-    if (av.asignado) {
-        var rTecnicoSelect = document.getElementById("rTecnico");
-        for (var i = 0; i < rTecnicoSelect.options.length; i++) {
-            if (rTecnicoSelect.options[i].value === av.asignado) {
-                rTecnicoSelect.selectedIndex = i;
-                break;
-            }
-        }
-    }
+    configurarTecnicoResolucion(av.asignado || "");
 
     document.getElementById("resolucionForm").style.display = "block";
+}
+
+function configurarTecnicoResolucion(asignado) {
+    var select = document.getElementById("rTecnico");
+    if (asignado) {
+        select.innerHTML = '<option value="" disabled>Seleccionar tecnico...</option>';
+        var opt = document.createElement("option");
+        opt.value = asignado;
+        opt.textContent = asignado;
+        select.appendChild(opt);
+        select.value = asignado;
+        select.disabled = true;
+    } else {
+        select.disabled = false;
+        populateSelect("rTecnico", Object.values(TECNICOS));
+    }
 }
 
 function toggleRealizado(el) {
@@ -3174,6 +3173,21 @@ function toggleRealizado(el) {
     el.classList.add(el.dataset.value === "Si" ? "active-si" : "active-no");
     const grupo = document.getElementById("rDescripcionGroup");
     grupo.style.display = el.dataset.value === "Si" ? "none" : "block";
+}
+
+async function agregarImagenesResolucion(files) {
+    if (files.length > 2) {
+        alert("Puedes adjuntar un maximo de 2 fotos.");
+    }
+    for (const file of files.slice(0, 2)) {
+        if (resolucionImagenes.length >= 2) break;
+        try {
+            resolucionImagenes.push(await fileToImagen(file));
+        } catch (err) {
+            alert(err.message);
+        }
+    }
+    renderResolucionImagenesPreview();
 }
 
 function renderResolucionImagenesPreview() {
@@ -3354,9 +3368,12 @@ function marcarAveriaResuelta(numero) {
 
 function clearResolucionForm() {
     document.getElementById("rFecha").value = "";
-    document.getElementById("rTecnico").value = "";
+    var rTecnicoSelect = document.getElementById("rTecnico");
+    rTecnicoSelect.disabled = false;
+    rTecnicoSelect.value = "";
     document.getElementById("rDescripcion").value = "";
     document.getElementById("rImagenes").value = "";
+    document.getElementById("rImagenesUpload").value = "";
     document.getElementById("rImagenesPreview").innerHTML = "";
     document.getElementById("rDescripcionGroup").style.display = "none";
     document.getElementById("rRepuestosGroup").style.display = "none";

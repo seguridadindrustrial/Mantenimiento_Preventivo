@@ -305,8 +305,13 @@
             </div>
 
             <div class="form-group">
-                <label for="rImagenes">Fotos (maximo 2, opcional)</label>
-                <input type="file" id="rImagenes" accept="image/*" multiple>
+                <label id="rFotosLabel">Fotos (maximo 2, opcional)</label>
+                <div class="photo-buttons">
+                    <label for="rImagenes" class="btn-photo">Tomar foto</label>
+                    <label for="rImagenesUpload" class="btn-photo btn-photo-alt">Subir foto</label>
+                </div>
+                <input type="file" id="rImagenes" accept="image/*" capture="environment" style="display:none;">
+                <input type="file" id="rImagenesUpload" accept="image/*" multiple style="display:none;">
                 <div id="rImagenesPreview" class="imagenes-preview"></div>
             </div>
 
