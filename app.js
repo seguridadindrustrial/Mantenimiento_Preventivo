@@ -1668,6 +1668,7 @@ function loginTecnico() {
         }
         if (personal && personal.tipo === "Tecnico" && !esMantenimiento) {
             tecnicoNombre = personal.nombre;
+            empleadoNombre = personal.nombre;
             errorEl.style.display = "none";
             document.getElementById("loginSection").style.display = "none";
             document.getElementById("averiaForm").style.display = "block";
