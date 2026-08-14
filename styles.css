@@ -50,6 +50,11 @@ footer {
     width: 100%;
     z-index: -1;
 }
+footer a {
+    color: #0c0c0c;
+    text-decoration: underline;
+    font-weight: 600;
+}
 .container {
     margin: 30px auto;
     background: #fff8f8;

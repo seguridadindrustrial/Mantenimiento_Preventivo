@@ -4,6 +4,7 @@ let SEDES_CHECKIN = [];
 let SEDE_ZONAS = {};
 
 const datosPersonal = [
+    {nombre: "LOLY GARCIA", cedula: "4711758", tipo: "Empleado", whatsapp: "584241752256", correo: "", jefe:""},
     {nombre: "CAROLINA BLANCO", cedula: "31451530", tipo: "Tecnico", whatsapp: "584124756318", correo: "carolinablanco8419@gmail.com", jefe:"msuje3536@gmail.com, blancocarolina155@gmail.com"},
     { nombre: "JHONNY BARAJAS", cedula: "9467216", tipo: "Empleado", whatsapp: "584127548281", correo: "", jefe: "kliviat..muñoz@caracascatering.com" },
     { nombre: "MANUEL ACOSTA", cedula: "15613616", tipo: "Empleado", whatsapp: "584121476287", correo: "", jefe: "kliviat..muñoz@caracascatering.com" },
@@ -831,7 +832,7 @@ const RUTINA_CORRECTIVO = {
         "Carpinteria",
         "Pintura",
         "Albanileria",
-        ""
+        "Otros"
     ]
 };
 
@@ -1860,6 +1861,7 @@ function renderRutina(equipo, mantenimiento) {
     rutinaActual.forEach((item, index) => {
         const esObjeto = typeof item === "object" && item !== null;
         const label = esObjeto ? item.label : item;
+        if (!label) return;
         const fields = esObjeto ? (item.expand || (item.sub ? [item.sub] : null)) : null;
         let subHtml = "";
         if (fields && fields.length > 0) {
@@ -2014,6 +2016,7 @@ function irAlPaso3() {
     }
     const hasCheckinEmpty = rutinaActual.some(c => {
         const label = typeof c === "object" && c !== null ? c.label : c;
+        if (!label) return false;
         return !checkins[label];
     });
     if (hasCheckinEmpty) {
@@ -2254,8 +2257,10 @@ function toggleCheckinSub(btn) {
 
 function getCheckinValues() {
     const results = {};
-    document.querySelectorAll(".checkin-main-toggle").forEach((group, index) => {
-        const item = rutinaActual[index];
+    document.querySelectorAll(".checkin-main-toggle").forEach((group) => {
+        const anyBtn = group.querySelector(".toggle-btn[data-index]");
+        if (!anyBtn) return;
+        const item = rutinaActual[parseInt(anyBtn.dataset.index, 10)];
         if (!item) return;
         const label = typeof item === "object" && item !== null ? item.label : item;
         const activeBtn = group.querySelector(".active-si, .active-no");
@@ -2473,6 +2478,7 @@ function enviarFormulario(e) {
 
     const hasCheckinEmpty = rutinaActual.some(c => {
         const label = typeof c === "object" && c !== null ? c.label : c;
+        if (!label) return false;
         return !checkins[label];
     });
     if (hasCheckinEmpty) {
