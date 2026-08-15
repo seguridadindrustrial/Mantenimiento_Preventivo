@@ -288,7 +288,8 @@ textarea:focus {
     flex: 1;
 }
 
-.row-fecha-hora input[type="date"] {
+.row-fecha-hora input[type="date"],
+.row-fecha-hora input[type="time"] {
     width: 100%;
     padding: 10px 14px;
     border: 3px solid #67C064;
@@ -302,7 +303,8 @@ textarea:focus {
     transition: border-color 0.2s;
 }
 
-.row-fecha-hora input[type="date"]:focus {
+.row-fecha-hora input[type="date"]:focus,
+.row-fecha-hora input[type="time"]:focus {
     outline: none;
     border-color: #67C064;
     background: #fff;
@@ -856,7 +858,8 @@ input[type="file"] {
         min-width: 56px;
     }
 
-    .row-fecha-hora input[type="date"] {
+    .row-fecha-hora input[type="date"],
+    .row-fecha-hora input[type="time"] {
         height: 40px;
     }
 }

@@ -1663,7 +1663,7 @@ function loginTecnico() {
             document.getElementById("tecnicoInfo").textContent = "Tecnico: " + tecnicoNombre;
             populateSelect("sedes", SEDES_CHECKIN);
             populateSelect("mantenimiento", MANTENIMIENTOS);
-            populateTimeSelects();
+            limpiarHora();
             return;
         }
         if (personal && personal.tipo === "Tecnico" && !esMantenimiento) {
@@ -1674,7 +1674,7 @@ function loginTecnico() {
             document.getElementById("averiaForm").style.display = "block";
             document.getElementById("empleadoInfo").textContent = "Tecnico: " + tecnicoNombre;
             populateSelect("aSedes", SEDES);
-            populateTimeSelects("a");
+            limpiarHora("a");
             return;
         }
         if (personal && personal.tipo === "Empleado") {
@@ -1684,7 +1684,7 @@ function loginTecnico() {
             document.getElementById("averiaForm").style.display = "block";
             document.getElementById("empleadoInfo").textContent = "Empleado: " + empleadoNombre;
             populateSelect("aSedes", SEDES);
-            populateTimeSelects("a");
+            limpiarHora("a");
             return;
         }
         errorEl.textContent = "Credencial o codigo de averia no valido. Solicita tu registro al administrador.";
@@ -1728,40 +1728,11 @@ function actualizarLabelFotos() {
     }
 }
 
-function populateTimeSelects(prefix) {
+function limpiarHora(prefix) {
     prefix = prefix || "";
-    const ids = prefix === "a"
-        ? { horas: "aHoraHora", minutos: "aHoraMinuto", periodo: "aHoraPeriodo" }
-        : prefix === "r"
-        ? { horas: "rHoraHora", minutos: "rHoraMinuto", periodo: "rHoraPeriodo" }
-        : { horas: "horaHora", minutos: "horaMinuto", periodo: "horaPeriodo" };
-    const horas = document.getElementById(ids.horas);
-    horas.innerHTML = '<option value="" disabled selected>HH</option>';
-    for (var i = 1; i <= 12; i++) {
-        var opt = document.createElement("option");
-        opt.value = i;
-        opt.textContent = i;
-        horas.appendChild(opt);
-    }
-
-    const minutos = document.getElementById(ids.minutos);
-    minutos.innerHTML = '<option value="" disabled selected>MM</option>';
-    for (var m = 0; m < 60; m += 5) {
-        var opt = document.createElement("option");
-        var val = m < 10 ? "0" + m : "" + m;
-        opt.value = val;
-        opt.textContent = val;
-        minutos.appendChild(opt);
-    }
-
-    const periodo = document.getElementById(ids.periodo);
-    periodo.innerHTML = '<option value="" disabled selected>AM/PM</option>';
-    ["AM", "PM"].forEach(function (p) {
-        var opt = document.createElement("option");
-        opt.value = p;
-        opt.textContent = p;
-        periodo.appendChild(opt);
-    });
+    var id = prefix === "a" ? "aHora" : prefix === "r" ? "rHora" : "hora";
+    var el = document.getElementById(id);
+    if (el) el.value = "";
 }
 
 function populateSelect(id, items, agregarOtro) {
@@ -1783,20 +1754,9 @@ function populateSelect(id, items, agregarOtro) {
 
 function obtenerHora(prefix) {
     prefix = prefix || "";
-    const ids = {
-        h: prefix ? prefix + "HoraHora" : "horaHora",
-        m: prefix ? prefix + "HoraMinuto" : "horaMinuto",
-        p: prefix ? prefix + "HoraPeriodo" : "horaPeriodo"
-    };
-    var h = document.getElementById(ids.h).value;
-    var m = document.getElementById(ids.m).value;
-    var p = document.getElementById(ids.p).value;
-    if (!h || !m || !p) return "";
-    var horas24 = parseInt(h, 10);
-    if (p === "PM" && horas24 !== 12) horas24 += 12;
-    if (p === "AM" && horas24 === 12) horas24 = 0;
-    var hh = horas24 < 10 ? "0" + horas24 : "" + horas24;
-    return hh + ":" + m;
+    var id = prefix === "a" ? "aHora" : prefix === "r" ? "rHora" : "hora";
+    var el = document.getElementById(id);
+    return el ? (el.value || "") : "";
 }
 
 function calcularTurno(hora24) {
@@ -2913,7 +2873,7 @@ function clearForm() {
     document.getElementById("formActions").style.display = "flex";
     document.getElementById("equipo").required = true;
     document.getElementById("mantenimiento").required = true;
-    populateTimeSelects();
+    limpiarHora();
     rutinaActual = [];
     nombreRutinaActual = "";
     esTaller = false;
@@ -3129,7 +3089,7 @@ function clearAveriaForm() {
     label.textContent = "Fotos (maximo 2) - Opcional";
     label.style.color = "";
     label.style.fontWeight = "";
-    populateTimeSelects("a");
+    limpiarHora("a");
 }
 
 function abrirResolucion(av) {
@@ -3141,7 +3101,7 @@ function abrirResolucion(av) {
         (av.zona ? " | Zona: " + av.zona : "") +
         " | Descripcion: " + (av.descripcion || "");
     document.getElementById("resolucionEquipo").textContent = "Equipo: " + (av.equipo || "No especificado");
-    populateTimeSelects("r");
+    limpiarHora("r");
     clearResolucionForm();
     configurarTecnicoResolucion(av.asignado || "");
 
@@ -3386,7 +3346,7 @@ function clearResolucionForm() {
         document.getElementById(id).classList.remove("active-si", "active-no");
     });
     resolucionImagenes = [];
-    populateTimeSelects("r");
+    limpiarHora("r");
 }
 
 function volverAlLogin() {
