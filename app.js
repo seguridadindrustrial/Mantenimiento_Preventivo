@@ -368,6 +368,7 @@ const ZONA_EQUIPOS = {
             "TABLEROS",
             "LAMPARAS",
             "ESCRITORIOS",
+            "AIRE ACONDICIONADO 5 TONELADAS ",
         ],
         "TALLER": [
             "MICROONDAS DEL TALLER # 3",
@@ -908,7 +909,6 @@ const RUTINA_SEMANARIO_RUICES = [
             { label: "Aire party / pantry", type: "select", options: ["Encendido", "Apagado"] },
             { label: "Aire de panadería", type: "select", options: ["Encendido", "Apagado"] },
             { label: "Inyección", type: "select", options: ["Encendido", "Apagado"] },
-            { label: "Extractor", type: "select", options: ["Encendido", "Apagado"] },
             { label: "Ascensor", type: "select", options: ["Sin novedad", "Con novedad", "Fuera de servicio"] }
         ]
     },
@@ -966,6 +966,7 @@ const EQUIPO_RUTINA = {
     "AIRE ACONDICIONADO 5 TON FAN COIL 3": "Rutina Aires Acondicionados",
     "AIRE ACONDICIONADO 5 TON FAN COIL 4": "Rutina Aires Acondicionados",
     "AIRE ACONDICIONADO 5 TON PISO TECHO 1": "Rutina Aires Acondicionados",
+    "AIRE ACONDICIONADO 5 TONELADAS ": "Rutina Aires Acondicionados",
     "ALFOMBRA PISO": "Rutina Area Comun",
     "AMASADOR # 1": "Rutina Amasadora",
     "ARMARIO REFRIGERADO URSEL 1": "Rutina Cava Cuarto/Nevera",
