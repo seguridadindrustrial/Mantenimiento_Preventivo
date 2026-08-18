@@ -609,6 +609,7 @@ const SEDE_EQUIPOS = {
 const MANTENIMIENTOS = [
     "PREVENTIVO",
     "CORRECTIVO",
+    "OTRO",
 ];
 
 
@@ -1386,6 +1387,17 @@ document.addEventListener("DOMContentLoaded", () => {
         renderImagenesPreview();
     });
 
+    document.getElementById("mantenimiento").addEventListener("change", function () {
+        document.getElementById("otroMantenimientoGroup").style.display = this.value === "OTRO" ? "block" : "none";
+        if (this.value !== "OTRO") {
+            document.getElementById("otroDescripcion").value = "";
+            document.getElementById("otroRepuestosGroup").style.display = "none";
+            document.getElementById("otroRepuestosRows").innerHTML = "";
+            document.getElementById("otroRepSi").classList.remove("active-si", "active-no");
+            document.getElementById("otroRepNo").classList.remove("active-si", "active-no");
+        }
+    });
+
     document.getElementById("sedes").addEventListener("change", function () {
         const sede = this.value;
         const zonas = SEDE_ZONAS[sede] || [];
@@ -1620,6 +1632,55 @@ function irAlPaso2() {
     }
 
     renderRutina(equipo, mantenimiento);
+
+    if (mantenimiento === "OTRO") {
+        var otroDesc = document.getElementById("otroDescripcion").value.trim();
+        var otroRepToggle = document.querySelector("#otroRepSi.active-si, #otroRepNo.active-si, #otroRepSi.active-no, #otroRepNo.active-no");
+        if (!otroRepToggle) {
+            alert("Responde Si o No en repuestos.");
+            return;
+        }
+        var otrosRepuestos = [];
+        if (otroRepToggle.dataset.value === "Si") {
+            otrosRepuestos = getRepuestos("otroRepuestosRows");
+            if (otrosRepuestos.length === 0) {
+                alert("Agrega al menos un repuesto.");
+                return;
+            }
+        }
+        var turno = calcularTurno(hora);
+        var idUnico = generarIdUnico(fecha, hora, sedes, equipo, tecnicoNombre);
+        if (yaEnviado(idUnico)) {
+            alert("Este registro ya fue enviado anteriormente.");
+            return;
+        }
+        if (!confirm("Confirmar envio?\n\nFecha: " + fecha + "\nHora: " + hora + "\nSede: " + sedes + "\nEquipo: " + equipo + "\nMantenimiento: OTRO")) {
+            return;
+        }
+        var registroOtro = {
+            id: idUnico,
+            fecha: fecha, hora: hora, turno: turno,
+            sedes: sedes, zona: zona, tecnico: tecnicoNombre,
+            equipo: equipo, mantenimiento: "OTRO",
+            rutina: "OTRO",
+            checkinKeys: [], checkinValues: [],
+            descripcion: otroDesc,
+            repuestos: otrosRepuestos
+        };
+        marcarEnviado(idUnico);
+        saveToLocalStorage(registroOtro);
+        fetch(APPS_SCRIPT_URL, {
+            method: "POST", mode: "no-cors",
+            body: JSON.stringify(registroOtro)
+        }).then(function () {
+            alert("Registro enviado correctamente.");
+            clearForm();
+        }).catch(function () {
+            alert("Error de conexion. El registro se enviara cuando haya internet.");
+            clearForm();
+        });
+        return;
+    }
 
     if (!esDinamica && (!rutinaActual || (Array.isArray(rutinaActual) && rutinaActual.length === 0))) {
         alert("El equipo seleccionado no tiene rutina definida.");
@@ -1868,6 +1929,8 @@ function setPaso2Buttons() {
         const esUltima = parteSemanarioActual >= RUTINA_SEMANARIO_RUICES.length - 1;
         document.getElementById("btnPaso3").style.display = esUltima ? "none" : "block";
         document.getElementById("btnEnviar").style.display = esUltima ? "block" : "none";
+        var atajo = document.querySelector(".btn-atajo-tanques");
+        if (atajo) atajo.style.display = esUltima ? "none" : "block";
     } else {
         document.getElementById("btnPaso3").style.display = esTaller ? "none" : "block";
         document.getElementById("btnEnviar").style.display = esTaller ? "block" : "none";
@@ -1985,6 +2048,19 @@ function irAlPaso3() {
 
     document.getElementById("paso2").style.display = "none";
     document.getElementById("paso3").style.display = "block";
+}
+
+function toggleOtroRepuestos(btn) {
+    const group = btn.parentElement;
+    group.querySelectorAll(".toggle-btn").forEach(b => {
+        b.classList.remove("active-si", "active-no");
+    });
+    btn.classList.add(btn.dataset.value === "Si" ? "active-si" : "active-no");
+    const repuestosGroup = document.getElementById("otroRepuestosGroup");
+    repuestosGroup.style.display = btn.dataset.value === "Si" ? "block" : "none";
+    if (btn.dataset.value === "No") {
+        document.getElementById("otroRepuestosRows").innerHTML = "";
+    }
 }
 
 function toggleRepuestosToggle(btn) {
@@ -2402,8 +2478,14 @@ function enviarFormulario(e) {
     if (esTaller) {
         if (esSemanarioRuices) {
             if (!semanarioRuicesCompleto()) {
-                alert("Completa todas las partes y sub-preguntas del semanero antes de enviar.");
+                alert("Completa todas las sub-preguntas de las opciones marcadas con Si antes de enviar.");
                 return;
+            }
+            var sinMarcar = contarSemanarioSinMarcar();
+            if (sinMarcar > 0) {
+                if (!confirm("Tienes " + sinMarcar + " opcion(es) sin marcar. ¿Deseas enviar de todas formas?")) {
+                    return;
+                }
             }
             enviarSemanarioRuices(sedes, fecha, hora, zona, descripcion);
             return;
@@ -2671,6 +2753,17 @@ function renderSemanarioRuices(container) {
 
         container.appendChild(div);
     });
+
+    var atajo = document.createElement("button");
+    atajo.type = "button";
+    atajo.className = "btn-atajo-tanques";
+    atajo.textContent = "Tanques";
+    atajo.onclick = function () {
+        parteSemanarioActual = RUTINA_SEMANARIO_RUICES.length - 1;
+        mostrarParteSemanario();
+        setPaso2Buttons();
+    };
+    container.appendChild(atajo);
 }
 
 function mostrarParteSemanario() {
@@ -2698,7 +2791,7 @@ function semanarioRuicesCompleto() {
                 const campoEl = partEl.querySelector('.semanario-campo[data-campo="' + ci + '"]');
                 if (!campoEl) return;
                 const active = campoEl.querySelector(".semanario-toggle .active-si, .semanario-toggle .active-no");
-                if (!active) { ok = false; return; }
+                if (!active) return;
                 if (active.dataset.value === "Si") {
                     const inp = campoEl.querySelector(".semanario-number-input, .semanario-select");
                     if (!inp || inp.value.trim() === "") ok = false;
@@ -2706,12 +2799,36 @@ function semanarioRuicesCompleto() {
             });
         } else if (parte.tareas) {
             partEl.querySelectorAll(".taller-task").forEach(wrapper => {
-                if (!wrapper.querySelector(".taller-task-row .active-si, .taller-task-row .active-no")) ok = false;
+                const toggleActive = wrapper.querySelector(".taller-task-row .active-si, .taller-task-row .active-no");
+                if (!toggleActive) return;
                 if (!tallerSubCompleto(wrapper)) ok = false;
             });
         }
     });
     return ok;
+}
+
+function contarSemanarioSinMarcar() {
+    let sinMarcar = 0;
+    document.querySelectorAll(".semanario-part").forEach(partEl => {
+        const pi = parseInt(partEl.dataset.part);
+        const parte = RUTINA_SEMANARIO_RUICES[pi];
+        if (!parte) return;
+        if (parte.campos) {
+            parte.campos.forEach((campo, ci) => {
+                const campoEl = partEl.querySelector('.semanario-campo[data-campo="' + ci + '"]');
+                if (!campoEl) return;
+                const active = campoEl.querySelector(".semanario-toggle .active-si, .semanario-toggle .active-no");
+                if (!active) sinMarcar++;
+            });
+        } else if (parte.tareas) {
+            partEl.querySelectorAll(".taller-task").forEach(wrapper => {
+                const toggleActive = wrapper.querySelector(".taller-task-row .active-si, .taller-task-row .active-no");
+                if (!toggleActive) sinMarcar++;
+            });
+        }
+    });
+    return sinMarcar;
 }
 
 function getSemanarioRuicesValues() {
@@ -2882,6 +2999,12 @@ function clearForm() {
     parteSemanarioActual = 0;
     esDinamica = false;
     resetPaso3();
+    document.getElementById("otroMantenimientoGroup").style.display = "none";
+    document.getElementById("otroDescripcion").value = "";
+    document.getElementById("otroRepuestosGroup").style.display = "none";
+    document.getElementById("otroRepuestosRows").innerHTML = "";
+    document.getElementById("otroRepSi").classList.remove("active-si", "active-no");
+    document.getElementById("otroRepNo").classList.remove("active-si", "active-no");
 }
 
 function toggleAveriaToggle(btn) {

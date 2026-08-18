@@ -83,6 +83,28 @@
                     </select>
                 </div>
 
+                <div id="otroMantenimientoGroup" style="display:none;">
+                    <div class="form-group">
+                        <label for="otroDescripcion">Descripcion del mantenimiento</label>
+                        <textarea id="otroDescripcion" rows="3" placeholder="Describe el mantenimiento realizado..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Repuestos utilizados</label>
+                        <p class="hint">¿Se usaron repuestos?</p>
+                        <div class="toggle-group">
+                            <button type="button" class="toggle-btn" id="otroRepSi" data-value="Si" onclick="toggleOtroRepuestos(this)">Si</button>
+                            <button type="button" class="toggle-btn" id="otroRepNo" data-value="No" onclick="toggleOtroRepuestos(this)">No</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="otroRepuestosGroup" style="display:none;">
+                        <label>Agregar repuestos</label>
+                        <div id="otroRepuestosRows"></div>
+                        <button type="button" class="btn-secondary btn-add" onclick="agregarRepuestoRow('otroRepuestosRows')">＋ Agregar repuesto</button>
+                    </div>
+                </div>
+
                 <div class="form-actions" id="formActions">
                     <button type="button" class="btn-primary" id="btnSiguiente">Siguiente</button>
                 </div>
