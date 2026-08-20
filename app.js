@@ -3396,19 +3396,14 @@ function enviarResolucion(e) {
         imagenes: imagenesNuevas
     };
 
-    for (var i = 0; i < datosPersonal.length; i++) {
-        if (datosPersonal[i].nombre === tecnico) {
-            registro.correoReportero = datosPersonal[i].correo;
-            break;
-        }
-    }
-
     for (var i = 0; i < averiasDisponibles.length; i++) {
         if (String(averiasDisponibles[i].numero) === String(numero)) {
             var nombreReportero = averiasDisponibles[i].empleado;
             for (var j = 0; j < datosPersonal.length; j++) {
                 if (datosPersonal[j].nombre === nombreReportero) {
                     registro.correoReportero = datosPersonal[j].correo;
+                    registro.correoJefe = datosPersonal[j].jefe;
+                    registro.whatsappReportero = datosPersonal[j].whatsapp;
                     break;
                 }
             }

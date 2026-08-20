@@ -648,6 +648,52 @@ function procesarResolucionAveria(data) {
         }
     }
 
+    var correoJefe = data.correoJefe || "";
+    if (correoJefe) {
+        var asuntoJefe = "";
+        var htmlJefe = "";
+        if (realizado === "Si") {
+            asuntoJefe = "✅ Averia " + numero + " RESUELTA - " + (data.tecnico || "");
+            htmlJefe = "<h3 style='color:#2e7d32;'>✅ Averia " + numero + " Resuelta</h3>" +
+                "<b>Equipo:</b> " + equipo + "<br>" +
+                "<b>Sede:</b> " + sede + "<br>" +
+                "<b>Tecnico:</b> " + (data.tecnico || "") + "<br>" +
+                "<b>Fecha:</b> " + (data.fecha || "") + "<br>" +
+                "<b>Hora:</b> " + (data.hora || "") + "<br>" +
+                (data.descripcion ? "<b>Descripcion:</b> " + data.descripcion + "<br>" : "");
+        } else if (realizado === "No") {
+            asuntoJefe = "❌ Averia " + numero + " - No realizada - " + (data.tecnico || "");
+            htmlJefe = "<h3 style='color:#d32f2f;'>❌ Averia " + numero + " - No realizada</h3>" +
+                "<b>Equipo:</b> " + equipo + "<br>" +
+                "<b>Sede:</b> " + sede + "<br>" +
+                "<b>Tecnico:</b> " + (data.tecnico || "") + "<br>" +
+                "<b>Motivo:</b> " + (data.descripcion || "No especificado") + "<br>";
+        } else if (realizado === "Falsa averia") {
+            asuntoJefe = "ℹ️ Averia " + numero + " - Falsa averia - " + (data.tecnico || "");
+            htmlJefe = "<h3 style='color:#1976d2;'>ℹ️ Averia " + numero + " - Falsa Averia</h3>" +
+                "<b>Equipo:</b> " + equipo + "<br>" +
+                "<b>Sede:</b> " + sede + "<br>" +
+                "<b>Tecnico:</b> " + (data.tecnico || "") + "<br>" +
+                (data.descripcion ? "<b>Observacion:</b> " + data.descripcion + "<br>" : "");
+        } else if (realizado === "En proceso") {
+            asuntoJefe = "⏳ Averia " + numero + " - En proceso - " + (data.tecnico || "");
+            htmlJefe = "<h3 style='color:#f57c00;'>⏳ Averia " + numero + " - En Proceso</h3>" +
+                "<b>Equipo:</b> " + equipo + "<br>" +
+                "<b>Sede:</b> " + sede + "<br>" +
+                "<b>Tecnico:</b> " + (data.tecnico || "") + "<br>" +
+                (data.descripcion ? "<b>Observacion:</b> " + data.descripcion + "<br>" : "");
+        }
+        if (asuntoJefe) {
+            try {
+                MailApp.sendEmail({
+                    to: correoJefe,
+                    subject: asuntoJefe,
+                    htmlBody: htmlJefe
+                });
+            } catch (eJefe) {}
+        }
+    }
+
     var attachments = [];
     if (data.imagenes && data.imagenes.length > 0) {
         for (var k = 0; k < data.imagenes.length; k++) {
