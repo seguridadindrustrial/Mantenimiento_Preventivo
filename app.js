@@ -130,7 +130,7 @@ function buscarPersonalPorCedula(cedula) {
 
 function getAveriaZonas(sede) {
     if (sede === "EVENTO") return [];
-    var zonas = (SEDE_ZONAS[sede] || []).filter(function(z) { return z !== "SEMANERO"; });
+    var zonas = (SEDE_ZONAS[sede] || []).filter(function(z) { return z.toUpperCase().indexOf("SEMANERO") !== 0; });
     if (zonas.indexOf("EXTERIOR") === -1) zonas.push("EXTERIOR");
     return zonas;
 }
@@ -279,7 +279,7 @@ const ZONA_EQUIPOS = {
             "LAMPARAS",
             "ESCRITORIOS",
         ],
-        "SEMANERO": [],
+        "SEMANERO LOS RUICES": [],
     },
     "DEPOSITO": {
         "PB": [
@@ -1439,7 +1439,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const eqGroup = document.getElementById("equipoGroup");
         const eqExteriorGroup = document.getElementById("equipoExteriorGroup");
 
-        if (zona === "SEMANERO") {
+        if (zona && zona.toUpperCase().indexOf("SEMANERO") === 0) {
             eqExteriorGroup.style.display = "none";
             eqGroup.style.display = "none";
             document.getElementById("mantenimientoGroup").style.display = "none";
@@ -1605,7 +1605,7 @@ function irAlPaso2() {
     const equipoSelect = document.getElementById("equipo").value;
     const esOtro = equipoSelect === "__OTRO__";
     const equipo = esTaller
-        ? "SEMANERO"
+        ? (sedes === "RUICES" ? "Semanero los Ruices" : "SEMANERO")
         : esExterior
         ? document.getElementById("equipoExterior").value.trim()
         : esOtro
@@ -1823,9 +1823,10 @@ function obtenerHora(prefix) {
 
 function calcularTurno(hora24) {
     var horas = parseInt(hora24.split(":")[0], 10);
-    if (horas >= 6 && horas < 12) return "Diurno";
-    if (horas >= 18 && horas < 24) return "Nocturno";
-    return "Madrugada";
+    if (horas >= 8 && horas < 17) return "Diurno";
+    if (horas >= 19 && horas < 23) return "Nocturno";
+    if (horas >= 23 || horas < 7) return "Madrugada";
+    return "Diurno";
 }
 
 function renderRutina(equipo, mantenimiento) {
@@ -2449,7 +2450,7 @@ function enviarFormulario(e) {
     const equipoSelect = document.getElementById("equipo").value;
     const esOtro = equipoSelect === "__OTRO__";
     const equipo = esTaller
-        ? "SEMANERO"
+        ? (sedes === "RUICES" ? "Semanero los Ruices" : "SEMANERO")
         : esExterior
         ? document.getElementById("equipoExterior").value.trim()
         : esOtro
@@ -2632,7 +2633,7 @@ function enviarTaller(sedes, fecha, hora, zona, mantenimiento, descripcion) {
             sedes: sedes,
             zona: zona,
             tecnico: tecnicoNombre,
-            equipo: "SEMANERO",
+            equipo: sedes === "RUICES" ? "Semanero los Ruices" : "SEMANERO",
             mantenimiento: mantenimiento,
             rutina: "Actividades de Semaneros - " + taskLabel,
             task: taskLabel,
@@ -2915,7 +2916,7 @@ function enviarSemanarioRuices(sedes, fecha, hora, zona, descripcion) {
                     sedes: sedes,
                     zona: zona,
                     tecnico: tecnicoNombre,
-                    equipo: "SEMANERO",
+                    equipo: sedes === "RUICES" ? "Semanero los Ruices" : "SEMANERO",
                     mantenimiento: "",
                     rutina: "Actividades de Semaneros - Tanques",
                     task: "Tanques",
